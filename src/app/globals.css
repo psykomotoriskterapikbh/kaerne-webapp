@@ -1,0 +1,94 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@300;400&family=DM+Sans:wght@400;500&family=Caveat:wght@400&display=swap');
+
+:root {
+  --kaerne-sand: #fcf5ec;
+  --kaerne-cream: #fdf2ec;
+  --kaerne-ink: #2d2a26;
+  --kaerne-ink-soft: #5a5048;
+  --kaerne-muted: #9a8f82;
+  --kaerne-sage: #a8c19f;
+  --kaerne-sage-deep: #8aa885;
+  --kaerne-sage-light: #cadfc1;
+  --kaerne-peach: #f7baa0;
+  --kaerne-terracotta: #e2916f;
+  --kaerne-terracotta-deep: #864b35;
+  --kaerne-border: #ecdfc9;
+  --kaerne-border-soft: #f0d4c3;
+}
+
+@theme inline {
+  --color-background: var(--kaerne-sand);
+  --color-foreground: var(--kaerne-ink);
+  --font-serif: 'Fraunces', Georgia, serif;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-script: 'Caveat', cursive;
+}
+
+body {
+  background: var(--kaerne-sand);
+  color: var(--kaerne-ink);
+  font-family: 'DM Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Karla animations */
+@keyframes kbreath {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.025); }
+}
+@keyframes kwave {
+  0% { transform: rotate(0deg); }
+  10% { transform: rotate(-6deg); }
+  20% { transform: rotate(8deg); }
+  30% { transform: rotate(-4deg); }
+  50%, 100% { transform: rotate(0deg); }
+}
+@keyframes kaura {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.65; transform: scale(1.06); }
+}
+@keyframes kblink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  94%, 98% { transform: scaleY(0.08); }
+}
+@keyframes ksparkle {
+  0%, 100% { opacity: 0; transform: scale(0.4); }
+  50% { opacity: 1; transform: scale(1); }
+}
+@keyframes kfade {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes kbubble {
+  0% { opacity: 0; transform: translateY(12px) scale(0.85); }
+  15%, 80% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-6px) scale(0.95); }
+}
+@keyframes kchipIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.k-aura { animation: kaura 4.5s ease-in-out infinite; }
+.k-blob-wrap { animation: kbreath 5s ease-in-out infinite; transform-origin: center bottom; }
+.k-wave { animation: kwave 2.4s ease-out 0.4s 1; transform-origin: center bottom; }
+.k-eye-l { animation: kblink 6s infinite; transform-origin: 88px 80px; transform-box: fill-box; }
+.k-eye-r { animation: kblink 6s infinite; transform-origin: 128px 80px; transform-box: fill-box; }
+.k-sparkle { animation: ksparkle 3s ease-in-out infinite; }
+.k-bubble { animation: kbubble 4.5s ease-out 1.8s 1 both; }
+.k-fade1 { animation: kfade 1s ease both; }
+.k-fade2 { animation: kfade 1.2s ease both; }
+.k-fade3 { animation: kfade 1.4s ease both; }
+.k-fade4 { animation: kfade 1.6s ease both; }
+.k-chip {
+  background: var(--kaerne-cream);
+  border: 0.5px solid var(--kaerne-border-soft);
+  color: var(--kaerne-terracotta-deep);
+  transition: all 0.3s ease;
+  animation: kchipIn 0.7s ease both;
+}
+.k-chip:hover { background: #f8e4d6; border-color: #e2a98c; transform: translateY(-2px); }
+.k-chip:nth-child(1) { animation-delay: 0.5s; }
+.k-chip:nth-child(2) { animation-delay: 0.65s; }
+.k-chip:nth-child(3) { animation-delay: 0.8s; }
