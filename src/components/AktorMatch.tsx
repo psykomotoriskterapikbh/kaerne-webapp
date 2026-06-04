@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { AKTORER, AKTOR_KOMPAKT } from "@/data/aktorer";
+import { AKTORER } from "@/data/aktorer";
 
 type Props = { onAsk: (text: string) => void };
 
@@ -22,7 +22,6 @@ export default function AktorMatch({ onAsk }: Props) {
   const [omraade, setOmraade] = useState<string>("alle");
   const [region, setRegion] = useState<string>("sjaelland");
   const [soeg, setSoeg] = useState("");
-  const [opgave, setOpgave] = useState("");
 
   const resultater = useMemo(() => {
     const q = soeg.trim().toLowerCase();
@@ -38,17 +37,6 @@ export default function AktorMatch({ onAsk }: Props) {
     }).sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
   }, [kategori, omraade, region, soeg]);
 
-  const askAiMatch = () => {
-    const t = opgave.trim();
-    if (!t) return;
-    onAsk(
-      `Jeg er sagsbehandler og skal finde den rette indsats og aktør til denne opgave (anonymiseret): «${t}». ` +
-      `Her er en vejledende aktør-oversigt: ${AKTOR_KOMPAKT}. ` +
-      `Giv mig dit faglige bud: 1) hvilken type indsats og paragraf opgaven peger på, 2) hvilke 2-3 aktører fra oversigten der bedst matcher opgave OG geografi, 3) hvad jeg skal afklare med aktøren før valg (kapacitet, erfaring med målgruppen, pris, opstartstid). Husk: valget er mit.`
-    );
-    setOpgave("");
-  };
-
   const selectStyle = {
     border: "0.5px solid var(--kaerne-border)",
     background: "#fff",
@@ -62,34 +50,12 @@ export default function AktorMatch({ onAsk }: Props) {
         Aktør-match
       </div>
       <h2 className="text-center mb-3" style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(24px, 3vw, 32px)", fontWeight: 300, color: "var(--kaerne-ink)" }}>
-        Beskriv opgaven — Karla giver sit bud
+        Find den rette aktør til opgaven
       </h2>
       <p className="text-center mx-auto mb-6" style={{ maxWidth: 580, fontSize: 15, lineHeight: 1.6, color: "var(--kaerne-ink-soft)" }}>
-        Skriv hvad sagen kalder på (anonymiseret) — Karla foreslår indsatstype, paragraf,
-        konkrete aktører og geografi. Eller filtrér selv i oversigten nedenfor.
+        Karla kender hele oversigten — beskriv bare opgaven i chatten øverst, så giver hun
+        sit faglige bud på indsats, paragraf og konkrete aktører. Eller filtrér selv her.
       </p>
-
-      <div className="max-w-2xl mx-auto mb-10 relative">
-        <textarea
-          value={opgave}
-          onChange={(e) => setOpgave(e.target.value)}
-          rows={3}
-          placeholder="Fx: Familie på Vestsjælland med to børn, bekymring for mistrivsel i skolen, mor ønsker hjælp. Vi overvejer familiebehandling med hurtig opstart..."
-          className="w-full bg-white rounded-[18px] py-4 pl-5 pr-5 text-[14px] focus:outline-none resize-none"
-          style={{ border: "0.5px solid var(--kaerne-border)", boxShadow: "0 2px 14px rgba(90,80,72,0.06)" }}
-          aria-label="Beskriv opgaven til Karla"
-        />
-        <div className="flex justify-end mt-2.5">
-          <button
-            onClick={askAiMatch}
-            disabled={!opgave.trim()}
-            className="cursor-pointer px-5 py-2.5 rounded-full text-[13px] hover:opacity-90 transition-opacity disabled:opacity-50"
-            style={{ background: "var(--kaerne-terracotta)", color: "#fff", boxShadow: "0 3px 10px rgba(226,145,111,0.4)" }}
-          >
-            Få Karlas bud →
-          </button>
-        </div>
-      </div>
 
       <div className="flex flex-wrap justify-center gap-3 mb-6">
         <select value={region} onChange={(e) => setRegion(e.target.value)} className="px-4 py-2.5 rounded-full text-[13px] cursor-pointer focus:outline-none" style={selectStyle} aria-label="Filtrér på geografi">
@@ -176,7 +142,7 @@ export default function AktorMatch({ onAsk }: Props) {
 
       {resultater.length === 0 && (
         <p className="text-center mt-6" style={{ fontSize: 14, color: "var(--kaerne-muted)" }}>
-          Ingen aktører matcher — prøv et bredere filter, eller beskriv opgaven for Karla ovenfor.
+          Ingen aktører matcher — prøv et bredere filter, eller beskriv opgaven for Karla i chatten.
         </p>
       )}
 
