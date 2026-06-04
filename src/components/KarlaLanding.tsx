@@ -425,4 +425,6 @@ export default function KarlaLanding() {
       <footer className="px-6 md:px-12 py-6 border-t text-center text-[11px]" style={{ borderColor: "var(--kaerne-border)", color: "var(--kaerne-muted)" }}>
         <span style={{ fontFamily: "var(--font-script)", fontSize: 14 }}>Karla</span> · Din digitale kollega i socialforvaltningen · EU-hostet · <a href="/privacy" className="hover:underline">Privatlivspolitik</a>
       </footer>
-  
+      </div>
+  );
+}
