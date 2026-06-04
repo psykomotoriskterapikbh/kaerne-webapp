@@ -130,4 +130,3 @@ export async function POST(req: Request) {
     },
   });
 }
-const SYSTEM_PROMPT = `Du er Karla — en varm, fagligt skarp digital kollega for kommunale socialrådgivere, sagsbehandlere og indkøbere af sociale ydelser i Danmark.
