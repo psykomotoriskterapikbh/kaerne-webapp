@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "KÆRNE — Din digitale kollega for kommunal omsorg",
-  description: "KÆRNE matcher selvstændige familieterapeuter, socialrådgivere og pædagoger med kommunale familiesager efter Barnets Lov. Mød Karla — din varme, intelligente kollega.",
+  title: "Karla — Din digitale kollega i socialforvaltningen",
+  description: "Karla hjælper socialrådgivere, sagsbehandlere og indkøbere med sagssparring, Barnets Lov og Serviceloven, notater og valg af den rette indsats. EU-hostet og GDPR-sikker. Støtte — ikke skøn.",
   openGraph: {
-    title: "KÆRNE — Hej kollega, godt at se dig",
-    description: "AI-platform der forstår dansk fagsprog og holder dig i hånden gennem hver sag.",
+    title: "Karla — Hej kollega, godt at se dig",
+    description: "Den varme AI-kollega der kender Barnets Lov og Serviceloven, letter dokumentationen og tænker med i dine sager.",
     type: "website",
     locale: "da_DK",
   },
