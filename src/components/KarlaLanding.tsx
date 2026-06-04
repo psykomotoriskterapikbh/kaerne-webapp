@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import AktorMatch from "@/components/AktorMatch";
 
 type ChatMsg = { role: "user" | "assistant"; content: string };
 
@@ -10,7 +11,17 @@ const CHIPS = [
   { label: "Sagssparring", prompt: "Jeg vil gerne sparre om en sag (anonymiseret). Hjælp mig med at strukturere den — hvad vil du vide?" },
   { label: "§ Paragraf-hjælp", prompt: "Jeg har brug for hjælp til at finde den rette paragraf i Barnets Lov eller Serviceloven. Hvor starter vi?" },
   { label: "Notat-hjælp", prompt: "Hjælp mig med at omsætte mine løse noter til et professionelt journalnotat." },
-  { label: "Find den rette indsats", prompt: "Jeg skal finde den rette type indsats og leverandør til en sag. Hvad skal jeg overveje?" },
+  { label: "Forbered et møde", prompt: "Jeg skal forberede et svært møde i en sag. Hjælp mig med dagsorden, de svære spørgsmål og borgerens perspektiv." },
+  { label: "Find den rette indsats", prompt: "Jeg skal finde den rette type indsats og aktør til en sag. Hvad skal jeg overveje?" },
+];
+
+const FEATURES = [
+  { titel: "Sagssparring", tekst: "Tænk højt med en kollega der altid har tid. Karla strukturerer sagen, finder oversete vinkler og holder borgerens perspektiv op." },
+  { titel: "§ Paragraf-hjælp", tekst: "Fra gammel SEL til Barnets Lov på sekunder — §52 blev til §32, §76 til §§114-116. Karla kender begge regelsæt og forklarer i klart sprog." },
+  { titel: "Notat- og udkasthjælp", tekst: "Tal eller skriv løst — Karla former det til journalnotat, mødereferat eller udkast til undersøgelse. Objektivt, og med observation adskilt fra vurdering." },
+  { titel: "Aktør-match", tekst: "Filtrér aktører på paragraf, målgruppe og geografi — og få Karlas tjekliste til, hvad du skal afklare før valget." },
+  { titel: "Kvalitetstjek — på vej", tekst: "Tjek dit afgørelsesudkast mod officialprincippet og Ankestyrelsens praksis, før det sendes." },
+  { titel: "Frist-hjælper — på vej", tekst: "4-måneders fristen på den børnefaglige undersøgelse, opfølgninger og handleplaner — Karla holder styr på dem med dig." },
 ];
 
 export default function KarlaLanding() {
@@ -148,6 +159,7 @@ export default function KarlaLanding() {
         </div>
         <div className="hidden md:flex gap-7 text-[13px]" style={{ color: "#7a7268" }}>
           <a href="#funktioner" className="cursor-pointer hover:opacity-70 transition-opacity">Funktioner</a>
+          <a href="#aktoer" className="cursor-pointer hover:opacity-70 transition-opacity">Find aktør</a>
           <a href="#sikkerhed" className="cursor-pointer hover:opacity-70 transition-opacity">Sikkerhed</a>
         </div>
         <a href="#" onClick={(e) => { e.preventDefault(); inputRef.current?.focus(); }} className="text-[13px] px-5 py-2.5 rounded-full cursor-pointer hover:opacity-90 transition-opacity" style={{ color: "var(--kaerne-sand)", background: "var(--kaerne-ink)" }}>
@@ -251,8 +263,10 @@ export default function KarlaLanding() {
             </h1>
             {!chatActive && (
               <p className="k-fade3 mb-7" style={{ fontFamily: "var(--font-serif)", fontSize: 18, fontWeight: 300, lineHeight: 1.6, color: "var(--kaerne-ink-soft)" }}>
-                Jeg kender Barnets Lov og Serviceloven, hjælper med notater og undersøgelser
-                — og tænker med, når du skal finde den rette indsats. <br />Hvad arbejder du med i dag?
+                Jeg er din faglige kollega i socialforvaltningen. Jeg kender Barnets Lov og
+                Serviceloven, skriver udkast til notater og undersøgelser, tænker med i svære
+                sager — og hjælper dig med at finde den rette indsats og aktør, når sagen
+                kræver det. <br />Hvad arbejder du med i dag?
               </p>
             )}
 
@@ -284,6 +298,16 @@ export default function KarlaLanding() {
                         <span className="k-dot" style={{ animationDelay: "0.2s" }}>·</span>
                         <span className="k-dot" style={{ animationDelay: "0.4s" }}>·</span>
                       </span>
+                    )}
+                    {m.role === "assistant" && m.content && !loading && (
+                      <button
+                        onClick={() => navigator.clipboard?.writeText(m.content)}
+                        className="block mt-2 cursor-pointer text-[11px] hover:opacity-70 transition-opacity"
+                        style={{ color: "var(--kaerne-muted)" }}
+                        aria-label="Kopiér Karlas svar"
+                      >
+                        ⧉ Kopiér
+                      </button>
                     )}
                   </div>
                 ))}
@@ -334,7 +358,7 @@ export default function KarlaLanding() {
             </p>
 
             {!chatActive && (
-              <div id="funktioner" className="flex gap-2.5 mt-5 flex-wrap">
+              <div className="flex gap-2.5 mt-5 flex-wrap">
                 {CHIPS.map((c) => (
                   <button key={c.label} onClick={() => send(c.prompt)} className="k-chip cursor-pointer px-4 py-2.5 rounded-full text-[13px]">
                     {c.label}
@@ -344,6 +368,30 @@ export default function KarlaLanding() {
             )}
           </div>
         </div>
+
+        <section id="funktioner" className="max-w-5xl mx-auto mt-16">
+          <div className="text-center mb-2 text-[11px]" style={{ letterSpacing: "0.2em", color: "var(--kaerne-sage)", textTransform: "uppercase" }}>
+            Det kan Karla
+          </div>
+          <h2 className="text-center mb-7" style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(24px, 3vw, 32px)", fontWeight: 300, color: "var(--kaerne-ink)" }}>
+            Mindre skærm. Mere socialfaglighed.
+          </h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {FEATURES.map((f) => (
+              <div key={f.titel} className="rounded-[18px] p-5 transition-transform hover:-translate-y-0.5" style={{ background: "#fff", border: "0.5px solid var(--kaerne-border)", boxShadow: "0 3px 16px rgba(90,80,72,0.06)" }}>
+                <div className="mb-1.5" style={{ fontFamily: "var(--font-serif)", fontSize: 16.5, color: "var(--kaerne-ink)" }}>{f.titel}</div>
+                <div style={{ fontSize: 13.5, lineHeight: 1.55, color: "var(--kaerne-ink-soft)" }}>{f.tekst}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <AktorMatch
+          onAsk={(t) => {
+            send(t);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        />
 
         <div
           className="max-w-5xl mx-auto mt-16 h-px"
@@ -377,6 +425,4 @@ export default function KarlaLanding() {
       <footer className="px-6 md:px-12 py-6 border-t text-center text-[11px]" style={{ borderColor: "var(--kaerne-border)", color: "var(--kaerne-muted)" }}>
         <span style={{ fontFamily: "var(--font-script)", fontSize: 14 }}>Karla</span> · Din digitale kollega i socialforvaltningen · EU-hostet · <a href="/privacy" className="hover:underline">Privatlivspolitik</a>
       </footer>
-    </div>
-  );
-}
+  
