@@ -4,17 +4,26 @@ import { useEffect, useRef, useState } from "react";
 
 type ChatMsg = { role: "user" | "assistant"; content: string };
 
+const CPR_REGEX = /\b\d{6}[-\s]?\d{4}\b/;
+
+const CHIPS = [
+  { label: "Sagssparring", prompt: "Jeg vil gerne sparre om en sag (anonymiseret). Hjælp mig med at strukturere den — hvad vil du vide?" },
+  { label: "§ Paragraf-hjælp", prompt: "Jeg har brug for hjælp til at finde den rette paragraf i Barnets Lov eller Serviceloven. Hvor starter vi?" },
+  { label: "Notat-hjælp", prompt: "Hjælp mig med at omsætte mine løse noter til et professionelt journalnotat." },
+  { label: "Find den rette indsats", prompt: "Jeg skal finde den rette type indsats og leverandør til en sag. Hvad skal jeg overveje?" },
+];
+
 export default function KarlaLanding() {
   const [greeting, setGreeting] = useState("Hej kollega — godt at se dig.");
-  const [timeLabel, setTimeLabel] = useState("Søndag eftermiddag");
+  const [timeLabel, setTimeLabel] = useState("Velkommen");
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [gdprWarning, setGdprWarning] = useState(false);
   const pupilLRef = useRef<SVGEllipseElement>(null);
   const pupilRRef = useRef<SVGEllipseElement>(null);
   const smileRef = useRef<SVGPathElement>(null);
   const blobRef = useRef<SVGSVGElement>(null);
-  const wrapRef = useRef<HTMLDivElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -24,11 +33,11 @@ export default function KarlaLanding() {
     const h = now.getHours();
     let part = "aften";
     let g = "Hej kollega — godt at se dig.";
-    if (h < 10) { part = "morgen"; g = "Godmorgen, kollega — kaffen er varm."; }
-    else if (h < 14) { part = "formiddag"; g = "God formiddag — hvordan starter dagen?"; }
+    if (h < 10) { part = "morgen"; g = "Godmorgen — skal vi tage dagens sager sammen?"; }
+    else if (h < 14) { part = "formiddag"; g = "God formiddag — hvad arbejder du med?"; }
     else if (h < 18) { part = "eftermiddag"; g = "God eftermiddag — træk lige vejret."; }
-    else if (h < 22) { part = "aften"; g = "God aften — du har gjort nok i dag."; }
-    else { part = "nat"; g = "Du er sent oppe, kollega."; }
+    else if (h < 22) { part = "aften"; g = "God aften — lang dag i felten?"; }
+    else { part = "nat"; g = "Sent oppe med en sag, kollega?"; }
     setTimeLabel(`${days[now.getDay()]} ${part}`);
     setGreeting(g);
 
@@ -68,6 +77,13 @@ export default function KarlaLanding() {
   const send = async (text: string) => {
     const t = text.trim();
     if (!t || loading) return;
+
+    if (CPR_REGEX.test(t)) {
+      setGdprWarning(true);
+      return;
+    }
+    setGdprWarning(false);
+
     const history: ChatMsg[] = [...messages, { role: "user", content: t }];
     setMessages(history);
     setInput("");
@@ -121,32 +137,34 @@ export default function KarlaLanding() {
   const chatActive = messages.length > 0;
 
   return (
-    <div ref={wrapRef} className="min-h-screen flex flex-col" style={{ background: "var(--kaerne-sand)", color: "var(--kaerne-ink)" }}>
+    <div className="min-h-screen flex flex-col" style={{ background: "var(--kaerne-sand)", color: "var(--kaerne-ink)" }}>
 
-      <nav className="flex justify-between items-center px-6 md:px-12 py-6 border-b" style={{ borderColor: "var(--kaerne-border)" }}>
-        <div style={{ fontFamily: "var(--font-serif)", fontSize: 16, letterSpacing: "0.5em", fontWeight: 300 }}>
-          K Æ R N E
+      <nav className="flex justify-between items-center px-6 md:px-12 py-5 border-b" style={{ borderColor: "var(--kaerne-border)", background: "rgba(252,245,236,0.85)", backdropFilter: "blur(8px)", position: "sticky", top: 0, zIndex: 50 }}>
+        <div className="flex items-baseline gap-3">
+          <span style={{ fontFamily: "var(--font-script)", fontSize: 28, lineHeight: 1 }}>Karla</span>
+          <span className="hidden sm:inline" style={{ fontSize: 10, letterSpacing: "0.22em", color: "var(--kaerne-muted)", textTransform: "uppercase" }}>
+            din digitale kollega
+          </span>
         </div>
         <div className="hidden md:flex gap-7 text-[13px]" style={{ color: "#7a7268" }}>
-          <a href="#feltet" className="cursor-pointer hover:opacity-70 transition-opacity">Feltet</a>
-          <a href="#manifest" className="cursor-pointer hover:opacity-70 transition-opacity">Manifest</a>
-          <a href="/login" className="cursor-pointer hover:opacity-70 transition-opacity">Log ind</a>
+          <a href="#funktioner" className="cursor-pointer hover:opacity-70 transition-opacity">Funktioner</a>
+          <a href="#sikkerhed" className="cursor-pointer hover:opacity-70 transition-opacity">Sikkerhed</a>
         </div>
-        <a href="/signup" className="text-[13px] px-5 py-2.5 rounded-full cursor-pointer hover:opacity-90 transition-opacity" style={{ color: "var(--kaerne-sand)", background: "var(--kaerne-ink)" }}>
-          Aktivér →
+        <a href="#" onClick={(e) => { e.preventDefault(); inputRef.current?.focus(); }} className="text-[13px] px-5 py-2.5 rounded-full cursor-pointer hover:opacity-90 transition-opacity" style={{ color: "var(--kaerne-sand)", background: "var(--kaerne-ink)" }}>
+          Tal med Karla →
         </a>
       </nav>
 
-      <main className="flex-1 px-6 md:px-12 py-12 md:py-16">
-        <div className="grid md:grid-cols-[260px_1fr] gap-12 items-start max-w-6xl mx-auto">
+      <main className="flex-1 px-6 md:px-12 py-10 md:py-14">
+        <div className="grid md:grid-cols-[280px_1fr] gap-10 md:gap-14 items-start max-w-5xl mx-auto">
 
-          <div className="relative w-[240px] h-[280px] flex items-center justify-center mx-auto md:mx-0 md:sticky md:top-8">
+          <div className="relative w-[250px] h-[300px] flex items-center justify-center mx-auto md:mx-0 md:sticky md:top-28">
             <div
-              className="k-aura absolute w-[220px] h-[220px] rounded-full"
-              style={{ background: "#fde4d4", zIndex: 1 }}
+              className="k-aura absolute w-[230px] h-[230px] rounded-full"
+              style={{ background: "radial-gradient(circle at 45% 40%, #fde9db 0%, #fde4d4 55%, rgba(253,228,212,0) 75%)", zIndex: 1 }}
             />
 
-            <svg className="k-bubble absolute" style={{ top: -8, right: -36, zIndex: 5 }} width="148" height="64" viewBox="0 0 140 60">
+            <svg className="k-bubble absolute" style={{ top: -10, right: -34, zIndex: 5 }} width="150" height="64" viewBox="0 0 140 60">
               <path
                 d="M10,28 Q10,8 30,8 L118,8 Q132,8 132,22 L132,32 Q132,46 118,46 L42,46 L26,56 L30,46 Q10,46 10,32 Z"
                 fill="#fff"
@@ -158,23 +176,38 @@ export default function KarlaLanding() {
               </text>
             </svg>
 
-            <div className="k-wave relative" style={{ zIndex: 2 }}>
-              <svg ref={blobRef} className="k-blob-wrap" width="220" height="220" viewBox="0 0 220 220">
+            <div className="k-float relative" style={{ zIndex: 2 }}>
+              <svg ref={blobRef} className="k-breathe" width="230" height="230" viewBox="0 0 220 220" style={{ filter: "drop-shadow(0 18px 22px rgba(90,80,72,0.18))" }}>
                 <defs>
-                  <radialGradient id="kgblob" cx="42%" cy="40%">
-                    <stop offset="0%" stopColor="var(--kaerne-sage-light)" />
-                    <stop offset="55%" stopColor="var(--kaerne-sage)" />
+                  <radialGradient id="kgblob" cx="40%" cy="34%">
+                    <stop offset="0%" stopColor="#d9ecc9" />
+                    <stop offset="38%" stopColor="var(--kaerne-sage-light)" />
+                    <stop offset="72%" stopColor="var(--kaerne-sage)" />
                     <stop offset="100%" stopColor="var(--kaerne-sage-deep)" />
                   </radialGradient>
                   <radialGradient id="kgcheek" cx="50%" cy="50%">
                     <stop offset="0%" stopColor="var(--kaerne-peach)" stopOpacity="0.9" />
                     <stop offset="100%" stopColor="var(--kaerne-peach)" stopOpacity="0" />
                   </radialGradient>
+                  <linearGradient id="kgsheen" x1="0%" y1="0%" x2="60%" y2="100%">
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.55" />
+                    <stop offset="45%" stopColor="#ffffff" stopOpacity="0.08" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+                  </linearGradient>
+                  <radialGradient id="kgunder" cx="50%" cy="92%" r="65%">
+                    <stop offset="0%" stopColor="#5d7050" stopOpacity="0.35" />
+                    <stop offset="60%" stopColor="#5d7050" stopOpacity="0" />
+                  </radialGradient>
                 </defs>
                 <path
                   d="M110,20 C156,22 192,52 198,98 C206,148 174,196 118,202 C66,206 22,178 16,124 C10,72 56,18 110,20 Z"
                   fill="url(#kgblob)"
                 />
+                <path
+                  d="M110,20 C156,22 192,52 198,98 C206,148 174,196 118,202 C66,206 22,178 16,124 C10,72 56,18 110,20 Z"
+                  fill="url(#kgunder)"
+                />
+                <ellipse cx="76" cy="52" rx="42" ry="26" fill="url(#kgsheen)" transform="rotate(-18 76 52)" />
                 <ellipse cx="68" cy="118" rx="22" ry="14" fill="url(#kgcheek)" />
                 <ellipse cx="158" cy="118" rx="22" ry="14" fill="url(#kgcheek)" />
                 <g>
@@ -198,44 +231,46 @@ export default function KarlaLanding() {
                 <circle className="k-sparkle" cx="40" cy="170" r="1.8" fill="var(--kaerne-sage)" style={{ animationDelay: "1.4s" }} />
                 <circle className="k-sparkle" cx="186" cy="172" r="2.2" fill="var(--kaerne-terracotta)" style={{ animationDelay: "2.1s" }} />
               </svg>
+              <div className="k-shadow" />
             </div>
 
-            <div className="absolute -bottom-1 left-0 right-0 text-center">
-              <div style={{ fontFamily: "var(--font-script)", fontSize: 24, color: "var(--kaerne-ink)", lineHeight: 1 }}>Karla</div>
+            <div className="absolute -bottom-2 left-0 right-0 text-center">
+              <div style={{ fontFamily: "var(--font-script)", fontSize: 26, color: "var(--kaerne-ink)", lineHeight: 1 }}>Karla</div>
               <div className="mt-1" style={{ fontSize: 10, letterSpacing: "0.2em", color: "var(--kaerne-muted)", textTransform: "uppercase" }}>
                 din digitale kollega
               </div>
             </div>
           </div>
 
-          <div>
+          <div className="max-w-2xl">
             <div className="k-fade1 mb-3 text-[11px]" style={{ letterSpacing: "0.2em", color: "var(--kaerne-sage)", textTransform: "uppercase" }}>
               {timeLabel}
             </div>
-            <h1 className="k-fade2 mb-4" style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(28px, 4vw, 38px)", fontWeight: 300, lineHeight: 1.1, letterSpacing: "-0.015em", color: "var(--kaerne-ink)" }}>
+            <h1 className="k-fade2 mb-4" style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(28px, 4vw, 40px)", fontWeight: 300, lineHeight: 1.12, letterSpacing: "-0.015em", color: "var(--kaerne-ink)" }}>
               {greeting}
             </h1>
             {!chatActive && (
-              <p className="k-fade3 mb-6" style={{ fontFamily: "var(--font-serif)", fontSize: 18, fontWeight: 300, lineHeight: 1.55, color: "var(--kaerne-ink-soft)" }}>
-                Hvordan har du det i dag? <br />Lad os tage tingene roligt, sammen.
+              <p className="k-fade3 mb-7" style={{ fontFamily: "var(--font-serif)", fontSize: 18, fontWeight: 300, lineHeight: 1.6, color: "var(--kaerne-ink-soft)" }}>
+                Jeg kender Barnets Lov og Serviceloven, hjælper med notater og undersøgelser
+                — og tænker med, når du skal finde den rette indsats. <br />Hvad arbejder du med i dag?
               </p>
             )}
 
             {chatActive && (
               <div
-                className="mb-5 max-h-[46vh] overflow-y-auto pr-1 flex flex-col gap-3"
+                className="mb-5 max-h-[48vh] overflow-y-auto pr-2 flex flex-col gap-3.5"
                 aria-live="polite"
               >
                 {messages.map((m, i) => (
                   <div
                     key={i}
-                    className={`max-w-[85%] rounded-[16px] px-4 py-3 text-[15px] leading-relaxed whitespace-pre-wrap ${
+                    className={`k-msg max-w-[86%] rounded-[18px] px-5 py-3.5 text-[15px] leading-relaxed whitespace-pre-wrap ${
                       m.role === "user" ? "self-end" : "self-start"
                     }`}
                     style={
                       m.role === "user"
-                        ? { background: "var(--kaerne-ink)", color: "var(--kaerne-sand)" }
-                        : { background: "#fff", border: "0.5px solid var(--kaerne-border)", color: "var(--kaerne-ink)" }
+                        ? { background: "var(--kaerne-ink)", color: "var(--kaerne-sand)", boxShadow: "0 2px 10px rgba(45,42,38,0.18)" }
+                        : { background: "#fff", border: "0.5px solid var(--kaerne-border)", color: "var(--kaerne-ink)", boxShadow: "0 2px 12px rgba(90,80,72,0.07)" }
                     }
                   >
                     {m.role === "assistant" && (
@@ -256,6 +291,13 @@ export default function KarlaLanding() {
               </div>
             )}
 
+            {gdprWarning && (
+              <div className="mb-4 rounded-[14px] px-5 py-3.5 text-[14px] leading-relaxed" style={{ background: "#fdf0e7", border: "0.5px solid #ecc9ae", color: "#864b35" }}>
+                <strong>Stop lige —</strong> det ligner et CPR-nummer. Karla arbejder kun med anonymiserede
+                oplysninger (GDPR). Fjern personnumre og navne, og prøv igen.
+              </div>
+            )}
+
             <form
               className="k-fade4 relative"
               onSubmit={(e) => {
@@ -266,9 +308,9 @@ export default function KarlaLanding() {
               <input
                 ref={inputRef}
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
-                className="w-full bg-white rounded-[18px] py-[18px] pl-6 pr-16 text-[15px] focus:outline-none transition-colors"
-                style={{ border: "0.5px solid var(--kaerne-border)" }}
+                onChange={(e) => { setInput(e.target.value); if (gdprWarning) setGdprWarning(false); }}
+                className="w-full bg-white rounded-[20px] py-[19px] pl-6 pr-16 text-[15px] focus:outline-none transition-shadow focus:shadow-[0_4px_20px_rgba(90,80,72,0.12)]"
+                style={{ border: "0.5px solid var(--kaerne-border)", boxShadow: "0 2px 14px rgba(90,80,72,0.06)" }}
                 placeholder={chatActive ? "Skriv til Karla..." : "Skriv til mig — bare som du tænker..."}
                 aria-label="Skriv til Karla"
                 disabled={loading}
@@ -278,7 +320,7 @@ export default function KarlaLanding() {
                 aria-label="Send til Karla"
                 disabled={loading || !input.trim()}
                 className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform disabled:opacity-50 disabled:hover:scale-100"
-                style={{ background: "var(--kaerne-terracotta)", color: "#fff" }}
+                style={{ background: "var(--kaerne-terracotta)", color: "#fff", boxShadow: "0 3px 10px rgba(226,145,111,0.45)" }}
               >
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="22" y1="2" x2="11" y2="13" />
@@ -287,22 +329,36 @@ export default function KarlaLanding() {
               </button>
             </form>
 
+            <p className="mt-2.5 text-[11.5px]" style={{ color: "var(--kaerne-muted)", lineHeight: 1.5 }}>
+              Karla støtter din faglighed — afgørelser er altid dine. Del aldrig CPR-numre eller navne.
+            </p>
+
             {!chatActive && (
-              <div className="flex gap-2.5 mt-5 flex-wrap">
-                <button onClick={() => send("Jeg tænker på en familie i en af mine sager — kan vi tale den igennem?")} className="k-chip cursor-pointer px-4 py-2.5 rounded-full text-[13px]">En familie jeg tænker på</button>
-                <button onClick={() => send("Jeg leder efter en varm fagperson til en sag — hvordan finder jeg den rette?")} className="k-chip cursor-pointer px-4 py-2.5 rounded-full text-[13px]">Find en varm fagperson</button>
-                <button onClick={() => send("Hvordan går mine sager?")} className="k-chip cursor-pointer px-4 py-2.5 rounded-full text-[13px]">Hvordan går mine sager?</button>
+              <div id="funktioner" className="flex gap-2.5 mt-5 flex-wrap">
+                {CHIPS.map((c) => (
+                  <button key={c.label} onClick={() => send(c.prompt)} className="k-chip cursor-pointer px-4 py-2.5 rounded-full text-[13px]">
+                    {c.label}
+                  </button>
+                ))}
               </div>
             )}
           </div>
         </div>
 
         <div
-          className="max-w-6xl mx-auto mt-16 h-px"
+          className="max-w-5xl mx-auto mt-16 h-px"
           style={{ background: "linear-gradient(90deg, transparent, var(--kaerne-border), transparent)" }}
         />
 
-        <div className="max-w-6xl mx-auto mt-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+        <div id="sikkerhed" className="max-w-5xl mx-auto mt-9 flex flex-wrap justify-center gap-2.5">
+          {["EU-hostet", "GDPR", "Barnets Lov & Serviceloven", "Støtte — ikke skøn"].map((b) => (
+            <span key={b} className="px-4 py-2 rounded-full text-[12px]" style={{ background: "var(--kaerne-cream)", border: "0.5px solid var(--kaerne-border-soft)", color: "var(--kaerne-ink-soft)", letterSpacing: "0.04em" }}>
+              {b}
+            </span>
+          ))}
+        </div>
+
+        <div className="max-w-5xl mx-auto mt-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
           <div style={{ fontFamily: "var(--font-serif)", fontSize: 17, lineHeight: 1.55, color: "var(--kaerne-ink-soft)", fontWeight: 300, maxWidth: 440 }}>
             <span style={{ color: "var(--kaerne-terracotta)", fontSize: 28, fontFamily: "Georgia, serif", lineHeight: 0 }}>&ldquo;</span>{" "}
             Ingen god sag bliver løst alene. Vi tager den sammen.{" "}
@@ -310,16 +366,16 @@ export default function KarlaLanding() {
             <div className="mt-2" style={{ fontSize: 11, color: "var(--kaerne-muted)", letterSpacing: "0.05em" }}>— Karla, hver morgen</div>
           </div>
           <div className="text-left md:text-right" style={{ fontSize: 11, color: "var(--kaerne-muted)" }}>
-            <div className="mb-1">EU-hostet · GDPR · Barnets Lov</div>
+            <div className="mb-1">Bygget til socialrådgivere, sagsbehandlere og indkøbere</div>
             <div style={{ color: "var(--kaerne-terracotta)", fontFamily: "var(--font-script)", fontSize: 15 }}>
-              Karla har holdt 247 i hånden i dag ♡
+              Karla tænker med — du bestemmer ♡
             </div>
           </div>
         </div>
       </main>
 
       <footer className="px-6 md:px-12 py-6 border-t text-center text-[11px]" style={{ borderColor: "var(--kaerne-border)", color: "var(--kaerne-muted)" }}>
-        <span style={{ fontFamily: "var(--font-serif)" }}>K Æ R N E ApS</span> · CVR 0000-0000 · <a href="/manifest" className="hover:underline">Manifest</a> · <a href="/privacy" className="hover:underline">Privatlivspolitik</a>
+        <span style={{ fontFamily: "var(--font-script)", fontSize: 14 }}>Karla</span> · Din digitale kollega i socialforvaltningen · EU-hostet · <a href="/privacy" className="hover:underline">Privatlivspolitik</a>
       </footer>
     </div>
   );
