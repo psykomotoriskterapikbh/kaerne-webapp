@@ -1,17 +1,32 @@
 // Vejledende aktør-oversigt — baseret på offentligt tilgængelige oplysninger
-// (virksomhedernes egne sider, CVR/proff.dk). Ikke en anbefaling eller rangering.
+// (virksomhedernes egne sider, CVR/proff.dk). Ikke en rangering. KÆRNE er platformens partner.
 
 export type Aktor = {
   navn: string;
-  kategori: "Matrikelløs indsats" | "Botilbud" | "Vikarbureau";
+  kategori: "Matrikelløs indsats" | "Botilbud" | "Vikarbureau" | "Fagpersons-netværk";
   omraade: "boern" | "voksne" | "begge";
   maalgruppe: string;
   paragraffer: string[];
   geografi: string;
+  regioner: ("sjaelland" | "jylland" | "landsdaekkende")[];
   web: string;
+  farve: string;
+  featured?: boolean;
 };
 
 export const AKTORER: Aktor[] = [
+  {
+    navn: "KÆRNE",
+    kategori: "Fagpersons-netværk",
+    omraade: "boern",
+    maalgruppe: "Familiesager efter Barnets Lov — håndplukkede familieterapeuter, socialrådgivere og pædagoger, matchet til den enkelte sag",
+    paragraffer: ["BL §32 familiebehandling", "Kontaktperson", "Støtteperson", "Hurtig opstart"],
+    geografi: "Sjælland og Hovedstaden",
+    regioner: ["sjaelland"],
+    web: "https://kærne.dk",
+    farve: "#8aa885",
+    featured: true,
+  },
   {
     navn: "Leute",
     kategori: "Matrikelløs indsats",
@@ -19,7 +34,9 @@ export const AKTORER: Aktor[] = [
     maalgruppe: "Børn, unge og familier med særlige behov",
     paragraffer: ["BL §30", "BL §32", "SEL §85", "Aflastning", "Efterværn"],
     geografi: "Landsdækkende",
+    regioner: ["landsdaekkende"],
     web: "https://www.leute.dk",
+    farve: "#c98a6b",
   },
   {
     navn: "Autenta",
@@ -28,7 +45,9 @@ export const AKTORER: Aktor[] = [
     maalgruppe: "Børn, unge og familier — mentaliseringsbaseret tilgang",
     paragraffer: ["BL §32 familiebehandling", "Kontaktperson", "Spædbarnsindsats", "Skolevægring"],
     geografi: "Hovedstadsområdet",
+    regioner: ["sjaelland"],
     web: "https://autenta.dk",
+    farve: "#7a8fa6",
   },
   {
     navn: "Auta",
@@ -37,79 +56,9 @@ export const AKTORER: Aktor[] = [
     maalgruppe: "Børn, unge og voksne — specialiseret i autisme og ADHD",
     paragraffer: ["BL §30", "BL §32", "BL §75", "BL §105", "BL §§114-116", "SEL §85", "LAB §31b mentor"],
     geografi: "Hovedstaden og Sjælland",
+    regioner: ["sjaelland"],
     web: "https://auta.dk",
-  },
-  {
-    navn: "Altid Vikar",
-    kategori: "Vikarbureau",
-    omraade: "begge",
-    maalgruppe: "Botilbud, plejecentre, hjemmepleje og daginstitutioner",
-    paragraffer: ["Pædagogiske vikarer", "SOSU-vikarer"],
-    geografi: "Landsdækkende",
-    web: "https://altidvikar.dk",
-  },
-  {
-    navn: "Habitus",
-    kategori: "Botilbud",
-    omraade: "voksne",
-    maalgruppe: "Voksne med autisme og komplekse behov",
-    paragraffer: ["SEL §104", "SEL §107", "SEL §108", "SEL §85"],
-    geografi: "Landsdækkende",
-    web: "https://habitus.dk",
-  },
-  {
-    navn: "Granhøjen / Gran Recovery & Health",
-    kategori: "Botilbud",
-    omraade: "voksne",
-    maalgruppe: "Voksne med psykiatriske udfordringer",
-    paragraffer: ["SEL §107", "SEL §108", "Beskæftigelsestilbud"],
-    geografi: "Nordvestsjælland",
-    web: "https://www.granhojen.dk",
-  },
-  {
-    navn: "SUF — Den Sociale Udviklingsfond",
-    kategori: "Matrikelløs indsats",
-    omraade: "begge",
-    maalgruppe: "Unge og voksne i udsatte positioner (nonprofit)",
-    paragraffer: ["SEL §85", "Efterværn", "BOAS-mentor (autisme/ADHD)", "Botilbud"],
-    geografi: "Landsdækkende (30+ afdelinger)",
-    web: "https://suf.dk",
-  },
-  {
-    navn: "Fonden Mariehjemmene",
-    kategori: "Botilbud",
-    omraade: "voksne",
-    maalgruppe: "Voksne og ældre (selvejende nonprofit, ~20 hjem)",
-    paragraffer: ["SEL §107", "SEL §108", "Plejehjem"],
-    geografi: "Landsdækkende",
-    web: "https://fonden.mariehjem.dk",
-  },
-  {
-    navn: "Carelink Gruppen",
-    kategori: "Vikarbureau",
-    omraade: "begge",
-    maalgruppe: "Bred velfærdskoncern — vikarer og sociale indsatser",
-    paragraffer: ["Vikarer (alle faggrupper)", "Familiebehandling", "SEL §85"],
-    geografi: "Landsdækkende",
-    web: "https://carelink.dk",
-  },
-  {
-    navn: "Powercare",
-    kategori: "Vikarbureau",
-    omraade: "begge",
-    maalgruppe: "Bosteder og socialpsykiatri — SKI-rammeaftale",
-    paragraffer: ["SOSU-vikarer", "Socialpædagogiske vikarer"],
-    geografi: "Midtjylland, Hovedstaden, Sjælland",
-    web: "https://www.powercare.dk",
-  },
-  {
-    navn: "Comeback",
-    kategori: "Matrikelløs indsats",
-    omraade: "boern",
-    maalgruppe: "Børn og unge",
-    paragraffer: ["BL §32 kontaktperson", "Ungestøtte"],
-    geografi: "København og Aarhus",
-    web: "https://www.comeback.nu",
+    farve: "#a3789a",
   },
   {
     navn: "Gravitas",
@@ -118,25 +67,9 @@ export const AKTORER: Aktor[] = [
     maalgruppe: "Børn, unge og familier",
     paragraffer: ["Støttekontaktperson", "Familiebehandling"],
     geografi: "Sjælland",
+    regioner: ["sjaelland"],
     web: "https://gravitas.dk",
-  },
-  {
-    navn: "Vejledernet",
-    kategori: "Matrikelløs indsats",
-    omraade: "boern",
-    maalgruppe: "Familier — akut og anbringelsesforebyggende",
-    paragraffer: ["Familiebehandling", "Stabiliserende indsats"],
-    geografi: "Jylland og Sjælland",
-    web: "https://vejledernet.dk",
-  },
-  {
-    navn: "PVI — Pædagogisk Vikarindsats",
-    kategori: "Vikarbureau",
-    omraade: "voksne",
-    maalgruppe: "Botilbud og døgninstitutioner",
-    paragraffer: ["Vikarer", "SEL §85 bostøtte"],
-    geografi: "Landsdækkende",
-    web: "https://pvi.dk",
+    farve: "#6b8c8a",
   },
   {
     navn: "FamiliePulsen",
@@ -145,7 +78,119 @@ export const AKTORER: Aktor[] = [
     maalgruppe: "Familier",
     paragraffer: ["Støttekontaktperson", "Familiebehandling"],
     geografi: "Sjælland",
+    regioner: ["sjaelland"],
     web: "https://familiepulsen.dk",
+    farve: "#b07f6e",
+  },
+  {
+    navn: "Granhøjen / Gran Recovery & Health",
+    kategori: "Botilbud",
+    omraade: "voksne",
+    maalgruppe: "Voksne med psykiatriske udfordringer",
+    paragraffer: ["SEL §107", "SEL §108", "Beskæftigelsestilbud"],
+    geografi: "Nordvestsjælland",
+    regioner: ["sjaelland"],
+    web: "https://www.granhojen.dk",
+    farve: "#7f9a6d",
+  },
+  {
+    navn: "Comeback",
+    kategori: "Matrikelløs indsats",
+    omraade: "boern",
+    maalgruppe: "Børn og unge",
+    paragraffer: ["BL §32 kontaktperson", "Ungestøtte"],
+    geografi: "København og Aarhus",
+    regioner: ["sjaelland", "jylland"],
+    web: "https://www.comeback.nu",
+    farve: "#9a8b6d",
+  },
+  {
+    navn: "Vejledernet",
+    kategori: "Matrikelløs indsats",
+    omraade: "boern",
+    maalgruppe: "Familier — akut og anbringelsesforebyggende",
+    paragraffer: ["Familiebehandling", "Stabiliserende indsats"],
+    geografi: "Jylland og Sjælland",
+    regioner: ["sjaelland", "jylland"],
+    web: "https://vejledernet.dk",
+    farve: "#6d7f9a",
+  },
+  {
+    navn: "SUF — Den Sociale Udviklingsfond",
+    kategori: "Matrikelløs indsats",
+    omraade: "begge",
+    maalgruppe: "Unge og voksne i udsatte positioner (nonprofit)",
+    paragraffer: ["SEL §85", "Efterværn", "BOAS-mentor (autisme/ADHD)", "Botilbud"],
+    geografi: "Landsdækkende (30+ afdelinger)",
+    regioner: ["landsdaekkende"],
+    web: "https://suf.dk",
+    farve: "#8a6d9a",
+  },
+  {
+    navn: "Habitus",
+    kategori: "Botilbud",
+    omraade: "voksne",
+    maalgruppe: "Voksne med autisme og komplekse behov",
+    paragraffer: ["SEL §104", "SEL §107", "SEL §108", "SEL §85"],
+    geografi: "Landsdækkende",
+    regioner: ["landsdaekkende"],
+    web: "https://habitus.dk",
+    farve: "#6d9a8b",
+  },
+  {
+    navn: "Fonden Mariehjemmene",
+    kategori: "Botilbud",
+    omraade: "voksne",
+    maalgruppe: "Voksne og ældre (selvejende nonprofit, ~20 hjem)",
+    paragraffer: ["SEL §107", "SEL §108", "Plejehjem"],
+    geografi: "Landsdækkende",
+    regioner: ["landsdaekkende"],
+    web: "https://fonden.mariehjem.dk",
+    farve: "#9a6d6d",
+  },
+  {
+    navn: "Carelink Gruppen",
+    kategori: "Vikarbureau",
+    omraade: "begge",
+    maalgruppe: "Bred velfærdskoncern — vikarer og sociale indsatser",
+    paragraffer: ["Vikarer (alle faggrupper)", "Familiebehandling", "SEL §85"],
+    geografi: "Landsdækkende",
+    regioner: ["landsdaekkende"],
+    web: "https://carelink.dk",
+    farve: "#6d8a9a",
+  },
+  {
+    navn: "Powercare",
+    kategori: "Vikarbureau",
+    omraade: "begge",
+    maalgruppe: "Bosteder og socialpsykiatri — SKI-rammeaftale",
+    paragraffer: ["SOSU-vikarer", "Socialpædagogiske vikarer"],
+    geografi: "Midtjylland, Hovedstaden, Sjælland",
+    regioner: ["sjaelland", "jylland"],
+    web: "https://www.powercare.dk",
+    farve: "#9a7f6d",
+  },
+  {
+    navn: "Altid Vikar",
+    kategori: "Vikarbureau",
+    omraade: "begge",
+    maalgruppe: "Botilbud, plejecentre, hjemmepleje og daginstitutioner",
+    paragraffer: ["Pædagogiske vikarer", "SOSU-vikarer"],
+    geografi: "Landsdækkende",
+    regioner: ["landsdaekkende"],
+    web: "https://altidvikar.dk",
+    farve: "#7f6d9a",
+  },
+  {
+    navn: "PVI — Pædagogisk Vikarindsats",
+    kategori: "Vikarbureau",
+    omraade: "voksne",
+    maalgruppe: "Botilbud og døgninstitutioner",
+    paragraffer: ["Vikarer", "SEL §85 bostøtte"],
+    geografi: "Landsdækkende",
+    regioner: ["landsdaekkende"],
+    web: "https://pvi.dk",
+    farve: "#6d9a7f",
   },
   {
     navn: "SOS Vikar",
@@ -154,6 +199,13 @@ export const AKTORER: Aktor[] = [
     maalgruppe: "Pleje- og socialområdet",
     paragraffer: ["SOSU-vikarer", "Pædagogiske vikarer"],
     geografi: "Landsdækkende",
+    regioner: ["landsdaekkende"],
     web: "https://www.sosvikar.dk",
+    farve: "#8a9a6d",
   },
 ];
+
+// Kompakt liste til Karlas AI-match
+export const AKTOR_KOMPAKT = AKTORER.map(
+  (a) => `${a.navn} (${a.kategori}; ${a.maalgruppe}; ${a.paragraffer.join("/")}; ${a.geografi}${a.featured ? "; platformens partner" : ""})`
+).join(" · ");
