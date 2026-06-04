@@ -135,3 +135,32 @@ body {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* Karla 2.2 — levende talebobl */
+.k-talebobl {
+  background: #fff;
+  border: 0.5px solid var(--kaerne-border);
+  border-radius: 16px;
+  padding: 10px 14px;
+  font-family: var(--font-serif);
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--kaerne-ink);
+  box-shadow: 0 6px 18px rgba(90,80,72,0.12);
+  animation: kboblin 0.45s ease both;
+}
+.k-talebobl-hale {
+  position: absolute;
+  bottom: -7px;
+  left: 26px;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-right: 0.5px solid var(--kaerne-border);
+  border-bottom: 0.5px solid var(--kaerne-border);
+  transform: rotate(45deg);
+}
+@keyframes kboblin {
+  from { opacity: 0; transform: translateY(6px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
