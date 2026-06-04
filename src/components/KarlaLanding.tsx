@@ -2,14 +2,21 @@
 
 import { useEffect, useRef, useState } from "react";
 
+type ChatMsg = { role: "user" | "assistant"; content: string };
+
 export default function KarlaLanding() {
   const [greeting, setGreeting] = useState("Hej kollega — godt at se dig.");
   const [timeLabel, setTimeLabel] = useState("Søndag eftermiddag");
+  const [messages, setMessages] = useState<ChatMsg[]>([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
   const pupilLRef = useRef<SVGEllipseElement>(null);
   const pupilRRef = useRef<SVGEllipseElement>(null);
   const smileRef = useRef<SVGPathElement>(null);
   const blobRef = useRef<SVGSVGElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const days = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
@@ -54,6 +61,65 @@ export default function KarlaLanding() {
     return () => window.removeEventListener("mousemove", handler);
   }, []);
 
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages, loading]);
+
+  const send = async (text: string) => {
+    const t = text.trim();
+    if (!t || loading) return;
+    const history: ChatMsg[] = [...messages, { role: "user", content: t }];
+    setMessages(history);
+    setInput("");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: history }),
+      });
+      if (!res.ok) {
+        const err = await res.text().catch(() => "");
+        throw new Error(err || "Serverfejl");
+      }
+      if (!res.body) throw new Error("Tomt svar");
+
+      setMessages((m) => [...m, { role: "assistant", content: "" }]);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let acc = "";
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        acc += decoder.decode(value, { stream: true });
+        const snapshot = acc;
+        setMessages((m) => {
+          const copy = [...m];
+          copy[copy.length - 1] = { role: "assistant", content: snapshot };
+          return copy;
+        });
+      }
+    } catch (e) {
+      const msg =
+        e instanceof Error && e.message && !e.message.includes("fetch")
+          ? e.message
+          : "Hov — jeg kunne ikke få forbindelse lige nu. Prøv igen om et øjeblik.";
+      setMessages((m) => {
+        const copy = [...m];
+        if (copy.length > 0 && copy[copy.length - 1].role === "assistant" && copy[copy.length - 1].content === "") {
+          copy[copy.length - 1] = { role: "assistant", content: msg };
+          return copy;
+        }
+        return [...copy, { role: "assistant", content: msg }];
+      });
+    } finally {
+      setLoading(false);
+      inputRef.current?.focus();
+    }
+  };
+
+  const chatActive = messages.length > 0;
+
   return (
     <div ref={wrapRef} className="min-h-screen flex flex-col" style={{ background: "var(--kaerne-sand)", color: "var(--kaerne-ink)" }}>
 
@@ -72,9 +138,9 @@ export default function KarlaLanding() {
       </nav>
 
       <main className="flex-1 px-6 md:px-12 py-12 md:py-16">
-        <div className="grid md:grid-cols-[260px_1fr] gap-12 items-center max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-[260px_1fr] gap-12 items-start max-w-6xl mx-auto">
 
-          <div className="relative w-[240px] h-[280px] flex items-center justify-center mx-auto md:mx-0">
+          <div className="relative w-[240px] h-[280px] flex items-center justify-center mx-auto md:mx-0 md:sticky md:top-8">
             <div
               className="k-aura absolute w-[220px] h-[220px] rounded-full"
               style={{ background: "#fde4d4", zIndex: 1 }}
@@ -88,7 +154,7 @@ export default function KarlaLanding() {
                 strokeWidth="0.5"
               />
               <text x="71" y="32" textAnchor="middle" fontFamily="Fraunces, serif" fontSize="13" fill="var(--kaerne-ink)">
-                Hej, det er mig!
+                {loading ? "Hmm, lad mig tænke..." : chatActive ? "Jeg lytter ♡" : "Hej, det er mig!"}
               </text>
             </svg>
 
@@ -149,36 +215,85 @@ export default function KarlaLanding() {
             <h1 className="k-fade2 mb-4" style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(28px, 4vw, 38px)", fontWeight: 300, lineHeight: 1.1, letterSpacing: "-0.015em", color: "var(--kaerne-ink)" }}>
               {greeting}
             </h1>
-            <p className="k-fade3 mb-6" style={{ fontFamily: "var(--font-serif)", fontSize: 18, fontWeight: 300, lineHeight: 1.55, color: "var(--kaerne-ink-soft)" }}>
-              Hvordan har du det i dag? <br />Lad os tage tingene roligt, sammen.
-            </p>
+            {!chatActive && (
+              <p className="k-fade3 mb-6" style={{ fontFamily: "var(--font-serif)", fontSize: 18, fontWeight: 300, lineHeight: 1.55, color: "var(--kaerne-ink-soft)" }}>
+                Hvordan har du det i dag? <br />Lad os tage tingene roligt, sammen.
+              </p>
+            )}
 
-            <form className="k-fade4 relative" onSubmit={(e) => e.preventDefault()}>
+            {chatActive && (
+              <div
+                className="mb-5 max-h-[46vh] overflow-y-auto pr-1 flex flex-col gap-3"
+                aria-live="polite"
+              >
+                {messages.map((m, i) => (
+                  <div
+                    key={i}
+                    className={`max-w-[85%] rounded-[16px] px-4 py-3 text-[15px] leading-relaxed whitespace-pre-wrap ${
+                      m.role === "user" ? "self-end" : "self-start"
+                    }`}
+                    style={
+                      m.role === "user"
+                        ? { background: "var(--kaerne-ink)", color: "var(--kaerne-sand)" }
+                        : { background: "#fff", border: "0.5px solid var(--kaerne-border)", color: "var(--kaerne-ink)" }
+                    }
+                  >
+                    {m.role === "assistant" && (
+                      <div className="mb-1" style={{ fontFamily: "var(--font-script)", fontSize: 14, color: "var(--kaerne-terracotta)" }}>
+                        Karla
+                      </div>
+                    )}
+                    {m.content || (
+                      <span className="inline-flex gap-1 items-center" aria-label="Karla skriver">
+                        <span className="k-dot" style={{ animationDelay: "0s" }}>·</span>
+                        <span className="k-dot" style={{ animationDelay: "0.2s" }}>·</span>
+                        <span className="k-dot" style={{ animationDelay: "0.4s" }}>·</span>
+                      </span>
+                    )}
+                  </div>
+                ))}
+                <div ref={chatEndRef} />
+              </div>
+            )}
+
+            <form
+              className="k-fade4 relative"
+              onSubmit={(e) => {
+                e.preventDefault();
+                send(input);
+              }}
+            >
               <input
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
                 className="w-full bg-white rounded-[18px] py-[18px] pl-6 pr-16 text-[15px] focus:outline-none transition-colors"
                 style={{ border: "0.5px solid var(--kaerne-border)" }}
-                placeholder="Skriv til mig — bare som du tænker..."
+                placeholder={chatActive ? "Skriv til Karla..." : "Skriv til mig — bare som du tænker..."}
                 aria-label="Skriv til Karla"
+                disabled={loading}
               />
               <button
-                type="button"
-                aria-label="Tal til Karla"
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
+                type="submit"
+                aria-label="Send til Karla"
+                disabled={loading || !input.trim()}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform disabled:opacity-50 disabled:hover:scale-100"
                 style={{ background: "var(--kaerne-terracotta)", color: "#fff" }}
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" />
-                  <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                  <line x1="12" y1="19" x2="12" y2="22" />
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13" />
+                  <polygon points="22 2 15 22 11 13 2 9 22 2" />
                 </svg>
               </button>
             </form>
 
-            <div className="flex gap-2.5 mt-5 flex-wrap">
-              <button className="k-chip cursor-pointer px-4 py-2.5 rounded-full text-[13px]">En familie jeg tænker på</button>
-              <button className="k-chip cursor-pointer px-4 py-2.5 rounded-full text-[13px]">Find en varm fagperson</button>
-              <button className="k-chip cursor-pointer px-4 py-2.5 rounded-full text-[13px]">Hvordan går mine sager?</button>
-            </div>
+            {!chatActive && (
+              <div className="flex gap-2.5 mt-5 flex-wrap">
+                <button onClick={() => send("Jeg tænker på en familie i en af mine sager — kan vi tale den igennem?")} className="k-chip cursor-pointer px-4 py-2.5 rounded-full text-[13px]">En familie jeg tænker på</button>
+                <button onClick={() => send("Jeg leder efter en varm fagperson til en sag — hvordan finder jeg den rette?")} className="k-chip cursor-pointer px-4 py-2.5 rounded-full text-[13px]">Find en varm fagperson</button>
+                <button onClick={() => send("Hvordan går mine sager?")} className="k-chip cursor-pointer px-4 py-2.5 rounded-full text-[13px]">Hvordan går mine sager?</button>
+              </div>
+            )}
           </div>
         </div>
 
