@@ -16,17 +16,47 @@ const CHIPS = [
 ];
 
 const FEATURES = [
-  { titel: "Sagssparring", tekst: "Tænk højt med en kollega der altid har tid. Karla strukturerer sagen, finder oversete vinkler og holder borgerens perspektiv op." },
-  { titel: "§ Paragraf-hjælp", tekst: "Fra gammel SEL til Barnets Lov på sekunder — §52 blev til §32, §76 til §§114-116. Karla kender begge regelsæt og forklarer i klart sprog." },
-  { titel: "Notat- og udkasthjælp", tekst: "Tal eller skriv løst — Karla former det til journalnotat, mødereferat eller udkast til undersøgelse. Objektivt, og med observation adskilt fra vurdering." },
-  { titel: "Aktør-match", tekst: "Filtrér aktører på paragraf, målgruppe og geografi — og få Karlas tjekliste til, hvad du skal afklare før valget." },
-  { titel: "Kvalitetstjek — på vej", tekst: "Tjek dit afgørelsesudkast mod officialprincippet og Ankestyrelsens praksis, før det sendes." },
-  { titel: "Frist-hjælper — på vej", tekst: "4-måneders fristen på den børnefaglige undersøgelse, opfølgninger og handleplaner — Karla holder styr på dem med dig." },
+  { titel: "Sagssparring", tekst: "Vend sagen med en kollega der altid har tid. Karla strukturerer efter ICS-trekanten, finder oversete vinkler og holder barnets perspektiv op — før netværksmødet, ikke efter." },
+  { titel: "§ Paragraf-hjælp", tekst: "Fra gammel SEL til Barnets Lov på sekunder — §52 blev til §32, §76 til §§114-116. Med blik for officialprincippet og Ankestyrelsens praksis, i klart sprog." },
+  { titel: "Upload sagen — få et oplæg", tekst: "Træk en anonymiseret sagsbeskrivelse ind i chatten. Karla analyserer: centrale temaer, mulige paragraffer, hvad der mangler at blive belyst, og forslag til næste skridt. Beslutningen er din." },
+  { titel: "Notat- og udkasthjælp", tekst: "Tal eller skriv løst — Karla former det til journalnotat, BFU-afsnit eller udkast til barnets plan. Observation adskilt fra vurdering, klar til at sætte ind i DUBU." },
+  { titel: "AI aktør-match", tekst: "Beskriv opgaven — Karla foreslår indsatstype, paragraf, konkrete aktører og geografi, plus de spørgsmål du skal stille før valget." },
+  { titel: "Kalender & frister — på vej", tekst: "4-måneders fristen på den børnefaglige undersøgelse, opfølgning efter 3 måneder, handleplansrevision — i ét overblik, synkroniseret med din Outlook." },
+  { titel: "Kort over aktører — på vej", tekst: "Se godkendte tilbud og ledige aktører på et kort, tæt på borgeren — med afstand, tilsynsstatus og kapacitet." },
+  { titel: "Integrationer — på vej", tekst: "DUBU, Sensum/EG, Outlook og Tilbudsportalen. Karla skal arbejde sammen med dine systemer — ikke ved siden af dem." },
+];
+
+const QUIPS = [
+  "Husk: §50-undersøgelsen hedder §20 nu — og fristen er stadig 4 måneder ⏳",
+  "ICS-trekanten: barnet i midten. Altid.",
+  "Notatpligt: hvis det ikke er skrevet ned, er det ikke sket 📝",
+  "Officialprincippet: belys også det, der taler imod.",
+  "Efterværn hedder ungestøtte nu — §§114-116.",
+  "Vidste du? SEL §52, stk. 3 blev til BL §32.",
+  "Tjek tilsynsrapporten, før du vælger botilbud 👀",
+  "Barnets plan: senest 3 måneder efter indsatsen starter.",
+  "Vi dokumenterer, at vi dokumenterer 😄",
+  "Husk pausen — også sagsbehandlere har omsorgspligt for sig selv ♡",
+  "Partshøring før afgørelse. Forvaltningsloven §19.",
+  "Min yndlingsparagraf? §32 — der hvor familierne får hjælp.",
+  "DUBU-tip: skriv notatet, mens du husker det. Ikke fredag.",
+  "Anonymisér før du deler — GDPR ser alt 👀",
+  "Hvad siger Ankestyrelsen? Tjek principmeddelelserne.",
+  "Børnesamtalen før afgørelsen — barnets stemme tæller.",
+  "Samvær er barnets ret — ikke forældrenes.",
+  "Ungestøtte kan vare til det 23. år. Husk overgangen.",
+  "Jeg har læst Barnets Lov flere gange. Frivilligt 🤓",
+  "En god handleplan kan mærkes — også af familien.",
+  "Tag den svære samtale tidligt. Den bliver ikke lettere af at vente.",
+  "Kaffe + partshøring = en helt fin formiddag ☕",
+  "Genbehandlingsfrist? Skriv den i kalenderen. Nu.",
+  "Underretning: hellere én for meget end én for sent.",
 ];
 
 export default function KarlaLanding() {
   const [greeting, setGreeting] = useState("Hej kollega — godt at se dig.");
   const [timeLabel, setTimeLabel] = useState("Velkommen");
+  const [quip, setQuip] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -37,6 +67,22 @@ export default function KarlaLanding() {
   const blobRef = useRef<SVGSVGElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    e.target.value = "";
+    if (!f) return;
+    const raw = await f.text();
+    const t = raw.slice(0, 3500);
+    if (CPR_REGEX.test(t)) {
+      setGdprWarning(true);
+      return;
+    }
+    send(
+      `Her er en anonymiseret sagsbeskrivelse (fil: ${f.name}). Giv mig et fagligt oplæg: 1) centrale temaer, 2) mulige paragraffer i Barnets Lov/Serviceloven, 3) hvad der mangler at blive belyst (officialprincippet), 4) forslag til næste skridt. Beslutningen er min.\n\n---\n${t}`
+    );
+  };
 
   useEffect(() => {
     const days = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
@@ -84,6 +130,23 @@ export default function KarlaLanding() {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, loading]);
+
+  useEffect(() => {
+    let hide: ReturnType<typeof setTimeout>;
+    const first = setTimeout(() => {
+      setQuip(QUIPS[Math.floor(Math.random() * QUIPS.length)]);
+      hide = setTimeout(() => setQuip(null), 7500);
+    }, 5000);
+    const interval = setInterval(() => {
+      setQuip(QUIPS[Math.floor(Math.random() * QUIPS.length)]);
+      hide = setTimeout(() => setQuip(null), 7500);
+    }, 16000);
+    return () => {
+      clearTimeout(first);
+      clearInterval(interval);
+      clearTimeout(hide);
+    };
+  }, []);
 
   const send = async (text: string) => {
     const t = text.trim();
@@ -176,17 +239,14 @@ export default function KarlaLanding() {
               style={{ background: "radial-gradient(circle at 45% 40%, #fde9db 0%, #fde4d4 55%, rgba(253,228,212,0) 75%)", zIndex: 1 }}
             />
 
-            <svg className="k-bubble absolute" style={{ top: -10, right: -34, zIndex: 5 }} width="150" height="64" viewBox="0 0 140 60">
-              <path
-                d="M10,28 Q10,8 30,8 L118,8 Q132,8 132,22 L132,32 Q132,46 118,46 L42,46 L26,56 L30,46 Q10,46 10,32 Z"
-                fill="#fff"
-                stroke="var(--kaerne-border)"
-                strokeWidth="0.5"
-              />
-              <text x="71" y="32" textAnchor="middle" fontFamily="Fraunces, serif" fontSize="13" fill="var(--kaerne-ink)">
-                {loading ? "Hmm, lad mig tænke..." : chatActive ? "Jeg lytter ♡" : "Hej, det er mig!"}
-              </text>
-            </svg>
+            <div
+              key={loading ? "tænker" : quip ?? (chatActive ? "lytter" : "hej")}
+              className="k-talebobl absolute"
+              style={{ top: -22, right: -44, zIndex: 5, maxWidth: 215 }}
+            >
+              {loading ? "Hmm, lad mig tænke..." : quip ?? (chatActive ? "Jeg lytter ♡" : "Hej, det er mig!")}
+              <span className="k-talebobl-hale" aria-hidden="true" />
+            </div>
 
             <div className="k-float relative" style={{ zIndex: 2 }}>
               <svg ref={blobRef} className="k-breathe" width="230" height="230" viewBox="0 0 220 220" style={{ filter: "drop-shadow(0 18px 22px rgba(90,80,72,0.18))" }}>
@@ -263,10 +323,10 @@ export default function KarlaLanding() {
             </h1>
             {!chatActive && (
               <p className="k-fade3 mb-7" style={{ fontFamily: "var(--font-serif)", fontSize: 18, fontWeight: 300, lineHeight: 1.6, color: "var(--kaerne-ink-soft)" }}>
-                Jeg er din faglige kollega i socialforvaltningen. Jeg kender Barnets Lov og
-                Serviceloven, skriver udkast til notater og undersøgelser, tænker med i svære
-                sager — og hjælper dig med at finde den rette indsats og aktør, når sagen
-                kræver det. <br />Hvad arbejder du med i dag?
+                Fra screening til barnets plan: Jeg kender Barnets Lov og Serviceloven,
+                skriver udkast til journalnotater og BFU-afsnit, tænker med i svære sager
+                — og giver dig et fagligt bud på indsats og aktør, når sagen kræver det.
+                <br />Hvad ligger der på dit bord i dag?
               </p>
             )}
 
@@ -353,9 +413,21 @@ export default function KarlaLanding() {
               </button>
             </form>
 
-            <p className="mt-2.5 text-[11.5px]" style={{ color: "var(--kaerne-muted)", lineHeight: 1.5 }}>
-              Karla støtter din faglighed — afgørelser er altid dine. Del aldrig CPR-numre eller navne.
-            </p>
+            <div className="mt-2.5 flex items-center justify-between gap-3 flex-wrap">
+              <p className="text-[11.5px]" style={{ color: "var(--kaerne-muted)", lineHeight: 1.5 }}>
+                Karla støtter din faglighed — afgørelser er altid dine. Del aldrig CPR-numre eller navne.
+              </p>
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                disabled={loading}
+                className="cursor-pointer px-3.5 py-1.5 rounded-full text-[11.5px] hover:opacity-75 transition-opacity disabled:opacity-50"
+                style={{ border: "0.5px solid var(--kaerne-border)", color: "var(--kaerne-ink-soft)", background: "#fff" }}
+              >
+                ⎙ Upload anonymiseret sag (.txt)
+              </button>
+              <input ref={fileRef} type="file" accept=".txt,.md" onChange={handleFile} className="hidden" aria-label="Upload anonymiseret sagsbeskrivelse" />
+            </div>
 
             {!chatActive && (
               <div className="flex gap-2.5 mt-5 flex-wrap">
@@ -377,8 +449,17 @@ export default function KarlaLanding() {
             Mindre skærm. Mere socialfaglighed.
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {FEATURES.map((f) => (
-              <div key={f.titel} className="rounded-[18px] p-5 transition-transform hover:-translate-y-0.5" style={{ background: "#fff", border: "0.5px solid var(--kaerne-border)", boxShadow: "0 3px 16px rgba(90,80,72,0.06)" }}>
+            {FEATURES.map((f, i) => (
+              <div
+                key={f.titel}
+                className="rounded-[18px] p-5 transition-transform hover:-translate-y-0.5"
+                style={{
+                  background: i % 3 === 1 ? "var(--kaerne-cream)" : "#fff",
+                  border: "0.5px solid var(--kaerne-border)",
+                  boxShadow: "0 3px 16px rgba(90,80,72,0.06)",
+                  transform: i % 2 === 1 ? "rotate(0.3deg)" : "rotate(-0.2deg)",
+                }}
+              >
                 <div className="mb-1.5" style={{ fontFamily: "var(--font-serif)", fontSize: 16.5, color: "var(--kaerne-ink)" }}>{f.titel}</div>
                 <div style={{ fontSize: 13.5, lineHeight: 1.55, color: "var(--kaerne-ink-soft)" }}>{f.tekst}</div>
               </div>
@@ -425,6 +506,6 @@ export default function KarlaLanding() {
       <footer className="px-6 md:px-12 py-6 border-t text-center text-[11px]" style={{ borderColor: "var(--kaerne-border)", color: "var(--kaerne-muted)" }}>
         <span style={{ fontFamily: "var(--font-script)", fontSize: 14 }}>Karla</span> · Din digitale kollega i socialforvaltningen · EU-hostet · <a href="/privacy" className="hover:underline">Privatlivspolitik</a>
       </footer>
-      </div>
+    </div>
   );
 }
