@@ -164,3 +164,16 @@ body {
   from { opacity: 0; transform: translateY(6px) scale(0.96); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+/* Karla 2.4 — flot svar-rendering og hurtig-svar */
+.k-svar p { margin: 0 0 9px; }
+.k-svar p:last-child { margin-bottom: 0; }
+.k-svar .k-h { font-family: var(--font-serif); font-size: 16px; margin: 12px 0 6px; color: var(--kaerne-ink); }
+.k-svar ul, .k-svar ol { margin: 4px 0 10px; padding-left: 20px; display: flex; flex-direction: column; gap: 5px; }
+.k-svar ol li::marker { color: var(--kaerne-terracotta); font-weight: 600; }
+.k-svar ul li::marker { color: var(--kaerne-sage); }
+.k-svar strong { color: var(--kaerne-ink); font-weight: 600; }
+.k-svar code { background: var(--kaerne-sand); padding: 0 4px; border-radius: 4px; font-size: 0.9em; }
+.k-par { background: var(--kaerne-cream); border: 0.5px solid var(--kaerne-border-soft); border-radius: 999px; padding: 0 7px; font-size: 0.85em; color: var(--kaerne-terracotta-deep); white-space: nowrap; }
+.k-quick { background: #fff; border: 0.5px solid var(--kaerne-border); color: var(--kaerne-ink-soft); transition: all 0.25s ease; box-shadow: 0 2px 8px rgba(90,80,72,0.05); }
+.k-quick:hover { background: var(--kaerne-cream); transform: translateY(-1px); border-color: #e2a98c; }
