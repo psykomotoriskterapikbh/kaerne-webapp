@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import AktorMatch from "@/components/AktorMatch";
+import Vaerktoejer, { Faq } from "@/components/Vaerktoejer";
 
 type ChatMsg = { role: "user" | "assistant"; content: string };
 
@@ -22,12 +23,42 @@ function formatKarla(raw: string): string {
     s
       .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
       .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, "$1<em>$2</em>")
+      .replace(/\*\*/g, "")
       .replace(/`([^`]+)`/g, "<code>$1</code>")
       .replace(/((?:BL|SEL|LAB|FVL)\s)?(§§?\s?\d+[a-z]?(?:-\d+)?(?:,?\s?stk\.\s?\d+)?)/g, '<span class="k-par">$1$2</span>');
-  for (const line of lines) {
-    const t = line.trim();
+  for (let i = 0; i < lines.length; i++) {
+    const t = lines[i].trim();
     if (!t) {
       closeList();
+      continue;
+    }
+    if (/^(-{3,}|_{3,}|\*{3,})$/.test(t)) {
+      closeList();
+      out.push("<hr/>");
+      continue;
+    }
+    if (t.startsWith("|") && t.endsWith("|") && t.length > 2) {
+      closeList();
+      const rows: string[][] = [];
+      let j = i;
+      while (j < lines.length) {
+        const r = lines[j].trim();
+        if (!(r.startsWith("|") && r.endsWith("|") && r.length > 2)) break;
+        if (!/^\|[\s:|-]+\|$/.test(r)) {
+          rows.push(r.slice(1, -1).split("|").map((c) => c.trim()));
+        }
+        j++;
+      }
+      if (rows.length > 0) {
+        const [head, ...body] = rows;
+        let tbl = '<div class="k-tabelwrap"><table class="k-tabel"><thead><tr>';
+        tbl += head.map((c) => `<th>${inline(c)}</th>`).join("");
+        tbl += "</tr></thead><tbody>";
+        for (const r of body) tbl += `<tr>${r.map((c) => `<td>${inline(c)}</td>`).join("")}</tr>`;
+        tbl += "</tbody></table></div>";
+        out.push(tbl);
+      }
+      i = j - 1;
       continue;
     }
     const olM = t.match(/^(\d+)[.)]\s+(.*)$/);
@@ -75,7 +106,7 @@ const FEATURES = [
   { titel: "Upload sagen — få et oplæg", tekst: "Træk en anonymiseret sagsbeskrivelse ind i chatten. Karla analyserer: centrale temaer, mulige paragraffer, hvad der mangler at blive belyst, og forslag til næste skridt. Beslutningen er din." },
   { titel: "Notat- og udkasthjælp", tekst: "Tal eller skriv løst — Karla former det til journalnotat, BFU-afsnit eller udkast til barnets plan. Observation adskilt fra vurdering, klar til at sætte ind i DUBU." },
   { titel: "AI aktør-match", tekst: "Beskriv opgaven — Karla foreslår indsatstype, paragraf, konkrete aktører og geografi, plus de spørgsmål du skal stille før valget." },
-  { titel: "Kalender & frister — på vej", tekst: "4-måneders fristen på den børnefaglige undersøgelse, opfølgning efter 3 måneder, handleplansrevision — i ét overblik, synkroniseret med din Outlook." },
+  { titel: "Frist-beregner — klar nu", tekst: "4-måneders fristen på den børnefaglige undersøgelse, barnets plan, opfølgning — beregn deadline og læg den direkte i din kalender med ét klik. Find den under Værktøjer." },
   { titel: "Kort over aktører — på vej", tekst: "Se godkendte tilbud og ledige aktører på et kort, tæt på borgeren — med afstand, tilsynsstatus og kapacitet." },
   { titel: "Integrationer — på vej", tekst: "DUBU, Sensum/EG, Outlook og Tilbudsportalen. Karla skal arbejde sammen med dine systemer — ikke ved siden af dem." },
 ];
@@ -277,6 +308,7 @@ export default function KarlaLanding() {
         <div className="hidden md:flex gap-7 text-[13px]" style={{ color: "#7a7268" }}>
           <a href="#funktioner" className="cursor-pointer hover:opacity-70 transition-opacity">Funktioner</a>
           <a href="#aktoer" className="cursor-pointer hover:opacity-70 transition-opacity">Find aktør</a>
+          <a href="#vaerktoejer" className="cursor-pointer hover:opacity-70 transition-opacity">Værktøjer</a>
           <a href="#sikkerhed" className="cursor-pointer hover:opacity-70 transition-opacity">Sikkerhed</a>
         </div>
         <a href="#" onClick={(e) => { e.preventDefault(); inputRef.current?.focus(); }} className="text-[13px] px-5 py-2.5 rounded-full cursor-pointer hover:opacity-90 transition-opacity" style={{ color: "var(--kaerne-sand)", background: "var(--kaerne-ink)" }}>
@@ -498,6 +530,24 @@ export default function KarlaLanding() {
               >
                 ⎙ Upload anonymiseret sag (.txt)
               </button>
+              {chatActive && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const txt = messages.map((m) => `${m.role === "user" ? "Mig" : "Karla"}:\n${m.content}`).join("\n\n---\n\n");
+                    const blob = new Blob([`Samtale med Karla — ${new Date().toLocaleDateString("da-DK")}\n\n${txt}`], { type: "text/plain;charset=utf-8" });
+                    const a = document.createElement("a");
+                    a.href = URL.createObjectURL(blob);
+                    a.download = "karla-samtale.txt";
+                    a.click();
+                    URL.revokeObjectURL(a.href);
+                  }}
+                  className="cursor-pointer px-3.5 py-1.5 rounded-full text-[11.5px] hover:opacity-75 transition-opacity"
+                  style={{ border: "0.5px solid var(--kaerne-border)", color: "var(--kaerne-ink-soft)", background: "#fff" }}
+                >
+                  ↓ Gem samtale (.txt)
+                </button>
+              )}
               <input ref={fileRef} type="file" accept=".txt,.md" onChange={handleFile} className="hidden" aria-label="Upload anonymiseret sagsbeskrivelse" />
             </div>
 
@@ -539,6 +589,8 @@ export default function KarlaLanding() {
           </div>
         </section>
 
+        <Vaerktoejer />
+
         <AktorMatch
           onAsk={(t) => {
             send(t);
@@ -546,13 +598,34 @@ export default function KarlaLanding() {
           }}
         />
 
+        <Faq />
+
+        <section id="kontakt" className="max-w-3xl mx-auto mt-16 rounded-[24px] px-8 py-10 text-center" style={{ background: "var(--kaerne-cream)", border: "0.5px solid var(--kaerne-border-soft)", boxShadow: "0 6px 28px rgba(90,80,72,0.08)" }}>
+          <h2 className="mb-3" style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(22px, 3vw, 30px)", fontWeight: 300, color: "var(--kaerne-ink)" }}>
+            Prøv Karla med din næste sag
+          </h2>
+          <p className="mx-auto mb-6" style={{ maxWidth: 470, fontSize: 14.5, lineHeight: 1.65, color: "var(--kaerne-ink-soft)" }}>
+            Det koster ikke noget at tænke højt. Stil et spørgsmål fra en rigtig (anonymiseret) sag
+            — og mærk, om Karla tænker med på den rigtige måde. Skal hele teamet med, så tag en
+            snak med KÆRNE om en aftale for jeres kommune.
+          </p>
+          <div className="flex justify-center gap-3 flex-wrap">
+            <button onClick={() => { window.scrollTo({ top: 0, behavior: "smooth" }); inputRef.current?.focus(); }} className="cursor-pointer px-6 py-3 rounded-full text-[14px] hover:opacity-90 transition-opacity" style={{ background: "var(--kaerne-ink)", color: "var(--kaerne-sand)" }}>
+              Tal med Karla nu →
+            </button>
+            <a href="https://kærne.dk" target="_blank" rel="noopener noreferrer" className="px-6 py-3 rounded-full text-[14px] hover:opacity-75 transition-opacity" style={{ border: "0.5px solid var(--kaerne-border)", color: "var(--kaerne-ink-soft)", background: "#fff" }}>
+              Kontakt KÆRNE om en aftale
+            </a>
+          </div>
+        </section>
+
         <div
           className="max-w-5xl mx-auto mt-16 h-px"
           style={{ background: "linear-gradient(90deg, transparent, var(--kaerne-border), transparent)" }}
         />
 
         <div id="sikkerhed" className="max-w-5xl mx-auto mt-9 flex flex-wrap justify-center gap-2.5">
-          {["EU-hostet", "GDPR", "Barnets Lov & Serviceloven", "Støtte — ikke skøn"].map((b) => (
+          {["Ingen samtaler gemmes", "Automatisk CPR-blokering", "Bygget på Barnets Lov 2024", "Støtte — ikke skøn"].map((b) => (
             <span key={b} className="px-4 py-2 rounded-full text-[12px]" style={{ background: "var(--kaerne-cream)", border: "0.5px solid var(--kaerne-border-soft)", color: "var(--kaerne-ink-soft)", letterSpacing: "0.04em" }}>
               {b}
             </span>
@@ -576,7 +649,7 @@ export default function KarlaLanding() {
       </main>
 
       <footer className="px-6 md:px-12 py-6 border-t text-center text-[11px]" style={{ borderColor: "var(--kaerne-border)", color: "var(--kaerne-muted)" }}>
-        <span style={{ fontFamily: "var(--font-script)", fontSize: 14 }}>Karla</span> · Din digitale kollega i socialforvaltningen · EU-hostet · <a href="/privacy" className="hover:underline">Privatlivspolitik</a>
+        <span style={{ fontFamily: "var(--font-script)", fontSize: 14 }}>Karla</span> · Din digitale kollega i socialforvaltningen · Støtte, ikke skøn · <a href="#faq" className="hover:underline">Spørgsmål & svar</a>
       </footer>
     </div>
   );
