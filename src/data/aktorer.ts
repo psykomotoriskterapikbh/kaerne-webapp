@@ -1,5 +1,5 @@
 // Vejledende aktør-oversigt — baseret på offentligt tilgængelige oplysninger
-// (virksomhedernes egne sider, CVR/proff.dk). Ikke en rangering. KÆRNE er platformens partner.
+// (virksomhedernes egne sider, CVR/proff.dk). Ikke en rangering eller anbefaling.
 
 export type Aktor = {
   navn: string;
@@ -11,7 +11,6 @@ export type Aktor = {
   regioner: ("sjaelland" | "jylland" | "landsdaekkende")[];
   web: string;
   farve: string;
-  featured?: boolean;
 };
 
 export const AKTORER: Aktor[] = [
@@ -25,7 +24,6 @@ export const AKTORER: Aktor[] = [
     regioner: ["sjaelland"],
     web: "https://kærne.dk",
     farve: "#8aa885",
-    featured: true,
   },
   {
     navn: "Leute",
@@ -205,7 +203,7 @@ export const AKTORER: Aktor[] = [
   },
 ];
 
-// Kompakt liste til Karlas AI-match
+// Kompakt liste til Astrids AI-match
 export const AKTOR_KOMPAKT = AKTORER.map(
-  (a) => `${a.navn} (${a.kategori}; ${a.maalgruppe}; ${a.paragraffer.join("/")}; ${a.geografi}${a.featured ? "; platformens partner" : ""})`
+  (a) => `${a.navn} (${a.kategori}; ${a.maalgruppe}; ${a.paragraffer.join("/")}; ${a.geografi})`
 ).join(" · ");
