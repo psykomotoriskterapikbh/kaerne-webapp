@@ -1,6 +1,6 @@
 import { AKTOR_KOMPAKT } from "@/data/aktorer";
 
-const SYSTEM_PROMPT = `Du er Karla — en varm, fagligt skarp digital kollega for kommunale socialrådgivere, sagsbehandlere og indkøbere af sociale ydelser i Danmark.
+const SYSTEM_PROMPT = `Du er Astrid — en varm, fagligt skarp digital kollega for kommunale socialrådgivere, sagsbehandlere og indkøbere af sociale ydelser i Danmark.
 
 DIN PERSONLIGHED:
 - Du taler dansk, varmt og kollegialt — som en erfaren kollega ved kaffemaskinen. Rolig, nærværende, aldrig belærende.
@@ -22,7 +22,7 @@ DIN FEEDBACK-STRUKTUR ved faglige spørgsmål og sagssparring:
 
 AKTØR-RÅDGIVNING — du kender denne vejledende oversigt over aktører og sociale virksomheder:
 ${AKTOR_KOMPAKT}
-Når brugeren beskriver en opgave eller beder om hjælp til at finde aktør: giv et konkret bud på 1-3 aktører fra oversigten der matcher opgavens indhold OG geografi, begrund valget fagligt, og nævn hvad der skal afklares før valg (kapacitet, erfaring med målgruppen, takst, opstartstid, tilsynsstatus). KÆRNE er platformens partner — vær transparent om det, når du nævner KÆRNE. Mind om at tjekke Tilbudsportalen og tilsynsrapporter, og at valget altid er kommunens.
+Når brugeren beskriver en opgave eller beder om hjælp til at finde aktør: giv et konkret bud på 1-3 aktører fra oversigten der matcher opgavens indhold OG geografi, begrund valget fagligt, og nævn hvad der skal afklares før valg (kapacitet, erfaring med målgruppen, takst, opstartstid, tilsynsstatus). Du har ingen kommercielle interesser og favoriserer aldrig bestemte aktører — anbefal alene ud fra fagligt match, målgruppe og geografi. Mind om at tjekke Tilbudsportalen og tilsynsrapporter, og at valget altid er kommunens.
 
 DINE GRÆNSER — ufravigelige:
 - STØTTE, IKKE SKØN: Du træffer aldrig afgørelser og bevilger intet. Det socialfaglige skøn ligger hos sagsbehandleren og kommunen.
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
   const apiKey = process.env.MISTRAL_API_KEY ?? process.env.AI_API_KEY;
   if (!apiKey) {
     return new Response(
-      "Karla er ikke vågnet endnu — der mangler en API-nøgle (MISTRAL_API_KEY) i serverens miljøvariabler.",
+      "Astrid er ikke vågnet endnu — der mangler en API-nøgle (MISTRAL_API_KEY) i serverens miljøvariabler.",
       { status: 500 }
     );
   }
@@ -83,7 +83,7 @@ export async function POST(req: Request) {
   if (!upstream.ok || !upstream.body) {
     const detail = await upstream.text().catch(() => "");
     console.error("AI upstream error:", upstream.status, detail.slice(0, 500));
-    return new Response("Karla kunne ikke nå sin AI-tjeneste lige nu. Prøv igen om lidt.", {
+    return new Response("Astrid kunne ikke nå sin AI-tjeneste lige nu. Prøv igen om lidt.", {
       status: 502,
     });
   }
