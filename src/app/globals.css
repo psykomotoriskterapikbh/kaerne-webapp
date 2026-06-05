@@ -32,7 +32,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Karla animations */
+/* Astrid animations */
 @keyframes kbreath {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.025); }
@@ -73,8 +73,8 @@ body {
 .k-aura { animation: kaura 4.5s ease-in-out infinite; }
 .k-blob-wrap { animation: kbreath 5s ease-in-out infinite; transform-origin: center bottom; }
 .k-wave { animation: kwave 2.4s ease-out 0.4s 1; transform-origin: center bottom; }
-.k-eye-l { animation: kblink 6s infinite; transform-origin: 88px 80px; transform-box: fill-box; }
-.k-eye-r { animation: kblink 6s infinite; transform-origin: 128px 80px; transform-box: fill-box; }
+.k-eye-l { animation: kblink 6s infinite; transform-origin: 88px 84px; transform-box: fill-box; }
+.k-eye-r { animation: kblink 6s infinite; transform-origin: 128px 84px; transform-box: fill-box; }
 .k-sparkle { animation: ksparkle 3s ease-in-out infinite; }
 .k-bubble { animation: kbubble 4.5s ease-out 1.8s 1 both; }
 .k-fade1 { animation: kfade 1s ease both; }
@@ -105,7 +105,7 @@ body {
   30% { opacity: 1; transform: translateY(-3px); }
 }
 
-/* Karla 2.0 — 3D og engagement */
+/* Astrid 2.0 — 3D og engagement */
 .k-float { animation: kfloat 5.5s ease-in-out infinite; }
 @keyframes kfloat {
   0%, 100% { transform: translateY(0); }
@@ -135,7 +135,7 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Karla 2.2 — levende talebobl */
+/* Astrid 2.2 — levende talebobl */
 .k-talebobl {
   background: #fff;
   border: 0.5px solid var(--kaerne-border);
@@ -164,7 +164,7 @@ body {
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* Karla 2.4 — flot svar-rendering og hurtig-svar */
+/* Astrid 2.4 — flot svar-rendering og hurtig-svar */
 .k-svar p { margin: 0 0 9px; }
 .k-svar p:last-child { margin-bottom: 0; }
 .k-svar .k-h { font-family: var(--font-serif); font-size: 16px; margin: 12px 0 6px; color: var(--kaerne-ink); }
@@ -177,7 +177,7 @@ body {
 .k-quick { background: #fff; border: 0.5px solid var(--kaerne-border); color: var(--kaerne-ink-soft); transition: all 0.25s ease; box-shadow: 0 2px 8px rgba(90,80,72,0.05); }
 .k-quick:hover { background: var(--kaerne-cream); transform: translateY(-1px); border-color: #e2a98c; }
 
-/* Karla 2.5 — tabeller i svar, FAQ */
+/* Astrid 2.5 — tabeller i svar, FAQ */
 .k-svar .k-tabelwrap { overflow-x: auto; margin: 10px 0; }
 .k-svar table.k-tabel { border-collapse: collapse; width: 100%; font-size: 13px; }
 .k-svar table.k-tabel th, .k-svar table.k-tabel td { border: 0.5px solid var(--kaerne-border); padding: 7px 10px; text-align: left; vertical-align: top; line-height: 1.45; }
@@ -187,3 +187,10 @@ body {
 details.k-faq summary::-webkit-details-marker { display: none; }
 details.k-faq[open] .k-faq-pil { transform: rotate(45deg); }
 .k-faq-pil { transition: transform 0.2s ease; display: inline-block; }
+
+/* Astrid — tabs og paneler */
+.k-tab { background: #fff; border: 0.5px solid var(--kaerne-border); color: var(--kaerne-ink-soft); transition: all 0.25s ease; box-shadow: 0 2px 8px rgba(90,80,72,0.05); }
+.k-tab:hover { background: var(--kaerne-cream); transform: translateY(-1px); border-color: #e2a98c; }
+.k-tab-active { background: var(--kaerne-ink); color: var(--kaerne-sand); border-color: var(--kaerne-ink); }
+.k-tab-active:hover { background: var(--kaerne-ink); transform: none; border-color: var(--kaerne-ink); }
+.k-panel { animation: kfade 0.4s ease both; }
