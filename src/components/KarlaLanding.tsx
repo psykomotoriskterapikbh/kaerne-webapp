@@ -7,6 +7,60 @@ type ChatMsg = { role: "user" | "assistant"; content: string };
 
 const CPR_REGEX = /\b\d{6}[-\s]?\d{4}\b/;
 
+function formatKarla(raw: string): string {
+  const esc = raw.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const lines = esc.split("\n");
+  const out: string[] = [];
+  let listType: "ul" | "ol" | null = null;
+  const closeList = () => {
+    if (listType) {
+      out.push(listType === "ul" ? "</ul>" : "</ol>");
+      listType = null;
+    }
+  };
+  const inline = (s: string) =>
+    s
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, "$1<em>$2</em>")
+      .replace(/`([^`]+)`/g, "<code>$1</code>")
+      .replace(/((?:BL|SEL|LAB|FVL)\s)?(§§?\s?\d+[a-z]?(?:-\d+)?(?:,?\s?stk\.\s?\d+)?)/g, '<span class="k-par">$1$2</span>');
+  for (const line of lines) {
+    const t = line.trim();
+    if (!t) {
+      closeList();
+      continue;
+    }
+    const olM = t.match(/^(\d+)[.)]\s+(.*)$/);
+    const ulM = t.match(/^[-•]\s+(.*)$/);
+    const hM = t.match(/^#{1,4}\s+(.*)$/);
+    if (olM) {
+      if (listType !== "ol") {
+        closeList();
+        out.push("<ol>");
+        listType = "ol";
+      }
+      out.push(`<li>${inline(olM[2])}</li>`);
+    } else if (ulM) {
+      if (listType !== "ul") {
+        closeList();
+        out.push("<ul>");
+        listType = "ul";
+      }
+      out.push(`<li>${inline(ulM[1])}</li>`);
+    } else if (hM) {
+      closeList();
+      out.push(`<p class="k-h">${inline(hM[1])}</p>`);
+    } else {
+      closeList();
+      out.push(`<p>${inline(t)}</p>`);
+    }
+  }
+  closeList();
+  return out.join("");
+}
+
+const QUICK_REPLIES = ["Uddyb det", "Hvad er mit næste skridt?", "Formulér det som journalnotat", "Kortere, tak"];
+
 const CHIPS = [
   { label: "Sagssparring", prompt: "Jeg vil gerne sparre om en sag (anonymiseret). Hjælp mig med at strukturere den — hvad vil du vide?" },
   { label: "§ Paragraf-hjælp", prompt: "Jeg har brug for hjælp til at finde den rette paragraf i Barnets Lov eller Serviceloven. Hvor starter vi?" },
@@ -338,8 +392,8 @@ export default function KarlaLanding() {
                 {messages.map((m, i) => (
                   <div
                     key={i}
-                    className={`k-msg max-w-[86%] rounded-[18px] px-5 py-3.5 text-[15px] leading-relaxed whitespace-pre-wrap ${
-                      m.role === "user" ? "self-end" : "self-start"
+                    className={`k-msg max-w-[86%] rounded-[18px] px-5 py-3.5 text-[15px] leading-relaxed ${
+                      m.role === "user" ? "self-end whitespace-pre-wrap" : "self-start"
                     }`}
                     style={
                       m.role === "user"
@@ -352,12 +406,16 @@ export default function KarlaLanding() {
                         Karla
                       </div>
                     )}
-                    {m.content || (
-                      <span className="inline-flex gap-1 items-center" aria-label="Karla skriver">
-                        <span className="k-dot" style={{ animationDelay: "0s" }}>·</span>
-                        <span className="k-dot" style={{ animationDelay: "0.2s" }}>·</span>
-                        <span className="k-dot" style={{ animationDelay: "0.4s" }}>·</span>
-                      </span>
+                    {m.role === "assistant" && m.content ? (
+                      <div className="k-svar" dangerouslySetInnerHTML={{ __html: formatKarla(m.content) }} />
+                    ) : (
+                      m.content || (
+                        <span className="inline-flex gap-1 items-center" aria-label="Karla skriver">
+                          <span className="k-dot" style={{ animationDelay: "0s" }}>·</span>
+                          <span className="k-dot" style={{ animationDelay: "0.2s" }}>·</span>
+                          <span className="k-dot" style={{ animationDelay: "0.4s" }}>·</span>
+                        </span>
+                      )
                     )}
                     {m.role === "assistant" && m.content && !loading && (
                       <button
@@ -372,6 +430,20 @@ export default function KarlaLanding() {
                   </div>
                 ))}
                 <div ref={chatEndRef} />
+              </div>
+            )}
+
+            {chatActive && !loading && messages[messages.length - 1]?.role === "assistant" && messages[messages.length - 1].content && (
+              <div className="flex gap-2 mb-4 flex-wrap">
+                {QUICK_REPLIES.map((q) => (
+                  <button
+                    key={q}
+                    onClick={() => send(q)}
+                    className="k-quick cursor-pointer px-3.5 py-2 rounded-full text-[12.5px]"
+                  >
+                    {q}
+                  </button>
+                ))}
               </div>
             )}
 
