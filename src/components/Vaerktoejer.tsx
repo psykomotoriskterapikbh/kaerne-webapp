@@ -36,14 +36,14 @@ function downloadIcs(titel: string, note: string, deadline: Date) {
   const ics = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Karla//Fristberegner//DA",
+    "PRODID:-//Astrid//Fristberegner//DA",
     "BEGIN:VEVENT",
-    `UID:karla-${Date.now()}@karla`,
+    `UID:astrid-${Date.now()}@astrid`,
     `DTSTAMP:${icsDate(new Date())}T090000Z`,
     `DTSTART;VALUE=DATE:${icsDate(deadline)}`,
     `DTEND;VALUE=DATE:${icsDate(dagEfter)}`,
     `SUMMARY:Frist: ${titel}`,
-    `DESCRIPTION:${note.replace(/,/g, "\\,")} (Beregnet med Karla — kontrollér altid fristen i sagen.)`,
+    `DESCRIPTION:${note.replace(/,/g, "\\,")} (Beregnet med Astrid — kontrollér altid fristen i sagen.)`,
     "BEGIN:VALARM",
     "TRIGGER:-P7D",
     "ACTION:DISPLAY",
@@ -55,12 +55,12 @@ function downloadIcs(titel: string, note: string, deadline: Date) {
   const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "karla-frist.ics";
+  a.download = "astrid-frist.ics";
   a.click();
   URL.revokeObjectURL(a.href);
 }
 
-function FristBeregner() {
+export function FristBeregner() {
   const [fristId, setFristId] = useState("bfu");
   const [start, setStart] = useState(() => new Date().toISOString().slice(0, 10));
   const [egneMdr, setEgneMdr] = useState(3);
@@ -163,7 +163,7 @@ const MAPPINGS: Mapping[] = [
   { gammel: "SEL §153", ny: "BL §133", emne: "Underretningspligt (fagpersoner)" },
 ];
 
-function ParagrafOversaetter() {
+export function ParagrafOversaetter() {
   const [q, setQ] = useState("");
   const hits = useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -176,7 +176,7 @@ function ParagrafOversaetter() {
       <div>
         <div className="mb-1" style={{ fontFamily: "var(--font-serif)", fontSize: 19, color: "var(--kaerne-ink)" }}>Paragraf-oversætter</div>
         <div style={{ fontSize: 13, lineHeight: 1.55, color: "var(--kaerne-ink-soft)" }}>
-          Fra gammel Servicelov til Barnets Lov — slå op på sekunder. Spørg Karla i chatten, hvis du vil have paragraffen forklaret.
+          Fra gammel Servicelov til Barnets Lov — slå op på sekunder. Spørg Astrid i chatten, hvis du vil have paragraffen forklaret.
         </div>
       </div>
       <input
@@ -197,7 +197,7 @@ function ParagrafOversaetter() {
           </div>
         ))}
         {hits.length === 0 && (
-          <div className="py-3" style={{ fontSize: 13, color: "var(--kaerne-muted)" }}>Ingen match — prøv et bredere ord, eller spørg Karla i chatten.</div>
+          <div className="py-3" style={{ fontSize: 13, color: "var(--kaerne-muted)" }}>Ingen match — prøv et bredere ord, eller spørg Astrid i chatten.</div>
         )}
       </div>
       <div style={{ fontSize: 11, lineHeight: 1.5, color: "var(--kaerne-muted)" }}>
@@ -207,62 +207,34 @@ function ParagrafOversaetter() {
   );
 }
 
-/* ---------- Samlet sektion ---------- */
-
-export default function Vaerktoejer() {
-  return (
-    <section id="vaerktoejer" className="max-w-5xl mx-auto mt-16">
-      <div className="text-center mb-2 text-[11px]" style={{ letterSpacing: "0.2em", color: "var(--kaerne-sage)", textTransform: "uppercase" }}>
-        Værktøjer
-      </div>
-      <h2 className="text-center mb-3" style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(24px, 3vw, 32px)", fontWeight: 300, color: "var(--kaerne-ink)" }}>
-        Små værktøjer, der sparer store minutter
-      </h2>
-      <p className="text-center mx-auto mb-7" style={{ maxWidth: 560, fontSize: 15, lineHeight: 1.6, color: "var(--kaerne-ink-soft)" }}>
-        Klar til brug med det samme — ingen login, ingen installation. Beregn fristen, find den nye paragraf, og kom videre med sagen.
-      </p>
-      <div className="grid md:grid-cols-2 gap-4 items-start">
-        <FristBeregner />
-        <ParagrafOversaetter />
-      </div>
-    </section>
-  );
-}
-
 /* ---------- FAQ ---------- */
 
 const FAQ_ITEMS = [
   {
-    q: "Træffer Karla afgørelser i mine sager?",
-    a: "Nej — aldrig. Karla er støtte, ikke skøn. Hun strukturerer, foreslår og finder vinkler, men det socialfaglige skøn og alle afgørelser ligger hos dig og din kommune. Det er et bevidst designvalg, ikke en begrænsning.",
+    q: "Træffer Astrid afgørelser i mine sager?",
+    a: "Nej — aldrig. Astrid er støtte, ikke skøn. Hun strukturerer, foreslår og finder vinkler, men det socialfaglige skøn og alle afgørelser ligger hos dig og din kommune. Det er et bevidst designvalg, ikke en begrænsning.",
   },
   {
-    q: "Hvad sker der med det, jeg skriver til Karla?",
-    a: "Din samtale bruges kun til at generere svaret her og nu — Karla gemmer ingen samtaler på en server, og der er ingen profil eller historik. Skriv aldrig CPR-numre, navne eller adresser; Karla blokerer automatisk beskeder, der ligner CPR-numre.",
+    q: "Hvad sker der med det, jeg skriver til Astrid?",
+    a: "Din samtale bruges kun til at generere svaret her og nu — Astrid gemmer ingen samtaler på en server, og der er ingen profil eller historik. Skriv aldrig CPR-numre, navne eller adresser; Astrid blokerer automatisk beskeder, der ligner CPR-numre.",
   },
   {
     q: "Kan jeg stole på paragrafferne?",
-    a: "Karla er trænet på Barnets Lov (2024) og Serviceloven og siger ærligt til, hvis hun er usikker. Men AI kan fejle — brug hendes svar som kvalificeret udkast, og slå altid efter på retsinformation.dk, før noget lander i en afgørelse.",
+    a: "Astrid er trænet på Barnets Lov (2024) og Serviceloven og siger ærligt til, hvis hun er usikker. Men AI kan fejle — brug hendes svar som kvalificeret udkast, og slå altid efter på retsinformation.dk, før noget lander i en afgørelse.",
   },
   {
     q: "Hvad koster det?",
-    a: "Karla er gratis at prøve — bare begynd at skrive. Skal hele teamet eller forvaltningen med, så tag fat i KÆRNE og hør om en aftale for jeres kommune.",
+    a: "Astrid er gratis at prøve — bare begynd at skrive. Skal hele teamet eller forvaltningen med, kan der laves en aftale for jeres kommune.",
   },
   {
-    q: "Hvorfor anbefaler Karla nogle gange KÆRNE?",
-    a: "KÆRNE er platformens partner, og det siger Karla åbent, når de nævnes. Hun foreslår altid de aktører, der fagligt og geografisk passer bedst til opgaven — og valget er altid dit og kommunens. Tjek altid Tilbudsportalen og tilsynsrapporter.",
+    q: "Er aktør-oversigten neutral?",
+    a: "Ja. Ingen aktør betaler for at være med eller blive fremhævet. Astrid anbefaler alene ud fra fagligt match, målgruppe og geografi — og valget er altid dit og kommunens. Tjek altid Tilbudsportalen og tilsynsrapporter.",
   },
 ];
 
 export function Faq() {
   return (
-    <section id="faq" className="max-w-3xl mx-auto mt-16">
-      <div className="text-center mb-2 text-[11px]" style={{ letterSpacing: "0.2em", color: "var(--kaerne-sage)", textTransform: "uppercase" }}>
-        Spørgsmål & svar
-      </div>
-      <h2 className="text-center mb-7" style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(24px, 3vw, 32px)", fontWeight: 300, color: "var(--kaerne-ink)" }}>
-        Det spørger kollegerne om
-      </h2>
+    <section id="faq" className="max-w-3xl mx-auto">
       <div className="flex flex-col gap-2.5">
         {FAQ_ITEMS.map((f) => (
           <details key={f.q} className="k-faq rounded-[16px] px-5 py-1" style={{ background: "#fff", border: "0.5px solid var(--kaerne-border)", boxShadow: "0 2px 12px rgba(90,80,72,0.05)" }}>
