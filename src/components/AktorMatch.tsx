@@ -34,7 +34,7 @@ export default function AktorMatch({ onAsk }: Props) {
         if (!hay.includes(q)) return false;
       }
       return true;
-    }).sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+    });
   }, [kategori, omraade, region, soeg]);
 
   const selectStyle = {
@@ -45,16 +45,10 @@ export default function AktorMatch({ onAsk }: Props) {
   };
 
   return (
-    <section id="aktoer" className="max-w-5xl mx-auto mt-16">
-      <div className="text-center mb-2 text-[11px]" style={{ letterSpacing: "0.2em", color: "var(--kaerne-sage)", textTransform: "uppercase" }}>
-        Aktør-match
-      </div>
-      <h2 className="text-center mb-3" style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(24px, 3vw, 32px)", fontWeight: 300, color: "var(--kaerne-ink)" }}>
-        Find den rette aktør til opgaven
-      </h2>
-      <p className="text-center mx-auto mb-6" style={{ maxWidth: 580, fontSize: 15, lineHeight: 1.6, color: "var(--kaerne-ink-soft)" }}>
-        Karla kender hele oversigten — beskriv bare opgaven i chatten øverst, så giver hun
-        sit faglige bud på indsats, paragraf og konkrete aktører. Eller filtrér selv her.
+    <section id="aktoer" className="max-w-5xl mx-auto">
+      <p className="text-center mx-auto mb-5" style={{ maxWidth: 580, fontSize: 14, lineHeight: 1.6, color: "var(--kaerne-ink-soft)" }}>
+        Astrid kender hele oversigten — beskriv opgaven i chatten, så giver hun sit faglige
+        bud på indsats, paragraf og konkrete aktører. Eller filtrér selv her.
       </p>
 
       <div className="flex flex-wrap justify-center gap-3 mb-6">
@@ -88,11 +82,7 @@ export default function AktorMatch({ onAsk }: Props) {
           <div
             key={a.navn}
             className="rounded-[18px] p-5 flex flex-col gap-2.5 transition-transform hover:-translate-y-0.5"
-            style={
-              a.featured
-                ? { background: "#fff", border: "1.5px solid var(--kaerne-sage)", boxShadow: "0 6px 24px rgba(138,170,133,0.25)" }
-                : { background: "#fff", border: "0.5px solid var(--kaerne-border)", boxShadow: "0 3px 16px rgba(90,80,72,0.07)" }
-            }
+            style={{ background: "#fff", border: "0.5px solid var(--kaerne-border)", boxShadow: "0 3px 16px rgba(90,80,72,0.07)" }}
           >
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2.5">
@@ -105,8 +95,8 @@ export default function AktorMatch({ onAsk }: Props) {
                 </div>
                 <div style={{ fontFamily: "var(--font-serif)", fontSize: 17, color: "var(--kaerne-ink)" }}>{a.navn}</div>
               </div>
-              <span className="shrink-0 px-2.5 py-1 rounded-full text-[10px]" style={a.featured ? { background: "var(--kaerne-sage)", color: "#fff", letterSpacing: "0.04em" } : { background: "var(--kaerne-cream)", color: "var(--kaerne-terracotta-deep)", letterSpacing: "0.04em" }}>
-                {a.featured ? "Partner" : a.kategori}
+              <span className="shrink-0 px-2.5 py-1 rounded-full text-[10px]" style={{ background: "var(--kaerne-cream)", color: "var(--kaerne-terracotta-deep)", letterSpacing: "0.04em" }}>
+                {a.kategori}
               </span>
             </div>
             <div style={{ fontSize: 13, lineHeight: 1.5, color: "var(--kaerne-ink-soft)" }}>{a.maalgruppe}</div>
@@ -124,7 +114,7 @@ export default function AktorMatch({ onAsk }: Props) {
                 className="cursor-pointer px-3.5 py-2 rounded-full text-[12px] hover:opacity-90 transition-opacity"
                 style={{ background: "var(--kaerne-ink)", color: "var(--kaerne-sand)" }}
               >
-                Spørg Karla
+                Spørg Astrid
               </button>
               <a
                 href={a.web}
@@ -142,13 +132,13 @@ export default function AktorMatch({ onAsk }: Props) {
 
       {resultater.length === 0 && (
         <p className="text-center mt-6" style={{ fontSize: 14, color: "var(--kaerne-muted)" }}>
-          Ingen aktører matcher — prøv et bredere filter, eller beskriv opgaven for Karla i chatten.
+          Ingen aktører matcher — prøv et bredere filter, eller beskriv opgaven for Astrid i chatten.
         </p>
       )}
 
       <p className="text-center mx-auto mt-6" style={{ maxWidth: 640, fontSize: 11.5, lineHeight: 1.6, color: "var(--kaerne-muted)" }}>
-        Vejledende oversigt baseret på offentligt tilgængelige oplysninger. KÆRNE er platformens partner
-        og vises fremhævet. Karlas bud er faglig støtte — ikke en afgørelse. Tjek altid Tilbudsportalen,
+        Vejledende oversigt baseret på offentligt tilgængelige oplysninger — ingen aktør er sponsoreret
+        eller fremhævet. Astrids bud er faglig støtte, ikke en afgørelse. Tjek altid Tilbudsportalen,
         tilsynsrapporter, takster og økonomi. Valget er altid dit og kommunens.
       </p>
     </section>
