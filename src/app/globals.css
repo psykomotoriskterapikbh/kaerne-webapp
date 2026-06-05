@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@300;400&family=DM+Sans:wght@400;500&family=Caveat:wght@400&display=swap');
+
 :root {
   --kaerne-sand: #fcf5ec;
   --kaerne-cream: #fdf2ec;
@@ -92,7 +93,6 @@ body {
 .k-chip:nth-child(2) { animation-delay: 0.65s; }
 .k-chip:nth-child(3) { animation-delay: 0.8s; }
 
-
 .k-dot {
   display: inline-block;
   font-size: 22px;
@@ -104,7 +104,6 @@ body {
   0%, 60%, 100% { opacity: 0.25; transform: translateY(0); }
   30% { opacity: 1; transform: translateY(-3px); }
 }
-
 
 /* Karla 2.0 — 3D og engagement */
 .k-float { animation: kfloat 5.5s ease-in-out infinite; }
@@ -177,3 +176,14 @@ body {
 .k-par { background: var(--kaerne-cream); border: 0.5px solid var(--kaerne-border-soft); border-radius: 999px; padding: 0 7px; font-size: 0.85em; color: var(--kaerne-terracotta-deep); white-space: nowrap; }
 .k-quick { background: #fff; border: 0.5px solid var(--kaerne-border); color: var(--kaerne-ink-soft); transition: all 0.25s ease; box-shadow: 0 2px 8px rgba(90,80,72,0.05); }
 .k-quick:hover { background: var(--kaerne-cream); transform: translateY(-1px); border-color: #e2a98c; }
+
+/* Karla 2.5 — tabeller i svar, FAQ */
+.k-svar .k-tabelwrap { overflow-x: auto; margin: 10px 0; }
+.k-svar table.k-tabel { border-collapse: collapse; width: 100%; font-size: 13px; }
+.k-svar table.k-tabel th, .k-svar table.k-tabel td { border: 0.5px solid var(--kaerne-border); padding: 7px 10px; text-align: left; vertical-align: top; line-height: 1.45; }
+.k-svar table.k-tabel th { background: var(--kaerne-cream); font-weight: 600; color: var(--kaerne-ink); }
+.k-svar table.k-tabel tr:nth-child(even) td { background: var(--kaerne-sand); }
+.k-svar hr { border: none; border-top: 0.5px solid var(--kaerne-border); margin: 12px 0; }
+details.k-faq summary::-webkit-details-marker { display: none; }
+details.k-faq[open] .k-faq-pil { transform: rotate(45deg); }
+.k-faq-pil { transition: transform 0.2s ease; display: inline-block; }
