@@ -194,3 +194,13 @@ details.k-faq[open] .k-faq-pil { transform: rotate(45deg); }
 .k-tab-active { background: var(--kaerne-ink); color: var(--kaerne-sand); border-color: var(--kaerne-ink); }
 .k-tab-active:hover { background: var(--kaerne-ink); transform: none; border-color: var(--kaerne-ink); }
 .k-panel { animation: kfade 0.4s ease both; }
+
+/* Astrid — mobiloptimering (iPhone & Android) */
+html, body { overflow-x: hidden; }
+@media (max-width: 767px) {
+  input, select, textarea { font-size: 16px !important; } /* undgaa iOS auto-zoom ved fokus */
+  .k-talebobl { right: -6px !important; max-width: 170px !important; font-size: 11.5px !important; }
+  .k-tab, .k-chip, .k-quick { min-height: 44px; } /* Apple/Android touch targets */
+  .k-svar { font-size: 14.5px; }
+  .k-svar table.k-tabel { font-size: 12px; }
+}
