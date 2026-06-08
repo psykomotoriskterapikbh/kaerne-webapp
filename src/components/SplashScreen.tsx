@@ -3,30 +3,26 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Astrid opstarts-splash — high-tech men varm/biophilic.
- * Lyspartikler spiraler ind og danner en glødende orb omgivet af en
- * data-konstellation, navnet toner frem, "system klar"-glimt, og scenen
- * fader ud til appen. Vises én gang pr. session.
+ * Astrid opstarts-splash — kaffekande hælder § + ♥ + kaffe i koppen.
+ * High-tech men varm. Kanden tipper, en strøm af kaffe blandet med
+ * paragraf-tegn og hjerter falder ned i koppen, der langsomt fyldes,
+ * navnet toner frem, og scenen fader ud. Vises én gang pr. session.
+ * Ingen lyd.
  */
+const SPLASH_BG =
+  "https://media.glif.app/i:r/c_limit,w_3840/f_auto/q_auto/fucn4fhdx5txpp7ddqre";
+
 export default function SplashScreen() {
   const [show, setShow] = useState(false);
   const [gone, setGone] = useState(false);
   const ovRef = useRef<HTMLDivElement>(null);
 
-  // refs til animerede dele
-  const hud1 = useRef<SVGGElement>(null);
-  const hud2 = useRef<SVGGElement>(null);
-  const constG = useRef<SVGGElement>(null);
-  const pwrap = useRef<SVGGElement>(null);
-  const particles = useRef<SVGGElement>(null);
-  const orbg = useRef<SVGGElement>(null);
-  const core = useRef<SVGCircleElement>(null);
-  const coreIn = useRef<SVGCircleElement>(null);
-  const hi = useRef<SVGEllipseElement>(null);
-  const rim = useRef<SVGPathElement>(null);
+  const pot = useRef<SVGGElement>(null);
+  const stream = useRef<SVGGElement>(null);
+  const fx = useRef<SVGGElement>(null);
+  const fill = useRef<SVGRectElement>(null);
   const halo = useRef<SVGCircleElement>(null);
-  const flower = useRef<SVGGElement>(null);
-  const sweep = useRef<SVGRectElement>(null);
+  const steam = useRef<SVGGElement>(null);
   const flash = useRef<SVGRectElement>(null);
   const nameEl = useRef<HTMLDivElement>(null);
   const subEl = useRef<HTMLDivElement>(null);
@@ -42,154 +38,208 @@ export default function SplashScreen() {
   useEffect(() => {
     if (!show) return;
     const NS = "http://www.w3.org/2000/svg";
-    const cx = 340, cy = 208;
-    const cols = ["#8aa885", "#a7c69d", "#b9d0b0", "#e2916f", "#ec9a86", "#caa98c"];
-    const dots: SVGCircleElement[] = [];
     const timers: ReturnType<typeof setTimeout>[] = [];
+    const intervals: ReturnType<typeof setInterval>[] = [];
     const T = (f: () => void, ms: number) => timers.push(setTimeout(f, ms));
 
-    const ticks = (g: SVGGElement, r: number, n: number, len: number, col: string, w: string) => {
-      for (let i = 0; i < n; i++) {
-        const a = (i / n) * 6.283;
-        const l = document.createElementNS(NS, "line");
-        l.setAttribute("x1", String(cx + Math.cos(a) * r)); l.setAttribute("y1", String(cy + Math.sin(a) * r));
-        l.setAttribute("x2", String(cx + Math.cos(a) * (r + len))); l.setAttribute("y2", String(cy + Math.sin(a) * (r + len)));
-        l.setAttribute("stroke", col); l.setAttribute("stroke-width", w); l.setAttribute("opacity", i % 4 === 0 ? ".55" : ".25");
-        g.appendChild(l);
+    const spoutX = 360, spoutY = 214;     // hvor strømmen forlader tuden
+    const cupRimY = 318;                   // koppens kant
+    const fillTopMin = 300, fillBottom = 388;
+
+    // ---- faldende elementer (§, ♥, kaffedråber) ----
+    const browns = ["#6f4e37", "#7c5a43", "#8a6650"];
+    const accents = ["#e2916f", "#cf7f57"];
+    const spawn = () => {
+      if (!fx.current) return;
+      const kind = Math.random();
+      const x = spoutX + (Math.random() * 16 - 8);
+      let node: SVGElement;
+      if (kind < 0.34) {
+        node = document.createElementNS(NS, "text");
+        node.textContent = "§";
+        node.setAttribute("font-size", (20 + Math.random() * 8).toFixed(0));
+        node.setAttribute("font-weight", "600");
+        node.setAttribute("fill", "#5a4636");
+        node.setAttribute("text-anchor", "middle");
+      } else if (kind < 0.62) {
+        node = document.createElementNS(NS, "text");
+        node.textContent = "♥";
+        node.setAttribute("font-size", (16 + Math.random() * 7).toFixed(0));
+        node.setAttribute("fill", accents[Math.floor(Math.random() * accents.length)]);
+        node.setAttribute("text-anchor", "middle");
+      } else {
+        node = document.createElementNS(NS, "circle");
+        node.setAttribute("r", (3 + Math.random() * 3.5).toFixed(1));
+        node.setAttribute("fill", browns[Math.floor(Math.random() * browns.length)]);
       }
-      const c = document.createElementNS(NS, "circle");
-      c.setAttribute("cx", String(cx)); c.setAttribute("cy", String(cy)); c.setAttribute("r", String(r));
-      c.setAttribute("fill", "none"); c.setAttribute("stroke", col); c.setAttribute("stroke-width", "0.8"); c.setAttribute("opacity", ".3");
-      g.appendChild(c);
+      const rot = (Math.random() * 60 - 30).toFixed(0);
+      const setXY = (yy: number) => {
+        if (node.tagName === "circle") {
+          node.setAttribute("cx", String(x)); node.setAttribute("cy", String(yy));
+        } else {
+          node.setAttribute("x", String(x)); node.setAttribute("y", String(yy));
+        }
+      };
+      setXY(spoutY);
+      node.setAttribute("opacity", "0");
+      node.style.transition = "transform 1.05s cubic-bezier(.45,.05,.7,1), opacity .5s ease";
+      node.style.transformBox = "fill-box";
+      node.style.transformOrigin = "center";
+      fx.current.appendChild(node);
+      const drop = cupRimY - spoutY + (Math.random() * 18);
+      requestAnimationFrame(() => {
+        node.setAttribute("opacity", "0.96");
+        node.style.transform = `translateY(${drop}px) rotate(${rot}deg)`;
+      });
+      timers.push(setTimeout(() => { node.setAttribute("opacity", "0"); }, 760));
+      timers.push(setTimeout(() => { node.remove(); }, 1150));
     };
 
-    const h1 = hud1.current!, h2 = hud2.current!, cg = constG.current!, pw = pwrap.current!, P = particles.current!;
-    ticks(h1, 126, 48, 6, "#8aa885", "1");
-    ticks(h2, 168, 30, 9, "#caa98c", "1");
+    // ---- koppen fyldes ----
+    let lvl = 0; // 0..1
+    const raise = () => {
+      lvl = Math.min(1, lvl + 0.045);
+      if (fill.current) {
+        const top = fillBottom - (fillBottom - fillTopMin) * lvl;
+        fill.current.setAttribute("y", String(top));
+        fill.current.setAttribute("height", String(fillBottom - top));
+      }
+    };
 
-    const N = 10; const pts: [number, number][] = [];
-    for (let k = 0; k < N; k++) { const a = (k / N) * 6.283 - 1.4, r = 100 + (k % 3) * 9; pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]); }
-    for (let k = 0; k < N; k++) {
-      const p = pts[k], q = pts[(k + 1) % N];
-      const ln = document.createElementNS(NS, "line");
-      ln.setAttribute("x1", String(p[0])); ln.setAttribute("y1", String(p[1])); ln.setAttribute("x2", String(q[0])); ln.setAttribute("y2", String(q[1]));
-      ln.setAttribute("stroke", "#8aa885"); ln.setAttribute("stroke-width", "0.9"); ln.setAttribute("opacity", ".4");
-      const len = Math.hypot(q[0] - p[0], q[1] - p[1]);
-      ln.setAttribute("stroke-dasharray", String(len)); ln.setAttribute("stroke-dashoffset", String(len));
-      ln.style.transition = `stroke-dashoffset 1.1s ease ${k * 0.05}s`;
-      cg.appendChild(ln);
-    }
-    pts.forEach((p, idx) => { const nd = document.createElementNS(NS, "circle"); nd.setAttribute("cx", String(p[0])); nd.setAttribute("cy", String(p[1])); nd.setAttribute("r", "3.2"); nd.setAttribute("fill", idx % 2 ? "#e2916f" : "#7e9d78"); cg.appendChild(nd); });
-
-    for (let i = 0; i < 42; i++) {
-      const ang = Math.random() * 6.283, dist = 130 + Math.random() * 210;
-      const c = document.createElementNS(NS, "circle");
-      c.setAttribute("cx", String(cx + Math.cos(ang) * dist)); c.setAttribute("cy", String(cy + Math.sin(ang) * dist));
-      c.setAttribute("r", (1.2 + Math.random() * 2.6).toFixed(1)); c.setAttribute("fill", cols[i % cols.length]); c.setAttribute("opacity", "0");
-      c.style.transition = "cx 1.4s cubic-bezier(.35,.65,.25,1), cy 1.4s cubic-bezier(.35,.65,.25,1), opacity .7s ease";
-      P.appendChild(c); dots.push(c);
-    }
-
-    T(() => { dots.forEach((d) => d.setAttribute("opacity", (0.5 + Math.random() * 0.5).toFixed(2))); h1.setAttribute("opacity", "1"); h2.setAttribute("opacity", "1"); h1.style.transition = h2.style.transition = "opacity 1s ease"; }, 435);
-    T(() => { pw.style.transition = "transform 1.4s cubic-bezier(.35,.65,.25,1)"; pw.style.transform = "rotate(55deg)"; dots.forEach((d) => { d.setAttribute("cx", String(cx + (Math.random() * 14 - 7))); d.setAttribute("cy", String(cy + (Math.random() * 14 - 7))); }); }, 940);
+    // ---- tidslinje ----
+    T(() => { if (halo.current) { halo.current.style.transition = "opacity 1s ease"; halo.current.setAttribute("opacity", "1"); } }, 200);
+    // kanden tipper og begynder at hælde
+    T(() => { if (pot.current) { pot.current.style.transition = "transform 1s cubic-bezier(.3,.7,.3,1)"; pot.current.style.transform = "rotate(-26deg)"; } }, 500);
+    // strøm + spawning starter
     T(() => {
-      const co = core.current!, ci = coreIn.current!, h = hi.current!;
-      co.style.transition = "r .8s cubic-bezier(.2,1.25,.4,1)"; ci.style.transition = "r .8s ease"; h.style.transition = "rx .8s ease, ry .8s ease";
-      co.setAttribute("r", "52"); ci.setAttribute("r", "40"); h.setAttribute("rx", "16"); h.setAttribute("ry", "11");
-      rim.current!.setAttribute("d", "M300,176 A52,52 0 0 1 380,176"); halo.current!.setAttribute("opacity", "1");
-      dots.forEach((d) => d.setAttribute("opacity", "0"));
-    }, 2175);
-    T(() => { orbg.current!.classList.add("asp-breath"); halo.current!.classList.add("asp-breath"); h1.classList.add("asp-spin"); h2.classList.add("asp-spinR"); }, 3265);
-    T(() => { cg.setAttribute("opacity", "1"); cg.style.transition = "opacity .6s ease"; cg.querySelectorAll("line").forEach((l) => l.setAttribute("stroke-dashoffset", "0")); }, 2650);
-    T(() => { cg.classList.add("asp-spin"); }, 4495);
-    T(() => { flower.current!.style.transition = "opacity .7s ease"; flower.current!.setAttribute("opacity", "1"); }, 3120);
-    T(() => { nameEl.current!.style.opacity = "1"; nameEl.current!.style.transform = "translateY(0)"; }, 3410);
-    T(() => { subEl.current!.style.opacity = "1"; }, 4425);
-    T(() => { sweep.current!.setAttribute("opacity", "1"); sweep.current!.style.transition = "transform 1.1s ease, opacity .3s ease"; sweep.current!.setAttribute("transform", "translate(900,0) skewX(-14)"); }, 3770);
-    T(() => { sweep.current!.setAttribute("opacity", "0"); }, 5365);
-    T(() => { flash.current!.style.transition = "opacity .16s ease"; flash.current!.setAttribute("opacity", ".6"); }, 4710);
-    T(() => { flash.current!.setAttribute("opacity", "0"); }, 5000);
-    T(() => { if (ovRef.current) ovRef.current.style.opacity = "0"; }, 7000);
-    T(() => { setGone(true); }, 8400);
+      if (stream.current) { stream.current.style.transition = "opacity .5s ease"; stream.current.setAttribute("opacity", "1"); }
+      intervals.push(setInterval(spawn, 150));
+      intervals.push(setInterval(raise, 230));
+    }, 1300);
+    // damp stiger
+    T(() => { if (steam.current) steam.current.classList.add("ksp-steam-on"); }, 2600);
+    // stop med at hælde — ret kanden op igen
+    T(() => {
+      intervals.forEach(clearInterval); intervals.length = 0;
+      if (stream.current) stream.current.setAttribute("opacity", "0");
+      if (pot.current) pot.current.style.transform = "rotate(-6deg)";
+      // top koppen helt op
+      lvl = 1;
+      if (fill.current) { fill.current.setAttribute("y", String(fillTopMin)); fill.current.setAttribute("height", String(fillBottom - fillTopMin)); }
+    }, 5200);
+    // navn + undertekst
+    T(() => { if (nameEl.current) { nameEl.current.style.opacity = "1"; nameEl.current.style.transform = "translateY(0)"; } }, 5400);
+    T(() => { if (subEl.current) subEl.current.style.opacity = "1"; }, 6100);
+    // varmt lysglimt
+    T(() => { if (flash.current) { flash.current.style.transition = "opacity .18s ease"; flash.current.setAttribute("opacity", ".45"); } }, 6300);
+    T(() => { if (flash.current) flash.current.setAttribute("opacity", "0"); }, 6550);
+    // fade ud + væk
+    T(() => { if (ovRef.current) ovRef.current.style.opacity = "0"; }, 7400);
+    T(() => { setGone(true); }, 8800);
 
-    return () => { timers.forEach(clearTimeout); };
+    return () => { timers.forEach(clearTimeout); intervals.forEach(clearInterval); };
   }, [show]);
 
   if (gone || !show) return null;
 
   return (
     <div ref={ovRef} aria-hidden="true" style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "radial-gradient(circle at 50% 42%,#fef9f2 0%,#f6ecdd 52%,#ecdfcd 100%)", transition: "opacity 1.4s ease", overflow: "hidden" }}>
-      {/* Glif-genereret kunstnerisk baggrund -- bloedt indtonet bag den levende SVG */}
-      <div
-        className="asp-bg"
-        style={{
-          position: "absolute",
-          inset: "-4%",
-          backgroundImage: "url('https://media.glif.app/i:r/c_limit,w_3840/f_auto/q_auto/fucn4fhdx5txpp7ddqre')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          opacity: 0,
-          filter: "saturate(1.05)",
-          WebkitMaskImage: "radial-gradient(circle at 50% 44%, #000 0%, #000 38%, rgba(0,0,0,.55) 64%, transparent 88%)",
-          maskImage: "radial-gradient(circle at 50% 44%, #000 0%, #000 38%, rgba(0,0,0,.55) 64%, transparent 88%)",
-          pointerEvents: "none",
-        }}
-      />
+      {/* Glif-genereret kunstnerisk baggrund */}
+      <div className="ksp-bg" style={{ position: "absolute", inset: "-4%", backgroundImage: `url('${SPLASH_BG}')`, backgroundSize: "cover", backgroundPosition: "center", opacity: 0, filter: "saturate(1.05)", WebkitMaskImage: "radial-gradient(circle at 50% 46%, #000 0%, #000 36%, rgba(0,0,0,.5) 62%, transparent 86%)", maskImage: "radial-gradient(circle at 50% 46%, #000 0%, #000 36%, rgba(0,0,0,.5) 62%, transparent 86%)", pointerEvents: "none" }} />
       <style>{`
-        @keyframes asp-bgin{0%{opacity:0;transform:scale(1.08)}100%{opacity:.62;transform:scale(1)}}
-        .asp-bg{animation:asp-bgin 2.8s ease-out .15s forwards}
-        @keyframes asp-breath{0%,100%{transform:scale(1)}50%{transform:scale(1.055)}}
-        @keyframes asp-haloB{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:.9;transform:scale(1.14)}}
-        @keyframes asp-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-        @keyframes asp-spinR{from{transform:rotate(0)}to{transform:rotate(-360deg)}}
-        .asp-breath{transform-box:fill-box;transform-origin:340px 208px;animation:asp-breath 4s ease-in-out infinite}
-        #asp-halo.asp-breath{transform-origin:center;animation:asp-haloB 4s ease-in-out infinite}
-        #asp-hud1.asp-spin{transform-box:view-box;transform-origin:340px 208px;animation:asp-spin 30s linear infinite}
-        #asp-hud2.asp-spinR{transform-box:view-box;transform-origin:340px 208px;animation:asp-spinR 22s linear infinite}
-        #asp-const.asp-spin{transform-box:view-box;transform-origin:340px 208px;animation:asp-spin 40s linear infinite}
+        @keyframes ksp-bgin{0%{opacity:0;transform:scale(1.08)}100%{opacity:.4;transform:scale(1)}}
+        .ksp-bg{animation:ksp-bgin 3s ease-out .15s forwards}
+        @keyframes ksp-haloB{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:.82;transform:scale(1.08)}}
+        #ksp-halo.ksp-on{transform-origin:center;animation:ksp-haloB 4s ease-in-out infinite}
+        @keyframes ksp-flow{0%{stroke-dashoffset:34}100%{stroke-dashoffset:0}}
+        @keyframes ksp-steam{0%{opacity:0;transform:translateY(6px) scaleX(1)}35%{opacity:.5}100%{opacity:0;transform:translateY(-20px) scaleX(1.25)}}
+        .ksp-steam-on .ksp-s{animation:ksp-steam 3s ease-in-out infinite}
+        .ksp-steam-on .ksp-s2{animation-delay:.7s}
+        .ksp-steam-on .ksp-s3{animation-delay:1.4s}
+        #ksp-stream{stroke-dasharray:7 6;animation:ksp-flow .5s linear infinite}
       `}</style>
 
-      <svg viewBox="0 0 680 440" width="min(92vw, 760px)" height="auto" style={{ maxHeight: "82vh" }}>
+      <svg viewBox="0 0 680 480" width="min(92vw, 760px)" height="auto" style={{ maxHeight: "84vh" }}>
         <defs>
-          <radialGradient id="asp-sphere" cx="38%" cy="32%" r="72%">
-            <stop offset="0%" stopColor="#f1f8e9" /><stop offset="30%" stopColor="#cfe3c6" /><stop offset="64%" stopColor="#a7c69d" /><stop offset="100%" stopColor="#6f8f6a" />
+          <radialGradient id="ksp-bloom" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#f6d9a8" stopOpacity="0.55" />
+            <stop offset="55%" stopColor="#ecc79a" stopOpacity="0.22" />
+            <stop offset="100%" stopColor="#ecc79a" stopOpacity="0" />
           </radialGradient>
-          <radialGradient id="asp-inner" cx="50%" cy="60%" r="60%">
-            <stop offset="0%" stopColor="#f6c9ad" stopOpacity=".55" /><stop offset="100%" stopColor="#f6c9ad" stopOpacity="0" />
-          </radialGradient>
-          <radialGradient id="asp-bloom" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#e2916f" stopOpacity=".5" /><stop offset="45%" stopColor="#e2916f" stopOpacity=".14" /><stop offset="100%" stopColor="#e2916f" stopOpacity="0" />
-          </radialGradient>
-          <linearGradient id="asp-sweep" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#fff" stopOpacity="0" /><stop offset="50%" stopColor="#fff" stopOpacity=".5" /><stop offset="100%" stopColor="#fff" stopOpacity="0" />
+          <linearGradient id="ksp-pot" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#9bb89a" />
+            <stop offset="55%" stopColor="#7fa07c" />
+            <stop offset="100%" stopColor="#5f7e5d" />
           </linearGradient>
-          <filter id="asp-glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="6" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
-          <filter id="asp-soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" /></filter>
+          <linearGradient id="ksp-cup" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="60%" stopColor="#f3ead9" />
+            <stop offset="100%" stopColor="#e6d6bd" />
+          </linearGradient>
+          <linearGradient id="ksp-coffee" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#7c5a43" />
+            <stop offset="100%" stopColor="#5a4030" />
+          </linearGradient>
+          <clipPath id="ksp-cupclip">
+            <path d="M302,316 h68 a6,6 0 0 1 6,6 l-7,60 a14,14 0 0 1 -14,12 h-38 a14,14 0 0 1 -14,-12 l-7,-60 a6,6 0 0 1 6,-6 z" />
+          </clipPath>
         </defs>
 
-        <g stroke="#caa98c" fill="none" opacity=".16"><circle cx="340" cy="208" r="150" /><circle cx="340" cy="208" r="186" /></g>
-        <g id="asp-hud1" ref={hud1} opacity="0" />
-        <g id="asp-hud2" ref={hud2} opacity="0" />
-        <circle id="asp-halo" ref={halo} cx="340" cy="208" r="150" fill="url(#asp-bloom)" opacity="0" />
-        <g id="asp-const" ref={constG} opacity="0" />
-        <g ref={pwrap} style={{ transformBox: "view-box", transformOrigin: "340px 208px" }}><g ref={particles} filter="url(#asp-soft)" /></g>
+        {/* glød bag scenen */}
+        <circle id="ksp-halo" ref={halo} className="ksp-on" cx="340" cy="300" r="170" fill="url(#ksp-bloom)" opacity="0" />
 
-        <g ref={orbg} filter="url(#asp-glow)">
-          <circle ref={core} cx="340" cy="208" r="0" fill="url(#asp-sphere)" />
-          <circle ref={coreIn} cx="340" cy="214" r="0" fill="url(#asp-inner)" />
-          <ellipse ref={hi} cx="322" cy="190" rx="0" ry="0" fill="#ffffff" opacity=".6" />
-          <path ref={rim} d="" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" opacity=".35" />
+        {/* damp */}
+        <g ref={steam} stroke="#c9b79c" strokeWidth="3" strokeLinecap="round" fill="none" opacity="1">
+          <path className="ksp-s" d="M326,300 q-6,-12 0,-24 q6,-12 0,-24" style={{ transformBox: "fill-box", transformOrigin: "center" }} />
+          <path className="ksp-s ksp-s2" d="M340,300 q-6,-12 0,-24 q6,-12 0,-24" style={{ transformBox: "fill-box", transformOrigin: "center" }} />
+          <path className="ksp-s ksp-s3" d="M354,300 q-6,-12 0,-24 q6,-12 0,-24" style={{ transformBox: "fill-box", transformOrigin: "center" }} />
         </g>
-        <g ref={flower} transform="translate(340,208)" opacity="0">
-          <circle cx="0" cy="-10" r="6.5" fill="#fdf2ec" /><circle cx="9.5" cy="-3.1" r="6.5" fill="#fdf2ec" />
-          <circle cx="5.9" cy="8.1" r="6.5" fill="#fdf2ec" /><circle cx="-5.9" cy="8.1" r="6.5" fill="#fdf2ec" />
-          <circle cx="-9.5" cy="-3.1" r="6.5" fill="#fdf2ec" /><circle cx="0" cy="0" r="4.6" fill="#e2916f" />
+
+        {/* faldende § ♥ kaffe */}
+        <g ref={fx} />
+
+        {/* strøm fra tuden */}
+        <g ref={stream} opacity="0">
+          <path id="ksp-stream" d="M360,214 q-6,52 -22,100" stroke="#6f4e37" strokeWidth="5" strokeLinecap="round" fill="none" opacity=".8" />
         </g>
-        <rect ref={sweep} x="-260" y="0" width="220" height="440" fill="url(#asp-sweep)" opacity="0" transform="skewX(-14)" />
-        <rect ref={flash} x="0" y="0" width="680" height="440" fill="#fffaf2" opacity="0" />
+
+        {/* koppen */}
+        <g>
+          <path d="M302,316 h68 a6,6 0 0 1 6,6 l-7,60 a14,14 0 0 1 -14,12 h-38 a14,14 0 0 1 -14,-12 l-7,-60 a6,6 0 0 1 6,-6 z" fill="url(#ksp-cup)" stroke="#d8c6a8" strokeWidth="1.5" />
+          {/* hank */}
+          <path d="M378,330 q26,2 24,26 q-2,20 -22,20" fill="none" stroke="#e0cfb0" strokeWidth="7" strokeLinecap="round" />
+          {/* kaffe-fyld */}
+          <g clipPath="url(#ksp-cupclip)">
+            <rect ref={fill} x="298" y="388" width="80" height="0" fill="url(#ksp-coffee)" />
+            <ellipse cx="338" cy="316" rx="36" ry="6" fill="#6f4e37" opacity=".0" />
+          </g>
+          {/* kant-highlight */}
+          <path d="M302,316 h68" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" opacity=".7" />
+        </g>
+
+        {/* kaffekande (tipper) */}
+        <g ref={pot} style={{ transformBox: "fill-box", transformOrigin: "385px 150px" }} transform="rotate(0)">
+          <g transform="translate(330,70)">
+            {/* krop */}
+            <path d="M40,30 h70 a14,14 0 0 1 14,14 l-6,52 a22,22 0 0 1 -22,20 h-42 a22,22 0 0 1 -22,-20 l-6,-52 a14,14 0 0 1 14,-14 z" fill="url(#ksp-pot)" stroke="#54724f" strokeWidth="2" />
+            {/* låg */}
+            <path d="M44,30 h62 a8,8 0 0 0 -8,-12 h-46 a8,8 0 0 0 -8,12 z" fill="#6f8f6b" stroke="#54724f" strokeWidth="1.5" />
+            <circle cx="75" cy="12" r="4.5" fill="#e2916f" />
+            {/* tud */}
+            <path d="M40,52 q-26,-2 -34,30 q-2,8 6,8 q10,-22 28,-22 z" fill="url(#ksp-pot)" stroke="#54724f" strokeWidth="1.5" />
+            {/* hank */}
+            <path d="M124,50 q26,4 22,34 q-3,18 -20,20" fill="none" stroke="#6f8f6b" strokeWidth="8" strokeLinecap="round" />
+            {/* glans */}
+            <path d="M58,40 q-8,30 -2,58" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" fill="none" opacity=".35" />
+          </g>
+        </g>
+
+        {/* varmt lysglimt */}
+        <rect ref={flash} x="0" y="0" width="680" height="480" fill="#fff6e9" opacity="0" />
       </svg>
 
-      <div style={{ position: "absolute", display: "flex", flexDirection: "column", alignItems: "center", marginTop: 172, textAlign: "center" }}>
+      {/* navn + undertekst */}
+      <div style={{ position: "absolute", display: "flex", flexDirection: "column", alignItems: "center", marginTop: 250, textAlign: "center" }}>
         <div ref={nameEl} style={{ fontFamily: "var(--font-script, cursive)", fontSize: 58, color: "#2d2a26", opacity: 0, transform: "translateY(10px)", transition: "all 1s cubic-bezier(.2,.8,.3,1)", lineHeight: 1, textShadow: "0 2px 18px rgba(226,145,111,.35)" }}>Astrid</div>
         <div ref={subEl} style={{ marginTop: 6, fontSize: 11.5, letterSpacing: ".3em", textTransform: "uppercase", color: "#c47a54", opacity: 0, transition: "opacity .8s ease" }}>System klar — dit rolige arbejdsrum</div>
       </div>
