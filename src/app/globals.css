@@ -204,3 +204,48 @@ html, body { overflow-x: hidden; }
   .k-svar { font-size: 14.5px; }
   .k-svar table.k-tabel { font-size: 12px; }
 }
+
+/* ===== Astrid 4.0 — UX, dopamin & retention ===== */
+/* Skriftkontrol (zoom) */
+[data-zoom="l"] { zoom: 1.12; }
+[data-zoom="xl"] { zoom: 1.24; }
+
+/* Skeleton loader (føles hurtigere) */
+.k-skel { display:flex; flex-direction:column; gap:9px; padding-top:2px; }
+.k-skel span { height:11px; border-radius:6px; background:linear-gradient(90deg,#efe6d8 25%,#f6efe4 50%,#efe6d8 75%); background-size:200% 100%; animation:k-shimmer 1.3s ease-in-out infinite; }
+@keyframes k-shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* Slash-menu */
+.k-slash { position:absolute; bottom:64px; left:8px; right:8px; background:#fff; border:0.5px solid var(--kaerne-border); border-radius:14px; box-shadow:0 12px 30px rgba(90,80,72,.16); overflow:hidden; z-index:20; animation:kfade .15s ease both; }
+.k-slash button { display:flex; gap:10px; align-items:center; width:100%; text-align:left; padding:10px 14px; background:transparent; border:none; cursor:pointer; font-size:14px; color:var(--kaerne-ink); }
+.k-slash button:hover, .k-slash button.sel { background:var(--kaerne-cream); }
+.k-slash .cmd { color:var(--kaerne-terracotta); font-weight:600; min-width:96px; }
+.k-slash .desc { color:var(--kaerne-muted); font-size:12.5px; }
+
+/* 🔥 streak + dæmpet chip */
+.k-streak { display:inline-flex; align-items:center; gap:5px; font-size:11.5px; padding:5px 11px; border-radius:999px; background:var(--kaerne-cream); color:var(--kaerne-terracotta-deep); border:0.5px solid var(--kaerne-border-soft); }
+
+/* Kaos → kontrol statusbar */
+.k-kaos { background:#fff; border:0.5px solid var(--kaerne-border); border-radius:14px; padding:12px 14px; box-shadow:0 2px 10px rgba(90,80,72,.06); }
+.k-kaos-track { height:9px; border-radius:6px; background:#f0e8da; overflow:hidden; }
+.k-kaos-fill { height:100%; border-radius:6px; transition:width .8s cubic-bezier(.3,1,.4,1), background .8s ease; }
+
+/* Daily guldkorn popup */
+.k-guld { position:fixed; right:18px; bottom:18px; max-width:300px; background:#fff; border:0.5px solid var(--kaerne-border); border-left:3px solid var(--kaerne-terracotta); border-radius:14px; padding:14px 16px; box-shadow:0 16px 40px rgba(90,80,72,.2); z-index:1000; animation:k-guldin .5s cubic-bezier(.2,1.3,.4,1) both; }
+@keyframes k-guldin { from{opacity:0; transform:translateY(16px) scale(.96)} to{opacity:1; transform:none} }
+
+/* "Sag lukket" dopamin-hit */
+.k-luk-ov { position:fixed; inset:0; z-index:1200; display:flex; align-items:center; justify-content:center; background:rgba(252,245,236,.55); backdrop-filter:blur(2px); animation:kfade .2s ease both; }
+.k-luk-doc { width:88px; height:108px; background:#fff; border:0.5px solid var(--kaerne-border); border-radius:10px; box-shadow:0 14px 36px rgba(90,80,72,.2); animation:k-luk-suck 1s cubic-bezier(.5,0,.3,1) forwards; }
+@keyframes k-luk-suck { 0%{transform:translateY(-60px) scale(1) rotate(-4deg); opacity:1} 60%{transform:translateY(0) scale(1) rotate(0); opacity:1} 100%{transform:translateY(10px) scale(.2); opacity:0} }
+.k-luk-check { position:absolute; width:96px; height:96px; border-radius:50%; background:#7fb89f; display:flex; align-items:center; justify-content:center; opacity:0; animation:k-luk-check .5s ease .85s forwards; box-shadow:0 0 0 0 rgba(127,184,159,.5); }
+@keyframes k-luk-check { 0%{opacity:0; transform:scale(.3)} 60%{opacity:1; transform:scale(1.12)} 100%{opacity:1; transform:scale(1)} }
+
+/* Super-match guldglimt */
+@keyframes k-jackpot { 0%,100%{box-shadow:0 0 0 0 rgba(236,192,106,0)} 50%{box-shadow:0 0 0 6px rgba(236,192,106,.45)} }
+.k-jackpot { animation:k-jackpot 1.1s ease 2; border-color:#ecc06a !important; }
+
+/* Inline AI-redigering popover */
+.k-inline { position:fixed; z-index:1300; background:var(--kaerne-ink); color:var(--kaerne-sand); border-radius:10px; box-shadow:0 10px 28px rgba(45,42,38,.3); display:flex; overflow:hidden; }
+.k-inline button { background:transparent; border:none; color:var(--kaerne-sand); padding:8px 12px; font-size:12.5px; cursor:pointer; }
+.k-inline button:hover { background:rgba(255,255,255,.12); }
