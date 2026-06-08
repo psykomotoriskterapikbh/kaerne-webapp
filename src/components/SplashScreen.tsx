@@ -28,6 +28,9 @@ export default function SplashScreen() {
     let seen = false;
     try { seen = sessionStorage.getItem("astrid_splash_seen") === "1"; } catch {}
     if (seen) { setGone(true); return; }
+    let reduce = false;
+    try { reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch {}
+    if (reduce) { setGone(true); return; }
     try { sessionStorage.setItem("astrid_splash_seen", "1"); } catch {}
     setShow(true);
   }, []);
