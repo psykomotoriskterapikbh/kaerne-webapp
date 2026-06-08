@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import AktorMatch from "@/components/AktorMatch";
+import AstridFigur from "@/components/AstridFigur";
 import { FristBeregner, ParagrafOversaetter, Faq } from "@/components/Vaerktoejer";
 
 type ChatMsg = { role: "user" | "assistant"; content: string };
@@ -100,33 +101,6 @@ const CHIPS = [
   { label: "Find den rette indsats", prompt: "Jeg skal finde den rette type indsats og aktør til en sag. Hvad skal jeg overveje?" },
 ];
 
-const QUIPS = [
-  "Husk: §50-undersøgelsen hedder §20 nu — og fristen er stadig 4 måneder ⏳",
-  "ICS-trekanten: barnet i midten. Altid.",
-  "Notatpligt: hvis det ikke er skrevet ned, er det ikke sket 📝",
-  "Officialprincippet: belys også det, der taler imod.",
-  "Efterværn hedder ungestøtte nu — §§114-116.",
-  "Vidste du? SEL §52, stk. 3 blev til BL §32.",
-  "Tjek tilsynsrapporten, før du vælger botilbud 👀",
-  "Barnets plan: senest 3 måneder efter indsatsen starter.",
-  "Vi dokumenterer, at vi dokumenterer 😄",
-  "Husk pausen — også sagsbehandlere har omsorgspligt for sig selv ♡",
-  "Partshøring før afgørelse. Forvaltningsloven §19.",
-  "Min yndlingsparagraf? §32 — der hvor familierne får hjælp.",
-  "DUBU-tip: skriv notatet, mens du husker det. Ikke fredag.",
-  "Anonymisér før du deler — GDPR ser alt 👀",
-  "Hvad siger Ankestyrelsen? Tjek principmeddelelserne.",
-  "Børnesamtalen før afgørelsen — barnets stemme tæller.",
-  "Samvær er barnets ret — ikke forældrenes.",
-  "Ungestøtte kan vare til det 23. år. Husk overgangen.",
-  "Jeg har læst Barnets Lov flere gange. Frivilligt 🤓",
-  "En god handleplan kan mærkes — også af familien.",
-  "Tag den svære samtale tidligt. Den bliver ikke lettere af at vente.",
-  "Kaffe + partshøring = en helt fin formiddag ☕",
-  "Genbehandlingsfrist? Skriv den i kalenderen. Nu.",
-  "Underretning: hellere én for meget end én for sent.",
-];
-
 const PANELS = [
   { id: "frister", label: "⏱ Frist-beregner" },
   { id: "paragraf", label: "§ Paragraf-oversætter" },
@@ -139,19 +113,16 @@ type PanelId = (typeof PANELS)[number]["id"];
 export default function KarlaLanding() {
   const [greeting, setGreeting] = useState("Hej kollega — godt at se dig.");
   const [timeLabel, setTimeLabel] = useState("Velkommen");
-  const [quip, setQuip] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [typing, setTyping] = useState(false);
   const [gdprWarning, setGdprWarning] = useState(false);
   const [panel, setPanel] = useState<PanelId | null>(null);
-  const pupilLRef = useRef<SVGEllipseElement>(null);
-  const pupilRRef = useRef<SVGEllipseElement>(null);
-  const smileRef = useRef<SVGPathElement>(null);
-  const blobRef = useRef<SVGSVGElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -181,56 +152,11 @@ export default function KarlaLanding() {
     else { part = "nat"; g = "Sent oppe med en sag, kollega?"; }
     setTimeLabel(`${days[now.getDay()]} ${part}`);
     setGreeting(g);
-
-    const handler = (e: MouseEvent) => {
-      const blob = blobRef.current;
-      if (!blob) return;
-      const r = blob.getBoundingClientRect();
-      const cx = r.left + r.width / 2;
-      const cy = r.top + r.height / 2;
-      const dx = e.clientX - cx;
-      const dy = e.clientY - cy;
-      const d = Math.sqrt(dx * dx + dy * dy);
-      const f = Math.min(6, d) / Math.max(1, d);
-      const ox = dx * f * 0.16;
-      const oy = dy * f * 0.16;
-      if (pupilLRef.current) {
-        pupilLRef.current.setAttribute("cx", String(88 + ox));
-        pupilLRef.current.setAttribute("cy", String(84 + oy));
-      }
-      if (pupilRRef.current) {
-        pupilRRef.current.setAttribute("cx", String(128 + ox));
-        pupilRRef.current.setAttribute("cy", String(84 + oy));
-      }
-      if (smileRef.current) {
-        if (d < 320) smileRef.current.setAttribute("d", "M84,131 Q108,160 132,131");
-        else smileRef.current.setAttribute("d", "M87,133 Q108,152 129,133");
-      }
-    };
-    window.addEventListener("mousemove", handler);
-    return () => window.removeEventListener("mousemove", handler);
   }, []);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, loading]);
-
-  useEffect(() => {
-    let hide: ReturnType<typeof setTimeout>;
-    const first = setTimeout(() => {
-      setQuip(QUIPS[Math.floor(Math.random() * QUIPS.length)]);
-      hide = setTimeout(() => setQuip(null), 7500);
-    }, 5000);
-    const interval = setInterval(() => {
-      setQuip(QUIPS[Math.floor(Math.random() * QUIPS.length)]);
-      hide = setTimeout(() => setQuip(null), 7500);
-    }, 16000);
-    return () => {
-      clearTimeout(first);
-      clearInterval(interval);
-      clearTimeout(hide);
-    };
-  }, []);
 
   const send = async (text: string) => {
     const t = text.trim();
@@ -245,6 +171,7 @@ export default function KarlaLanding() {
     const history: ChatMsg[] = [...messages, { role: "user", content: t }];
     setMessages(history);
     setInput("");
+    setTyping(false);
     setLoading(true);
     try {
       const res = await fetch("/api/chat", {
@@ -330,140 +257,7 @@ export default function KarlaLanding() {
         <div className="grid md:grid-cols-[280px_1fr] gap-10 md:gap-14 items-start max-w-5xl mx-auto">
 
           <div className="relative w-[250px] h-[300px] flex items-center justify-center mx-auto md:mx-0 md:sticky md:top-28">
-            <div
-              className="k-aura absolute w-[230px] h-[230px] rounded-full"
-              style={{ background: "radial-gradient(circle at 45% 40%, #fde9db 0%, #fde4d4 55%, rgba(253,228,212,0) 75%)", zIndex: 1 }}
-            />
-
-            <div
-              key={loading ? "tænker" : quip ?? (chatActive ? "lytter" : "hej")}
-              className="k-talebobl absolute"
-              style={{ top: -22, right: -44, zIndex: 5, maxWidth: 215 }}
-            >
-              {loading ? "Hmm, lad mig tænke..." : quip ?? (chatActive ? "Jeg lytter ♡" : "Hej, det er mig!")}
-              <span className="k-talebobl-hale" aria-hidden="true" />
-            </div>
-
-            <div className="k-float relative" style={{ zIndex: 2 }}>
-              <svg ref={blobRef} className="k-breathe" width="230" height="230" viewBox="0 0 220 220" style={{ filter: "drop-shadow(0 18px 22px rgba(90,80,72,0.18))" }}>
-                <defs>
-                  <radialGradient id="kgblob" cx="40%" cy="34%">
-                    <stop offset="0%" stopColor="#d9ecc9" />
-                    <stop offset="38%" stopColor="var(--kaerne-sage-light)" />
-                    <stop offset="72%" stopColor="var(--kaerne-sage)" />
-                    <stop offset="100%" stopColor="var(--kaerne-sage-deep)" />
-                  </radialGradient>
-                  <radialGradient id="kgcheek" cx="50%" cy="50%">
-                    <stop offset="0%" stopColor="var(--kaerne-peach)" stopOpacity="0.95" />
-                    <stop offset="100%" stopColor="var(--kaerne-peach)" stopOpacity="0" />
-                  </radialGradient>
-                  <linearGradient id="kgsheen" x1="0%" y1="0%" x2="60%" y2="100%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.55" />
-                    <stop offset="45%" stopColor="#ffffff" stopOpacity="0.08" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-                  </linearGradient>
-                  <radialGradient id="kgunder" cx="50%" cy="92%" r="65%">
-                    <stop offset="0%" stopColor="#5d7050" stopOpacity="0.35" />
-                    <stop offset="60%" stopColor="#5d7050" stopOpacity="0" />
-                  </radialGradient>
-                  <linearGradient id="kghair" x1="0%" y1="0%" x2="20%" y2="100%">
-                    <stop offset="0%" stopColor="#d99a76" />
-                    <stop offset="60%" stopColor="#c4805c" />
-                    <stop offset="100%" stopColor="#a96847" />
-                  </linearGradient>
-                  <radialGradient id="kgiris" cx="42%" cy="38%">
-                    <stop offset="0%" stopColor="#5d7050" />
-                    <stop offset="70%" stopColor="#3f4d38" />
-                    <stop offset="100%" stopColor="#2e3a29" />
-                  </radialGradient>
-                </defs>
-                <path
-                  d="M110,20 C156,22 192,52 198,98 C206,148 174,196 118,202 C66,206 22,178 16,124 C10,72 56,18 110,20 Z"
-                  fill="url(#kgblob)"
-                />
-                <path
-                  d="M110,20 C156,22 192,52 198,98 C206,148 174,196 118,202 C66,206 22,178 16,124 C10,72 56,18 110,20 Z"
-                  fill="url(#kgunder)"
-                />
-                <ellipse cx="76" cy="52" rx="42" ry="26" fill="url(#kgsheen)" transform="rotate(-18 76 52)" />
-
-                {/* hår — blødt pandehår med totter */}
-                <path
-                  d="M22,104 C16,42 58,13 110,13 C162,13 204,44 198,104
-                     C190,72 174,57 158,64 C168,42 136,31 116,44
-                     C104,30 72,34 76,57 C57,48 35,68 22,104 Z"
-                  fill="url(#kghair)"
-                />
-                <path d="M52,40 Q70,28 92,28" stroke="#e8b491" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.7" />
-                <path d="M120,26 Q146,28 162,42" stroke="#e8b491" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.55" />
-                <path d="M22,104 C20,124 24,140 30,150 C22,132 22,116 26,102 Z" fill="url(#kghair)" opacity="0.9" />
-                <path d="M198,104 C200,124 196,140 190,150 C198,132 198,116 194,102 Z" fill="url(#kghair)" opacity="0.9" />
-
-                {/* blomst i håret */}
-                <g transform="translate(170,46)">
-                  <circle cx="0" cy="-7" r="5" fill="#fdf2ec" />
-                  <circle cx="6.6" cy="-2.2" r="5" fill="#fdf2ec" />
-                  <circle cx="4.1" cy="5.7" r="5" fill="#fdf2ec" />
-                  <circle cx="-4.1" cy="5.7" r="5" fill="#fdf2ec" />
-                  <circle cx="-6.6" cy="-2.2" r="5" fill="#fdf2ec" />
-                  <circle cx="0" cy="0" r="3.6" fill="var(--kaerne-terracotta)" />
-                </g>
-
-                {/* bryn */}
-                <path d="M75,66 Q88,60 101,66" stroke="#8a5a3e" strokeWidth="3" fill="none" strokeLinecap="round" />
-                <path d="M115,66 Q128,60 141,66" stroke="#8a5a3e" strokeWidth="3" fill="none" strokeLinecap="round" />
-
-                {/* øjne med vipper */}
-                <g>
-                  <ellipse cx="88" cy="83" rx="13" ry="14.5" fill="#fdfbf6" />
-                  <ellipse ref={pupilLRef} className="k-eye-l" cx="88" cy="84" rx="9.5" ry="12.5" fill="url(#kgiris)" />
-                  <ellipse cx="85" cy="77" rx="3.2" ry="4.2" fill="#fff" opacity="0.95" />
-                  <circle cx="92" cy="88" r="1.6" fill="#fff" opacity="0.8" />
-                  <path d="M76,73 L71,68" stroke="#3a4636" strokeWidth="2.4" strokeLinecap="round" />
-                  <path d="M80,70 L76,64" stroke="#3a4636" strokeWidth="2.4" strokeLinecap="round" />
-                </g>
-                <g>
-                  <ellipse cx="128" cy="83" rx="13" ry="14.5" fill="#fdfbf6" />
-                  <ellipse ref={pupilRRef} className="k-eye-r" cx="128" cy="84" rx="9.5" ry="12.5" fill="url(#kgiris)" />
-                  <ellipse cx="125" cy="77" rx="3.2" ry="4.2" fill="#fff" opacity="0.95" />
-                  <circle cx="132" cy="88" r="1.6" fill="#fff" opacity="0.8" />
-                  <path d="M140,73 L145,68" stroke="#3a4636" strokeWidth="2.4" strokeLinecap="round" />
-                  <path d="M136,70 L140,64" stroke="#3a4636" strokeWidth="2.4" strokeLinecap="round" />
-                </g>
-
-                {/* næse */}
-                <path d="M106,103 Q108,107 110,103" stroke="#7f9a6d" strokeWidth="2.4" fill="none" strokeLinecap="round" />
-
-                {/* kinder og fregner */}
-                <ellipse cx="66" cy="115" rx="20" ry="12" fill="url(#kgcheek)" />
-                <ellipse cx="150" cy="115" rx="20" ry="12" fill="url(#kgcheek)" />
-                <g fill="#b07050" opacity="0.55">
-                  <circle cx="62" cy="108" r="1.4" />
-                  <circle cx="70" cy="112" r="1.4" />
-                  <circle cx="56" cy="114" r="1.4" />
-                  <circle cx="154" cy="108" r="1.4" />
-                  <circle cx="146" cy="112" r="1.4" />
-                  <circle cx="160" cy="114" r="1.4" />
-                </g>
-
-                {/* smil med læbe */}
-                <path
-                  ref={smileRef}
-                  d="M87,133 Q108,152 129,133"
-                  stroke="#8a4634"
-                  strokeWidth="4.5"
-                  fill="none"
-                  strokeLinecap="round"
-                />
-                <path d="M103,146 Q108,150 113,146" stroke="#8a4634" strokeWidth="2.6" fill="none" strokeLinecap="round" opacity="0.55" />
-
-                <circle className="k-sparkle" cx="38" cy="64" r="2.5" fill="var(--kaerne-terracotta)" style={{ animationDelay: "0s" }} />
-                <circle className="k-sparkle" cx="186" cy="86" r="2" fill="var(--kaerne-terracotta)" style={{ animationDelay: "0.8s" }} />
-                <circle className="k-sparkle" cx="40" cy="170" r="1.8" fill="var(--kaerne-sage)" style={{ animationDelay: "1.4s" }} />
-                <circle className="k-sparkle" cx="186" cy="172" r="2.2" fill="var(--kaerne-terracotta)" style={{ animationDelay: "2.1s" }} />
-              </svg>
-              <div className="k-shadow" />
-            </div>
+            <AstridFigur loading={loading} typing={typing} chatActive={chatActive} />
 
             <div className="absolute -bottom-2 left-0 right-0 text-center">
               <div style={{ fontFamily: "var(--font-script)", fontSize: 26, color: "var(--kaerne-ink)", lineHeight: 1 }}>Astrid</div>
@@ -568,7 +362,13 @@ export default function KarlaLanding() {
               <input
                 ref={inputRef}
                 value={input}
-                onChange={(e) => { setInput(e.target.value); if (gdprWarning) setGdprWarning(false); }}
+                onChange={(e) => {
+                  setInput(e.target.value);
+                  if (gdprWarning) setGdprWarning(false);
+                  setTyping(true);
+                  if (typingTimer.current) clearTimeout(typingTimer.current);
+                  typingTimer.current = setTimeout(() => setTyping(false), 1400);
+                }}
                 className="w-full bg-white rounded-[20px] py-[19px] pl-6 pr-16 text-[15px] focus:outline-none transition-shadow focus:shadow-[0_4px_20px_rgba(90,80,72,0.12)]"
                 style={{ border: "0.5px solid var(--kaerne-border)", boxShadow: "0 2px 14px rgba(90,80,72,0.06)" }}
                 placeholder={chatActive ? "Skriv til Astrid..." : "Skriv til mig — bare som du tænker..."}
