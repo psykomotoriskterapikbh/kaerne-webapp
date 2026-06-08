@@ -58,17 +58,17 @@ export default function SplashScreen() {
         timers.push(setTimeout(() => s.remove(), 3500));
       }, 520);
       intervals.push(iv);
-    }, 1400);
+    }, 1900);
 
     // progressbar "brygger"
-    T(() => { if (bar.current) bar.current.style.width = "100%"; }, 700);
+    T(() => { if (bar.current) bar.current.style.width = "100%"; }, 900);
 
     // wordmark
-    T(() => { if (nameEl.current) { nameEl.current.style.opacity = "1"; nameEl.current.style.transform = "translateY(0)"; } }, 1500);
+    T(() => { if (nameEl.current) { nameEl.current.style.opacity = "1"; nameEl.current.style.transform = "translateY(0)"; } }, 2000);
 
     // lyssweep ét enkelt strøg
-    T(() => { if (sweep.current) { sweep.current.style.transition = "transform 1.25s cubic-bezier(.4,0,.2,1), opacity .3s ease"; sweep.current.style.opacity = "1"; sweep.current.style.transform = "translateX(160%) skewX(-18deg)"; } }, 3900);
-    T(() => { if (sweep.current) sweep.current.style.opacity = "0"; }, 5150);
+    T(() => { if (sweep.current) { sweep.current.style.transition = "transform 1.25s cubic-bezier(.4,0,.2,1), opacity .3s ease"; sweep.current.style.opacity = "1"; sweep.current.style.transform = "translateX(160%) skewX(-18deg)"; } }, 5200);
+    T(() => { if (sweep.current) sweep.current.style.opacity = "0"; }, 6450);
 
     // progress færdig → label dekrypteres til "System klar"
     const decrypt = (el: HTMLDivElement, finalText: string, done?: () => void) => {
@@ -91,12 +91,12 @@ export default function SplashScreen() {
 
     T(() => {
       if (loadLbl.current) { loadLbl.current.style.color = "#9a6a47"; decrypt(loadLbl.current, "System klar"); }
-    }, 4200);
-    T(() => { if (subEl.current) { subEl.current.style.opacity = "1"; decrypt(subEl.current, "Dit rolige arbejdsrum"); } }, 4500);
+    }, 5600);
+    T(() => { if (subEl.current) { subEl.current.style.opacity = "1"; decrypt(subEl.current, "Dit rolige arbejdsrum"); } }, 5900);
 
     // fade ud + væk
-    T(() => { if (ovRef.current) ovRef.current.style.opacity = "0"; }, 6100);
-    T(() => { setGone(true); }, 7500);
+    T(() => { if (ovRef.current) ovRef.current.style.opacity = "0"; }, 8200);
+    T(() => { setGone(true); }, 9800);
 
     return () => { timers.forEach(clearTimeout); intervals.forEach(clearInterval); };
   }, [show]);
@@ -107,7 +107,7 @@ export default function SplashScreen() {
     <div ref={ovRef} aria-hidden="true" style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "radial-gradient(circle at 50% 40%,#fbf3e7 0%,#f3e7d4 55%,#e7d8bf 100%)", transition: "opacity 1.4s ease", overflow: "hidden" }}>
       <style>{`
         @keyframes asp-zoom{0%{transform:scale(1.075)}100%{transform:scale(1)}}
-        .asp-hero{animation:asp-zoom 7.4s cubic-bezier(.22,.61,.36,1) forwards}
+        .asp-hero{animation:asp-zoom 9.8s cubic-bezier(.22,.61,.36,1) forwards}
       `}</style>
 
       {/* foto-hero: detaljeret Glif-billede */}
@@ -142,7 +142,7 @@ export default function SplashScreen() {
         {/* slank brygge-progressbar */}
         <div style={{ marginTop: 26, width: 168, display: "flex", flexDirection: "column", alignItems: "center", gap: 9 }}>
           <div style={{ width: "100%", height: 2, background: "rgba(120,92,67,.18)", borderRadius: 2, overflow: "hidden" }}>
-            <div ref={bar} style={{ width: 0, height: "100%", background: "linear-gradient(90deg,#caa07a,#b06a45)", borderRadius: 2, transition: "width 3.4s cubic-bezier(.45,.05,.25,1)" }} />
+            <div ref={bar} style={{ width: 0, height: "100%", background: "linear-gradient(90deg,#caa07a,#b06a45)", borderRadius: 2, transition: "width 4.6s cubic-bezier(.45,.05,.25,1)" }} />
           </div>
           <div ref={loadLbl} style={{ fontSize: 9.5, letterSpacing: ".26em", textTransform: "uppercase", color: "#a98a6e", fontVariantNumeric: "tabular-nums" }}>Brygger dit arbejdsrum</div>
         </div>
