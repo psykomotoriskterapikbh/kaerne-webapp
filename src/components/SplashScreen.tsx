@@ -90,26 +90,26 @@ export default function SplashScreen() {
       P.appendChild(c); dots.push(c);
     }
 
-    T(() => { dots.forEach((d) => d.setAttribute("opacity", (0.5 + Math.random() * 0.5).toFixed(2))); h1.setAttribute("opacity", "1"); h2.setAttribute("opacity", "1"); h1.style.transition = h2.style.transition = "opacity 1s ease"; }, 300);
-    T(() => { pw.style.transition = "transform 1.4s cubic-bezier(.35,.65,.25,1)"; pw.style.transform = "rotate(55deg)"; dots.forEach((d) => { d.setAttribute("cx", String(cx + (Math.random() * 14 - 7))); d.setAttribute("cy", String(cy + (Math.random() * 14 - 7))); }); }, 650);
+    T(() => { dots.forEach((d) => d.setAttribute("opacity", (0.5 + Math.random() * 0.5).toFixed(2))); h1.setAttribute("opacity", "1"); h2.setAttribute("opacity", "1"); h1.style.transition = h2.style.transition = "opacity 1s ease"; }, 435);
+    T(() => { pw.style.transition = "transform 1.4s cubic-bezier(.35,.65,.25,1)"; pw.style.transform = "rotate(55deg)"; dots.forEach((d) => { d.setAttribute("cx", String(cx + (Math.random() * 14 - 7))); d.setAttribute("cy", String(cy + (Math.random() * 14 - 7))); }); }, 940);
     T(() => {
       const co = core.current!, ci = coreIn.current!, h = hi.current!;
       co.style.transition = "r .8s cubic-bezier(.2,1.25,.4,1)"; ci.style.transition = "r .8s ease"; h.style.transition = "rx .8s ease, ry .8s ease";
       co.setAttribute("r", "52"); ci.setAttribute("r", "40"); h.setAttribute("rx", "16"); h.setAttribute("ry", "11");
       rim.current!.setAttribute("d", "M300,176 A52,52 0 0 1 380,176"); halo.current!.setAttribute("opacity", "1");
       dots.forEach((d) => d.setAttribute("opacity", "0"));
-    }, 1500);
-    T(() => { orbg.current!.classList.add("asp-breath"); halo.current!.classList.add("asp-breath"); h1.classList.add("asp-spin"); h2.classList.add("asp-spinR"); }, 2250);
-    T(() => { cg.setAttribute("opacity", "1"); cg.style.transition = "opacity .6s ease"; cg.querySelectorAll("line").forEach((l) => l.setAttribute("stroke-dashoffset", "0")); }, 1900);
-    T(() => { cg.classList.add("asp-spin"); }, 3100);
-    T(() => { flower.current!.style.transition = "opacity .7s ease"; flower.current!.setAttribute("opacity", "1"); }, 2150);
-    T(() => { nameEl.current!.style.opacity = "1"; nameEl.current!.style.transform = "translateY(0)"; }, 2350);
-    T(() => { subEl.current!.style.opacity = "1"; }, 3050);
-    T(() => { sweep.current!.setAttribute("opacity", "1"); sweep.current!.style.transition = "transform 1.1s ease, opacity .3s ease"; sweep.current!.setAttribute("transform", "translate(900,0) skewX(-14)"); }, 2600);
-    T(() => { sweep.current!.setAttribute("opacity", "0"); }, 3700);
-    T(() => { flash.current!.style.transition = "opacity .16s ease"; flash.current!.setAttribute("opacity", ".6"); }, 3250);
-    T(() => { flash.current!.setAttribute("opacity", "0"); }, 3450);
-    T(() => { if (ovRef.current) ovRef.current.style.opacity = "0"; }, 3700);
+    }, 2175);
+    T(() => { orbg.current!.classList.add("asp-breath"); halo.current!.classList.add("asp-breath"); h1.classList.add("asp-spin"); h2.classList.add("asp-spinR"); }, 3265);
+    T(() => { cg.setAttribute("opacity", "1"); cg.style.transition = "opacity .6s ease"; cg.querySelectorAll("line").forEach((l) => l.setAttribute("stroke-dashoffset", "0")); }, 2650);
+    T(() => { cg.classList.add("asp-spin"); }, 4495);
+    T(() => { flower.current!.style.transition = "opacity .7s ease"; flower.current!.setAttribute("opacity", "1"); }, 3120);
+    T(() => { nameEl.current!.style.opacity = "1"; nameEl.current!.style.transform = "translateY(0)"; }, 3410);
+    T(() => { subEl.current!.style.opacity = "1"; }, 4425);
+    T(() => { sweep.current!.setAttribute("opacity", "1"); sweep.current!.style.transition = "transform 1.1s ease, opacity .3s ease"; sweep.current!.setAttribute("transform", "translate(900,0) skewX(-14)"); }, 3770);
+    T(() => { sweep.current!.setAttribute("opacity", "0"); }, 5365);
+    T(() => { flash.current!.style.transition = "opacity .16s ease"; flash.current!.setAttribute("opacity", ".6"); }, 4710);
+    T(() => { flash.current!.setAttribute("opacity", "0"); }, 5000);
+    T(() => { if (ovRef.current) ovRef.current.style.opacity = "0"; }, 7000);
     T(() => { setGone(true); }, 4800);
 
     return () => { timers.forEach(clearTimeout); };
@@ -118,7 +118,7 @@ export default function SplashScreen() {
   if (gone || !show) return null;
 
   return (
-    <div ref={ovRef} aria-hidden="true" style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "radial-gradient(circle at 50% 42%,#fef9f2 0%,#f6ecdd 52%,#ecdfcd 100%)", transition: "opacity 1.1s ease", overflow: "hidden" }}>
+    <div ref={ovRef} aria-hidden="true" style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "radial-gradient(circle at 50% 42%,#fef9f2 0%,#f6ecdd 52%,#ecdfcd 100%)", transition: "opacity 1.4s ease", overflow: "hidden" }}>
       {/* Glif-genereret kunstnerisk baggrund -- bloedt indtonet bag den levende SVG */}
       <div
         className="asp-bg"
