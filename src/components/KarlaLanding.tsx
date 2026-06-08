@@ -102,6 +102,7 @@ const CHIPS = [
   { label: "Notat-hjælp", prompt: "Hjælp mig med at omsætte mine løse noter til et professionelt journalnotat." },
   { label: "Forbered et møde", prompt: "Jeg skal forberede et svært møde i en sag. Hjælp mig med dagsorden, de svære spørgsmål og borgerens perspektiv." },
   { label: "Find den rette indsats", prompt: "Jeg skal finde den rette type indsats og aktør til en sag. Hvad skal jeg overveje?" },
+  { label: "Mødereferat", prompt: "Jeg skal lave et mødereferat. Bed mig om at indsætte mine anonymiserede noter eller transskription, og lav så et struktureret referat med beslutninger, aftaler, ansvarlige og frister." },
 ];
 
 const PANELS = [
