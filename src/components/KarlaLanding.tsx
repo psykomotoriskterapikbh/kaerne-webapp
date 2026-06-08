@@ -173,6 +173,39 @@ export default function KarlaLanding() {
     setInput("");
     setTyping(false);
     setLoading(true);
+    setMessages((m) => [...m, { role: "assistant", content: "" }]);
+
+    const setLast = (content: string) =>
+      setMessages((m) => {
+        const copy = [...m];
+        copy[copy.length - 1] = { role: "assistant", content };
+        return copy;
+      });
+
+    let full = "";
+    let revealed = 0;
+    let streamDone = false;
+    let failed = false;
+
+    // Skriv svaret gradvist frem — i et roligt, læsbart tempo (som en der taler)
+    const reveal = () =>
+      new Promise<void>((resolve) => {
+        const tick = () => {
+          if (revealed < full.length) {
+            const remaining = full.length - revealed;
+            const step = remaining > 320 ? 4 : remaining > 130 ? 2 : 1;
+            revealed = Math.min(full.length, revealed + step);
+            setLast(full.slice(0, revealed));
+            setTimeout(tick, 20);
+          } else if (streamDone) {
+            resolve();
+          } else {
+            setTimeout(tick, 55);
+          }
+        };
+        tick();
+      });
+
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
@@ -185,35 +218,31 @@ export default function KarlaLanding() {
       }
       if (!res.body) throw new Error("Tomt svar");
 
-      setMessages((m) => [...m, { role: "assistant", content: "" }]);
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
-      let acc = "";
-      for (;;) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        acc += decoder.decode(value, { stream: true });
-        const snapshot = acc;
-        setMessages((m) => {
-          const copy = [...m];
-          copy[copy.length - 1] = { role: "assistant", content: snapshot };
-          return copy;
-        });
-      }
+
+      // Astrid tænker lidt, før hun begynder at svare
+      await new Promise((r) => setTimeout(r, 1300));
+
+      const readLoop = (async () => {
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          full += decoder.decode(value, { stream: true });
+        }
+        streamDone = true;
+      })();
+
+      await Promise.all([readLoop, reveal()]);
     } catch (e) {
+      failed = true;
       const msg =
         e instanceof Error && e.message && !e.message.includes("fetch")
           ? e.message
           : "Hov — jeg kunne ikke få forbindelse lige nu. Prøv igen om et øjeblik.";
-      setMessages((m) => {
-        const copy = [...m];
-        if (copy.length > 0 && copy[copy.length - 1].role === "assistant" && copy[copy.length - 1].content === "") {
-          copy[copy.length - 1] = { role: "assistant", content: msg };
-          return copy;
-        }
-        return [...copy, { role: "assistant", content: msg }];
-      });
+      setLast(msg);
     } finally {
+      if (!failed) setLast(full);
       setLoading(false);
       inputRef.current?.focus();
     }
@@ -229,6 +258,7 @@ export default function KarlaLanding() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "var(--kaerne-sand)", color: "var(--kaerne-ink)" }}>
+      <style>{`.k-caret{display:inline-block;width:7px;height:1.02em;background:var(--kaerne-terracotta);margin-left:3px;vertical-align:-2px;border-radius:1px;animation:k-caretb 1s steps(1) infinite}@keyframes k-caretb{50%{opacity:0}}`}</style>
 
       <nav className="flex justify-between items-center px-6 md:px-12 py-5 border-b" style={{ borderColor: "var(--kaerne-border)", background: "rgba(252,245,236,0.85)", backdropFilter: "blur(8px)", position: "sticky", top: 0, zIndex: 50 }}>
         <div className="flex items-baseline gap-3">
@@ -284,49 +314,56 @@ export default function KarlaLanding() {
 
             {chatActive && (
               <div
-                className="mb-5 max-h-[48vh] overflow-y-auto pr-2 flex flex-col gap-3.5"
+                className="mb-5 max-h-[58vh] overflow-y-auto pr-1 flex flex-col gap-6"
                 aria-live="polite"
               >
-                {messages.map((m, i) => (
-                  <div
-                    key={i}
-                    className={`k-msg max-w-[86%] rounded-[18px] px-5 py-3.5 text-[15px] leading-relaxed ${
-                      m.role === "user" ? "self-end whitespace-pre-wrap" : "self-start"
-                    }`}
-                    style={
-                      m.role === "user"
-                        ? { background: "var(--kaerne-ink)", color: "var(--kaerne-sand)", boxShadow: "0 2px 10px rgba(45,42,38,0.18)" }
-                        : { background: "#fff", border: "0.5px solid var(--kaerne-border)", color: "var(--kaerne-ink)", boxShadow: "0 2px 12px rgba(90,80,72,0.07)" }
-                    }
-                  >
-                    {m.role === "assistant" && (
-                      <div className="mb-1" style={{ fontFamily: "var(--font-script)", fontSize: 14, color: "var(--kaerne-terracotta)" }}>
-                        Astrid
-                      </div>
-                    )}
-                    {m.role === "assistant" && m.content ? (
-                      <div className="k-svar" dangerouslySetInnerHTML={{ __html: formatSvar(m.content) }} />
-                    ) : (
-                      m.content || (
-                        <span className="inline-flex gap-1 items-center" aria-label="Astrid skriver">
-                          <span className="k-dot" style={{ animationDelay: "0s" }}>·</span>
-                          <span className="k-dot" style={{ animationDelay: "0.2s" }}>·</span>
-                          <span className="k-dot" style={{ animationDelay: "0.4s" }}>·</span>
-                        </span>
-                      )
-                    )}
-                    {m.role === "assistant" && m.content && !loading && (
-                      <button
-                        onClick={() => navigator.clipboard?.writeText(m.content)}
-                        className="block mt-2 cursor-pointer text-[11px] hover:opacity-70 transition-opacity"
-                        style={{ color: "var(--kaerne-muted)" }}
-                        aria-label="Kopiér Astrids svar"
+                {messages.map((m, i) =>
+                  m.role === "user" ? (
+                    <div
+                      key={i}
+                      className="self-end max-w-[80%] rounded-[18px] px-4 py-2.5 text-[15px] leading-relaxed whitespace-pre-wrap"
+                      style={{ background: "var(--kaerne-cream)", border: "0.5px solid var(--kaerne-border-soft)", color: "var(--kaerne-ink)" }}
+                    >
+                      {m.content}
+                    </div>
+                  ) : (
+                    <div key={i} className="self-stretch flex gap-3">
+                      <div
+                        style={{ flex: "0 0 auto", width: 30, height: 30, borderRadius: "50%", background: "var(--kaerne-sage)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: "var(--font-script)", fontSize: 15, marginTop: 2 }}
+                        aria-hidden="true"
                       >
-                        ⧉ Kopiér
-                      </button>
-                    )}
-                  </div>
-                ))}
+                        A
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="mb-1.5" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--kaerne-muted)" }}>
+                          Astrid
+                        </div>
+                        {m.content ? (
+                          <div className="k-svar text-[15.5px]" style={{ lineHeight: 1.75 }}>
+                            <span dangerouslySetInnerHTML={{ __html: formatSvar(m.content) }} />
+                            {loading && i === messages.length - 1 && <span className="k-caret" aria-hidden="true" />}
+                          </div>
+                        ) : (
+                          <span className="inline-flex gap-1 items-center" aria-label="Astrid skriver">
+                            <span className="k-dot" style={{ animationDelay: "0s" }}>·</span>
+                            <span className="k-dot" style={{ animationDelay: "0.2s" }}>·</span>
+                            <span className="k-dot" style={{ animationDelay: "0.4s" }}>·</span>
+                          </span>
+                        )}
+                        {m.content && !(loading && i === messages.length - 1) && (
+                          <button
+                            onClick={() => navigator.clipboard?.writeText(m.content)}
+                            className="block mt-2 cursor-pointer text-[11px] hover:opacity-70 transition-opacity"
+                            style={{ color: "var(--kaerne-muted)" }}
+                            aria-label="Kopiér Astrids svar"
+                          >
+                            ⧉ Kopiér
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )
+                )}
                 <div ref={chatEndRef} />
               </div>
             )}
