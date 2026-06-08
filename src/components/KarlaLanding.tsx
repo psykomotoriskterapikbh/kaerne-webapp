@@ -192,15 +192,22 @@ export default function KarlaLanding() {
       new Promise<void>((resolve) => {
         const tick = () => {
           if (revealed < full.length) {
-            const remaining = full.length - revealed;
-            const step = remaining > 320 ? 4 : remaining > 130 ? 2 : 1;
-            revealed = Math.min(full.length, revealed + step);
+            const ch = full[revealed];
+            revealed += 1;
             setLast(full.slice(0, revealed));
-            setTimeout(tick, 20);
+            // Roligt, menneskeligt tempo — med små pauser ved tegnsætning
+            let delay = 46;
+            if (ch === " ") delay = 75;
+            if (ch === "," || ch === ";" || ch === ":") delay = 300;
+            if (ch === "." || ch === "!" || ch === "?") delay = 480;
+            if (ch === "\n") delay = 340;
+            // Hvis hun er kommet meget bagud (langt svar), holder hun stadig et roligt tempo
+            if (full.length - revealed > 700) delay = Math.min(delay, 30);
+            setTimeout(tick, delay);
           } else if (streamDone) {
             resolve();
           } else {
-            setTimeout(tick, 55);
+            setTimeout(tick, 70);
           }
         };
         tick();
@@ -221,8 +228,8 @@ export default function KarlaLanding() {
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
 
-      // Astrid tænker lidt, før hun begynder at svare
-      await new Promise((r) => setTimeout(r, 1300));
+      // Astrid tænker lidt længere, før hun begynder at svare
+      await new Promise((r) => setTimeout(r, 2400));
 
       const readLoop = (async () => {
         for (;;) {
