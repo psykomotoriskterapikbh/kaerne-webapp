@@ -133,8 +133,24 @@ export default function KarlaLanding() {
     const f = e.target.files?.[0];
     e.target.value = "";
     if (!f) return;
-    const raw = await f.text();
-    const t = raw.slice(0, 3500);
+    const nm = f.name.toLowerCase();
+    let raw = "";
+    try {
+      if (nm.endsWith(".pdf") || nm.endsWith(".docx")) {
+        const fd = new FormData();
+        fd.append("file", f);
+        const r = await fetch("/api/extract", { method: "POST", body: fd });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok || !j.text) { setGdprWarning(true); return; }
+        raw = j.text as string;
+      } else {
+        raw = await f.text();
+      }
+    } catch {
+      setGdprWarning(true);
+      return;
+    }
+    const t = anonymiser(raw).slice(0, 6000);
     if (CPR_REGEX.test(t)) {
       setGdprWarning(true);
       return;
@@ -520,7 +536,7 @@ export default function KarlaLanding() {
                   </button>
                 )}
               </div>
-              <input ref={fileRef} type="file" accept=".txt,.md" onChange={handleFile} className="hidden" aria-label="Upload anonymiseret sagsbeskrivelse" />
+              <input ref={fileRef} type="file" accept=".txt,.md,.pdf,.docx" onChange={handleFile} className="hidden" aria-label="Upload anonymiseret sagsbeskrivelse" />
             </div>
 
             {!chatActive && (
