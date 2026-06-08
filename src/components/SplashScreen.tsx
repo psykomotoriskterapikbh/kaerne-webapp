@@ -118,8 +118,26 @@ export default function SplashScreen() {
   if (gone || !show) return null;
 
   return (
-    <div ref={ovRef} aria-hidden="true" style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "radial-gradient(circle at 50% 42%,#fef9f2 0%,#f6ecdd 52%,#ecdfcd 100%)", transition: "opacity 1.1s ease" }}>
+    <div ref={ovRef} aria-hidden="true" style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "radial-gradient(circle at 50% 42%,#fef9f2 0%,#f6ecdd 52%,#ecdfcd 100%)", transition: "opacity 1.1s ease", overflow: "hidden" }}>
+      {/* Glif-genereret kunstnerisk baggrund -- bloedt indtonet bag den levende SVG */}
+      <div
+        className="asp-bg"
+        style={{
+          position: "absolute",
+          inset: "-4%",
+          backgroundImage: "url('https://media.glif.app/i:r/c_limit,w_3840/f_auto/q_auto/fucn4fhdx5txpp7ddqre')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          opacity: 0,
+          filter: "saturate(1.05)",
+          WebkitMaskImage: "radial-gradient(circle at 50% 44%, #000 0%, #000 38%, rgba(0,0,0,.55) 64%, transparent 88%)",
+          maskImage: "radial-gradient(circle at 50% 44%, #000 0%, #000 38%, rgba(0,0,0,.55) 64%, transparent 88%)",
+          pointerEvents: "none",
+        }}
+      />
       <style>{`
+        @keyframes asp-bgin{0%{opacity:0;transform:scale(1.08)}100%{opacity:.62;transform:scale(1)}}
+        .asp-bg{animation:asp-bgin 2.8s ease-out .15s forwards}
         @keyframes asp-breath{0%,100%{transform:scale(1)}50%{transform:scale(1.055)}}
         @keyframes asp-haloB{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:.9;transform:scale(1.14)}}
         @keyframes asp-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
