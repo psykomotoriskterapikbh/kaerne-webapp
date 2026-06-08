@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import AktorMatch from "@/components/AktorMatch";
 import AstridFigur from "@/components/AstridFigur";
+import SplashScreen from "@/components/SplashScreen";
+import { FontControl, StreakChip, KaosKontrolBar, GuldkornPopup, LukSagButton, anonymiser, SLASH_COMMANDS } from "@/components/AstridUpgrades";
+import type { SlashCmd } from "@/components/AstridUpgrades";
 import { FristBeregner, ParagrafOversaetter, Faq } from "@/components/Vaerktoejer";
 
 type ChatMsg = { role: "user" | "assistant"; content: string };
@@ -119,6 +122,8 @@ export default function KarlaLanding() {
   const [typing, setTyping] = useState(false);
   const [gdprWarning, setGdprWarning] = useState(false);
   const [panel, setPanel] = useState<PanelId | null>(null);
+  const [slash, setSlash] = useState(false);
+  const [inlineSel, setInlineSel] = useState<{ text: string; x: number; y: number } | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -171,6 +176,7 @@ export default function KarlaLanding() {
     const history: ChatMsg[] = [...messages, { role: "user", content: t }];
     setMessages(history);
     setInput("");
+    setSlash(false);
     setTyping(false);
     setLoading(true);
     setMessages((m) => [...m, { role: "assistant", content: "" }]);
@@ -255,6 +261,19 @@ export default function KarlaLanding() {
     }
   };
 
+  const chooseSlash = (cmd: SlashCmd) => {
+    setSlash(false);
+    if (cmd.panel) { setPanel(cmd.panel); setInput(""); document.getElementById("paneler")?.scrollIntoView({ behavior: "smooth", block: "start" }); }
+    else if (cmd.prompt) { setInput(cmd.prompt); inputRef.current?.focus(); }
+  };
+  const onMsgMouseUp = () => {
+    const sel = window.getSelection();
+    const text = sel ? sel.toString().trim() : "";
+    if (text && text.length > 1 && sel) { const r = sel.getRangeAt(0).getBoundingClientRect(); setInlineSel({ text, x: Math.max(80, Math.min(r.left + r.width / 2, window.innerWidth - 110)), y: Math.max(48, r.top - 6) }); }
+    else setInlineSel(null);
+  };
+  const inlineAction = (instr: string) => { if (!inlineSel) return; send(`${instr}:\n\n"${inlineSel.text}"`); setInlineSel(null); };
+
   const chatActive = messages.length > 0;
 
   const askFromPanel = (t: string) => {
@@ -266,6 +285,15 @@ export default function KarlaLanding() {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "var(--kaerne-sand)", color: "var(--kaerne-ink)" }}>
       <style>{`.k-caret{display:inline-block;width:7px;height:1.02em;background:var(--kaerne-terracotta);margin-left:3px;vertical-align:-2px;border-radius:1px;animation:k-caretb 1s steps(1) infinite}@keyframes k-caretb{50%{opacity:0}}`}</style>
+      <SplashScreen />
+      <GuldkornPopup />
+      {inlineSel && (
+        <div className="k-inline" style={{ left: inlineSel.x, top: inlineSel.y, transform: "translate(-50%,-100%)" }}>
+          <button type="button" onClick={() => inlineAction("Gør denne tekst mere professionel")}>Gør professionel</button>
+          <button type="button" onClick={() => inlineAction("Forkort denne tekst")}>Forkort</button>
+          <button type="button" onClick={() => inlineAction("Uddyb denne tekst fagligt")}>Uddyb</button>
+        </div>
+      )}
 
       <nav className="flex justify-between items-center px-6 md:px-12 py-5 border-b" style={{ borderColor: "var(--kaerne-border)", background: "rgba(252,245,236,0.85)", backdropFilter: "blur(8px)", position: "sticky", top: 0, zIndex: 50 }}>
         <div className="flex items-baseline gap-3">
@@ -285,9 +313,13 @@ export default function KarlaLanding() {
             </button>
           ))}
         </div>
-        <a href="#" onClick={(e) => { e.preventDefault(); inputRef.current?.focus(); }} className="text-[13px] px-5 py-2.5 rounded-full cursor-pointer hover:opacity-90 transition-opacity" style={{ color: "var(--kaerne-sand)", background: "var(--kaerne-ink)" }}>
-          Tal med Astrid →
-        </a>
+        <div className="flex items-center gap-2">
+          <span className="hidden sm:inline-flex"><StreakChip /></span>
+          <span className="hidden sm:inline-flex"><FontControl /></span>
+          <a href="#" onClick={(e) => { e.preventDefault(); inputRef.current?.focus(); }} className="text-[13px] px-5 py-2.5 rounded-full cursor-pointer hover:opacity-90 transition-opacity" style={{ color: "var(--kaerne-sand)", background: "var(--kaerne-ink)" }}>
+            Tal med Astrid →
+          </a>
+        </div>
       </nav>
 
       <main className="flex-1 px-6 md:px-12 py-8 md:py-12">
@@ -319,10 +351,13 @@ export default function KarlaLanding() {
               </p>
             )}
 
+            {chatActive && <KaosKontrolBar />}
+
             {chatActive && (
               <div
                 className="mb-5 max-h-[58vh] overflow-y-auto pr-1 flex flex-col gap-6"
                 aria-live="polite"
+                onMouseUp={onMsgMouseUp}
               >
                 {messages.map((m, i) =>
                   m.role === "user" ? (
@@ -351,11 +386,9 @@ export default function KarlaLanding() {
                             {loading && i === messages.length - 1 && <span className="k-caret" aria-hidden="true" />}
                           </div>
                         ) : (
-                          <span className="inline-flex gap-1 items-center" aria-label="Astrid skriver">
-                            <span className="k-dot" style={{ animationDelay: "0s" }}>·</span>
-                            <span className="k-dot" style={{ animationDelay: "0.2s" }}>·</span>
-                            <span className="k-dot" style={{ animationDelay: "0.4s" }}>·</span>
-                          </span>
+                          <div className="k-skel" aria-label="Astrid skriver">
+                            <span style={{ width: "92%" }} /><span style={{ width: "78%" }} /><span style={{ width: "85%" }} />
+                          </div>
                         )}
                         {m.content && !(loading && i === messages.length - 1) && (
                           <button
@@ -403,11 +436,21 @@ export default function KarlaLanding() {
                 send(input);
               }}
             >
+              {slash && (
+                <div className="k-slash">
+                  {SLASH_COMMANDS.filter((cm) => cm.cmd.startsWith(input.split(" ")[0].toLowerCase())).map((cm) => (
+                    <button type="button" key={cm.cmd} onClick={() => chooseSlash(cm)}>
+                      <span className="cmd">{cm.cmd}</span><span className="desc">{cm.desc}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
               <input
                 ref={inputRef}
                 value={input}
                 onChange={(e) => {
                   setInput(e.target.value);
+                  setSlash(e.target.value.startsWith("/"));
                   if (gdprWarning) setGdprWarning(false);
                   setTyping(true);
                   if (typingTimer.current) clearTimeout(typingTimer.current);
@@ -447,6 +490,17 @@ export default function KarlaLanding() {
                 >
                   ⎙ Upload sag (.txt)
                 </button>
+                <button
+                  type="button"
+                  onClick={() => { const a = anonymiser(input); if (a !== input) setInput(a); }}
+                  disabled={loading || !input.trim()}
+                  className="cursor-pointer px-3.5 py-1.5 rounded-full text-[11.5px] hover:opacity-75 transition-opacity disabled:opacity-50"
+                  style={{ border: "0.5px solid var(--kaerne-border)", color: "var(--kaerne-ink-soft)", background: "#fff" }}
+                  title="Fjern CPR, navne, adresser m.m. fra teksten i feltet"
+                >
+                  ⦸ Anonymisér
+                </button>
+                {chatActive && <LukSagButton />}
                 {chatActive && (
                   <button
                     type="button"
