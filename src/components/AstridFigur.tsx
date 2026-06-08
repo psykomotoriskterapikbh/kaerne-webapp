@@ -101,7 +101,7 @@ export default function AstridFigur({
       state.look = { x: 0, y: f.lookUp ? -3 : 0 }; applyEyes(f.sy, f.sc);
       think.setAttribute("opacity", m === "taenksom" ? "1" : "0");
     };
-    const say = (txt: string, ms = 2400) => {
+    const say = (txt: string, ms = 4200) => {
       bubble.textContent = txt; bubble.style.opacity = "1"; bubble.style.transform = "translateY(0) scale(1)";
       clearTimeout(sayTimer);
       sayTimer = setTimeout(() => { bubble.style.opacity = "0"; bubble.style.transform = "translateY(6px) scale(.92)"; }, ms);
@@ -161,17 +161,17 @@ export default function AstridFigur({
       if (state.busy || typingRef.current || loadingRef.current) return;
       const r = Math.random();
       if (r < 0.34) {
-        say(pick(IDLE), 3400);
+        say(pick(IDLE), 5200);
       } else if (r < 0.62) {
         doSkill(pick(MINI_SKILLS));
       } else {
         const m = pick(AMBIENT) as Mood;
         setMood(m);
-        if (MOOD_QUIP[m]) say(pick(MOOD_QUIP[m]), 3000);
+        if (MOOD_QUIP[m]) say(pick(MOOD_QUIP[m]), 5200);
         if (m === "fjollet") sparkles(8);
-        setTimeout(() => { if (!state.busy && !typingRef.current && !loadingRef.current) setMood("glad"); }, 3200);
+        setTimeout(() => { if (!state.busy && !typingRef.current && !loadingRef.current) setMood("glad"); }, 5400);
       }
-    }, 5200);
+    }, 9500);
 
     const onMove = (e: MouseEvent) => {
       const b = svg.getBoundingClientRect();
@@ -202,7 +202,7 @@ export default function AstridFigur({
     svg.addEventListener("click", onClick);
 
     setMood("glad");
-    setTimeout(() => say("Hej! Jeg er Astrid.", 2600), 600);
+    setTimeout(() => say("Hej! Jeg er Astrid.", 4200), 700);
 
     return () => {
       clearTimeout(blinkT); clearTimeout(steamT); clearInterval(idleT); clearTimeout(sayTimer);
@@ -214,10 +214,10 @@ export default function AstridFigur({
   const prevLoading = useRef(false);
   useEffect(() => {
     const c = ctrl.current; if (!c) return;
-    if (loading) { c.setMood("taenksom"); c.say(pick(THINKING), 2600); }
+    if (loading) { c.setMood("taenksom"); c.say(pick(THINKING), 3800); }
     else if (prevLoading.current) {
       const m = pick(["begejstret", "stolt"]) as Mood;
-      c.setMood(m); c.say(pick(ANSWER), 1500); c.doSkill(pick(["hop", "nod", "bigjump"]));
+      c.setMood(m); c.say(pick(ANSWER), 2600); c.doSkill(pick(["hop", "nod", "bigjump"]));
       setTimeout(() => c.setMood("glad"), 1900);
     }
     prevLoading.current = loading;
@@ -228,7 +228,7 @@ export default function AstridFigur({
     const c = ctrl.current; if (!c || loading) return;
     if (typing) {
       if (c.mood !== "taenksom") c.setMood(Math.random() < 0.5 ? "nysgerrig" : "rolig");
-      if (!sayCool.current) { c.say(pick(TYPING), 1800); sayCool.current = true; setTimeout(() => (sayCool.current = false), 2200); }
+      if (!sayCool.current) { c.say(pick(TYPING), 3000); sayCool.current = true; setTimeout(() => (sayCool.current = false), 3600); }
     }
   }, [typing, loading]);
 
