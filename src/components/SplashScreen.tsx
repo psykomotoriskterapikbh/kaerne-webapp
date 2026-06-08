@@ -110,7 +110,7 @@ export default function SplashScreen() {
     T(() => { flash.current!.style.transition = "opacity .16s ease"; flash.current!.setAttribute("opacity", ".6"); }, 4710);
     T(() => { flash.current!.setAttribute("opacity", "0"); }, 5000);
     T(() => { if (ovRef.current) ovRef.current.style.opacity = "0"; }, 7000);
-    T(() => { setGone(true); }, 4800);
+    T(() => { setGone(true); }, 8400);
 
     return () => { timers.forEach(clearTimeout); };
   }, [show]);
