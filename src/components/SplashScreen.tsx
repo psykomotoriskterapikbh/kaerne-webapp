@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from "react";
  * Ingen lyd.
  */
 const SPLASH_BG =
-  "https://media.glif.app/i:r/c_limit,w_3840/f_auto/q_auto/fucn4fhdx5txpp7ddqre";
+  "https://media.glif.app/i:r/c_limit,w_3840/f_auto/q_auto/abzcrlgaoishv9ypz0uu";
 
 export default function SplashScreen() {
   const [show, setShow] = useState(false);
@@ -147,7 +147,7 @@ export default function SplashScreen() {
       {/* Glif-genereret kunstnerisk baggrund */}
       <div className="ksp-bg" style={{ position: "absolute", inset: "-4%", backgroundImage: `url('${SPLASH_BG}')`, backgroundSize: "cover", backgroundPosition: "center", opacity: 0, filter: "saturate(1.05)", WebkitMaskImage: "radial-gradient(circle at 50% 46%, #000 0%, #000 36%, rgba(0,0,0,.5) 62%, transparent 86%)", maskImage: "radial-gradient(circle at 50% 46%, #000 0%, #000 36%, rgba(0,0,0,.5) 62%, transparent 86%)", pointerEvents: "none" }} />
       <style>{`
-        @keyframes ksp-bgin{0%{opacity:0;transform:scale(1.08)}100%{opacity:.4;transform:scale(1)}}
+        @keyframes ksp-bgin{0%{opacity:0;transform:scale(1.08)}100%{opacity:.55;transform:scale(1)}}
         .ksp-bg{animation:ksp-bgin 3s ease-out .15s forwards}
         @keyframes ksp-haloB{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:.82;transform:scale(1.08)}}
         #ksp-halo.ksp-on{transform-origin:center;animation:ksp-haloB 4s ease-in-out infinite}
