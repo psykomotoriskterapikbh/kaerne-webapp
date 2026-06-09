@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import AktorMatch from "@/components/AktorMatch";
 import AstridFigur from "@/components/AstridFigur";
 import SplashScreen from "@/components/SplashScreen";
-import { FontControl, StreakChip, KaosKontrolBar, GuldkornPopup, LukSagButton, anonymiser, SLASH_COMMANDS } from "@/components/AstridUpgrades";
+import { StreakChip, KaosKontrolBar, GuldkornPopup, LukSagButton, anonymiser, SLASH_COMMANDS } from "@/components/AstridUpgrades";
 import AuthButton from "@/components/AuthButton";
 import type { SlashCmd } from "@/components/AstridUpgrades";
 import { FristBeregner, ParagrafOversaetter, Faq } from "@/components/Vaerktoejer";
@@ -178,7 +178,9 @@ export default function KarlaLanding() {
   }, []);
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    const nearBottom =
+      window.innerHeight + window.scrollY >= document.body.scrollHeight - 180;
+    if (nearBottom) chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, loading]);
 
   const send = async (text: string) => {
@@ -334,7 +336,6 @@ export default function KarlaLanding() {
         <div className="flex items-center gap-2">
           <AuthButton />
           <span className="hidden sm:inline-flex"><StreakChip /></span>
-          <span className="hidden sm:inline-flex"><FontControl /></span>
           <a href="#" onClick={(e) => { e.preventDefault(); inputRef.current?.focus(); }} className="text-[13px] px-5 py-2.5 rounded-full cursor-pointer hover:opacity-90 transition-opacity" style={{ color: "var(--kaerne-sand)", background: "var(--kaerne-ink)" }}>
             Tal med Astrid →
           </a>
