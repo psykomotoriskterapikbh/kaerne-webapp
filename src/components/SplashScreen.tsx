@@ -3,11 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Astrid opstarts-splash — foto-hero.
- * Det detaljerede Glif-kaffebillede er omdrejningspunktet: det toner blødt
- * ind og zoomer ganske langsomt (cinematisk), mens en slank "brygge"-progressbar
- * fyldes, et diskret lyssweep stryger forbi, og "System klar" dekrypteres frem.
- * Rent, præcist, professionelt. Vises én gang pr. session. Ingen lyd.
+ * Astrid opstarts-splash — EKSPLOSIV.
+ * Glif-billedet zoomer hurtigt ind, et lysglimt + en radial partikel-eksplosion
+ * (§, ♥, gnister) skyder udad, en stødring breder sig, og "VELKOMMEN TIL ASTRID"
+ * popper energisk frem med store bogstaver. Dopamin-forward. Vises én gang pr.
+ * session. Ingen lyd.
  */
 const SPLASH_BG =
   "https://media.glif.app/i:r/c_limit,w_3840/f_auto/q_auto/abzcrlgaoishv9ypz0uu";
@@ -17,12 +17,12 @@ export default function SplashScreen() {
   const [gone, setGone] = useState(false);
   const ovRef = useRef<HTMLDivElement>(null);
   const img = useRef<HTMLDivElement>(null);
-  const sweep = useRef<HTMLDivElement>(null);
-  const bar = useRef<HTMLDivElement>(null);
-  const motes = useRef<HTMLDivElement>(null);
-  const nameEl = useRef<HTMLDivElement>(null);
-  const loadLbl = useRef<HTMLDivElement>(null);
-  const subEl = useRef<HTMLDivElement>(null);
+  const flash = useRef<HTMLDivElement>(null);
+  const ring = useRef<HTMLDivElement>(null);
+  const burst = useRef<HTMLDivElement>(null);
+  const pre = useRef<HTMLDivElement>(null);
+  const big = useRef<HTMLDivElement>(null);
+  const sub = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let seen = false;
@@ -38,117 +38,100 @@ export default function SplashScreen() {
   useEffect(() => {
     if (!show) return;
     const timers: ReturnType<typeof setTimeout>[] = [];
-    const intervals: ReturnType<typeof setInterval>[] = [];
     const T = (f: () => void, ms: number) => timers.push(setTimeout(f, ms));
 
-    // billede toner ind
-    T(() => { if (img.current) img.current.style.opacity = "0.96"; }, 60);
+    // billede toner hurtigt ind
+    T(() => { if (img.current) img.current.style.opacity = "0.92"; }, 40);
 
-    // sparsomme §-fnug stiger op (diskret detalje)
-    T(() => {
-      if (!motes.current) return;
-      let n = 0;
-      const iv = setInterval(() => {
-        if (!motes.current || n >= 7) { clearInterval(iv); return; }
-        n++;
-        const s = document.createElement("div");
-        s.textContent = "§";
-        const size = 13 + Math.random() * 9;
-        s.style.cssText = `position:absolute;left:${42 + Math.random() * 16}%;bottom:46%;font-size:${size}px;color:#6b513c;opacity:0;transform:translateY(0);transition:transform 3.4s cubic-bezier(.4,0,.5,1),opacity 3.4s ease;pointer-events:none;text-shadow:0 1px 6px rgba(255,247,235,.5)`;
-        motes.current.appendChild(s);
-        requestAnimationFrame(() => { s.style.opacity = "0.28"; s.style.transform = `translateY(-${120 + Math.random() * 70}px) rotate(${Math.random() * 24 - 12}deg)`; });
-        timers.push(setTimeout(() => { s.style.opacity = "0"; }, 2600));
-        timers.push(setTimeout(() => s.remove(), 3500));
-      }, 520);
-      intervals.push(iv);
-    }, 1900);
-
-    // progressbar "brygger"
-    T(() => { if (bar.current) bar.current.style.width = "100%"; }, 900);
-
-    // wordmark
-    T(() => { if (nameEl.current) { nameEl.current.style.opacity = "1"; nameEl.current.style.transform = "translateY(0)"; } }, 2000);
-
-    // lyssweep ét enkelt strøg
-    T(() => { if (sweep.current) { sweep.current.style.transition = "transform 1.25s cubic-bezier(.4,0,.2,1), opacity .3s ease"; sweep.current.style.opacity = "1"; sweep.current.style.transform = "translateX(160%) skewX(-18deg)"; } }, 5200);
-    T(() => { if (sweep.current) sweep.current.style.opacity = "0"; }, 6450);
-
-    // progress færdig → label dekrypteres til "System klar"
-    const decrypt = (el: HTMLDivElement, finalText: string, done?: () => void) => {
-      const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅ§◊0123456789";
-      let frame = 0;
-      const iv = setInterval(() => {
-        frame++;
-        const revealed = Math.floor(frame / 1.5);
-        let out = "";
-        for (let i = 0; i < finalText.length; i++) {
-          const c = finalText[i];
-          if (c === " " || c === "—") { out += c; continue; }
-          out += i < revealed ? c : charset[Math.floor(Math.random() * charset.length)];
+    // EKSPLOSION — partikler skyder udad fra centrum
+    const detonate = () => {
+      if (!burst.current) return;
+      const cols = ["#e0a16a", "#e2916f", "#cf7f57", "#8aa885", "#f1c27a", "#7fb8b0"];
+      const glyphs = ["§", "♥", "✦", "•", "§", "♥"];
+      const N = 46;
+      for (let i = 0; i < N; i++) {
+        const p = document.createElement("div");
+        const isGlyph = Math.random() < 0.5;
+        const ang = (i / N) * 6.283 + Math.random() * 0.5;
+        const dist = 160 + Math.random() * 320;
+        const dx = Math.cos(ang) * dist;
+        const dy = Math.sin(ang) * dist;
+        const rot = (Math.random() * 720 - 360).toFixed(0);
+        if (isGlyph) {
+          p.textContent = glyphs[i % glyphs.length];
+          p.style.cssText = `position:absolute;left:50%;top:46%;font-size:${(14 + Math.random() * 16).toFixed(0)}px;font-weight:700;color:${cols[i % cols.length]};`;
+        } else {
+          const s = (5 + Math.random() * 9).toFixed(0);
+          p.style.cssText = `position:absolute;left:50%;top:46%;width:${s}px;height:${s}px;border-radius:50%;background:${cols[i % cols.length]};`;
         }
-        el.textContent = out;
-        if (revealed >= finalText.length) { clearInterval(iv); el.textContent = finalText; done && done(); }
-      }, 45);
-      intervals.push(iv);
+        p.style.transform = "translate(-50%,-50%) scale(.2)";
+        p.style.opacity = "1";
+        p.style.transition = "transform .95s cubic-bezier(.15,.75,.25,1), opacity .95s ease-out";
+        p.style.pointerEvents = "none";
+        p.style.willChange = "transform, opacity";
+        burst.current.appendChild(p);
+        requestAnimationFrame(() => {
+          p.style.transform = `translate(calc(-50% + ${dx.toFixed(0)}px), calc(-50% + ${dy.toFixed(0)}px)) scale(${(0.8 + Math.random()).toFixed(2)}) rotate(${rot}deg)`;
+          p.style.opacity = "0";
+        });
+        timers.push(setTimeout(() => p.remove(), 1100));
+      }
     };
 
+    // tidslinje — punchy
     T(() => {
-      if (loadLbl.current) { loadLbl.current.style.color = "#9a6a47"; decrypt(loadLbl.current, "System klar"); }
-    }, 5600);
-    T(() => { if (subEl.current) { subEl.current.style.opacity = "1"; decrypt(subEl.current, "Dit rolige arbejdsrum"); } }, 5900);
+      // lysglimt
+      if (flash.current) { flash.current.style.opacity = "0.85"; flash.current.style.transition = "opacity .5s ease-out"; requestAnimationFrame(() => { if (flash.current) flash.current.style.opacity = "0"; }); }
+      // stødring
+      if (ring.current) { ring.current.style.transition = "transform .8s cubic-bezier(.1,.7,.2,1), opacity .8s ease-out"; ring.current.style.opacity = "0.9"; requestAnimationFrame(() => { if (ring.current) { ring.current.style.transform = "translate(-50%,-50%) scale(11)"; ring.current.style.opacity = "0"; } }); }
+      detonate();
+    }, 620);
+
+    // VELKOMMEN TIL (lille, over)
+    T(() => { if (pre.current) { pre.current.style.opacity = "1"; pre.current.style.transform = "translateY(0)"; } }, 540);
+    // ASTRID popper stort frem
+    T(() => { if (big.current) { big.current.style.opacity = "1"; big.current.style.transform = "scale(1)"; } }, 700);
+    // andet lille glimt af gnister
+    T(() => detonate(), 1500);
+    // undertekst
+    T(() => { if (sub.current) sub.current.style.opacity = "1"; }, 1700);
 
     // fade ud + væk
-    T(() => { if (ovRef.current) ovRef.current.style.opacity = "0"; }, 8200);
-    T(() => { setGone(true); }, 9800);
+    T(() => { if (ovRef.current) ovRef.current.style.opacity = "0"; }, 4600);
+    T(() => { setGone(true); }, 6000);
 
-    return () => { timers.forEach(clearTimeout); intervals.forEach(clearInterval); };
+    return () => { timers.forEach(clearTimeout); };
   }, [show]);
 
   if (gone || !show) return null;
 
   return (
-    <div ref={ovRef} aria-hidden="true" style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "radial-gradient(circle at 50% 40%,#fbf3e7 0%,#f3e7d4 55%,#e7d8bf 100%)", transition: "opacity 1.4s ease", overflow: "hidden" }}>
+    <div ref={ovRef} aria-hidden="true" style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "radial-gradient(circle at 50% 44%,#fdf5ea 0%,#f3e7d4 55%,#e7d8bf 100%)", transition: "opacity 1.2s ease", overflow: "hidden" }}>
       <style>{`
-        @keyframes asp-zoom{0%{transform:scale(1.075)}100%{transform:scale(1)}}
-        .asp-hero{animation:asp-zoom 9.8s cubic-bezier(.22,.61,.36,1) forwards}
+        @keyframes asp-zoom{0%{transform:scale(1.18)}100%{transform:scale(1)}}
+        .asp-hero{animation:asp-zoom 4.2s cubic-bezier(.12,.7,.25,1) forwards}
       `}</style>
 
-      {/* foto-hero: detaljeret Glif-billede */}
-      <div
-        ref={img}
-        className="asp-hero"
-        style={{
-          position: "absolute", inset: 0,
-          backgroundImage: `url('${SPLASH_BG}')`,
-          backgroundSize: "cover", backgroundPosition: "center 42%",
-          opacity: 0, transition: "opacity 1.4s ease",
-          WebkitMaskImage: "radial-gradient(120% 110% at 50% 44%, #000 0%, #000 58%, rgba(0,0,0,.7) 78%, transparent 100%)",
-          maskImage: "radial-gradient(120% 110% at 50% 44%, #000 0%, #000 58%, rgba(0,0,0,.7) 78%, transparent 100%)",
-        }}
-      />
+      {/* foto-hero baggrund */}
+      <div ref={img} className="asp-hero" style={{ position: "absolute", inset: 0, backgroundImage: `url('${SPLASH_BG}')`, backgroundSize: "cover", backgroundPosition: "center 42%", opacity: 0, transition: "opacity .6s ease", WebkitMaskImage: "radial-gradient(125% 115% at 50% 44%, #000 0%, #000 56%, rgba(0,0,0,.6) 78%, transparent 100%)", maskImage: "radial-gradient(125% 115% at 50% 44%, #000 0%, #000 56%, rgba(0,0,0,.6) 78%, transparent 100%)" }} />
 
-      {/* blød bund-scrim så teksten er læsbar */}
-      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(247,240,228,0) 42%, rgba(247,240,228,.55) 74%, rgba(244,236,221,.9) 100%)", pointerEvents: "none" }} />
+      {/* bund-scrim */}
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(247,240,228,0) 40%, rgba(247,240,228,.5) 72%, rgba(244,236,221,.88) 100%)", pointerEvents: "none" }} />
 
-      {/* §-fnug der stiger op */}
-      <div ref={motes} style={{ position: "absolute", inset: 0, pointerEvents: "none" }} />
+      {/* stødring */}
+      <div ref={ring} style={{ position: "absolute", left: "50%", top: "46%", width: 60, height: 60, marginLeft: -30, marginTop: -30, borderRadius: "50%", border: "2px solid #e0a16a", opacity: 0, transform: "translate(-50%,-50%) scale(.2)", pointerEvents: "none" }} />
 
-      {/* lyssweep */}
-      <div ref={sweep} style={{ position: "absolute", top: 0, bottom: 0, left: "-30%", width: "32%", opacity: 0, transform: "translateX(-60%) skewX(-18deg)", background: "linear-gradient(90deg, transparent, rgba(255,251,242,.5), transparent)", pointerEvents: "none" }} />
+      {/* partikel-eksplosion */}
+      <div ref={burst} style={{ position: "absolute", inset: 0, pointerEvents: "none" }} />
 
-      {/* indhold nederst-centreret */}
-      <div style={{ position: "absolute", left: 0, right: 0, bottom: "20%", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "0 24px" }}>
-        <div ref={nameEl} style={{ fontFamily: "var(--font-script, cursive)", fontSize: 64, color: "#2c2824", opacity: 0, transform: "translateY(12px)", transition: "all 1.1s cubic-bezier(.2,.8,.3,1)", lineHeight: 1, textShadow: "0 2px 22px rgba(226,145,111,.3)" }}>Astrid</div>
+      {/* lysglimt */}
+      <div ref={flash} style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 50% 46%, #fff6e9 0%, rgba(255,246,233,.6) 30%, transparent 65%)", opacity: 0, pointerEvents: "none" }} />
 
-        <div ref={subEl} style={{ marginTop: 10, fontSize: 11, letterSpacing: ".34em", textTransform: "uppercase", color: "#b07a55", opacity: 0, transition: "opacity .8s ease", fontVariantNumeric: "tabular-nums", minHeight: 14 }}>Dit rolige arbejdsrum</div>
-
-        {/* slank brygge-progressbar */}
-        <div style={{ marginTop: 26, width: 168, display: "flex", flexDirection: "column", alignItems: "center", gap: 9 }}>
-          <div style={{ width: "100%", height: 2, background: "rgba(120,92,67,.18)", borderRadius: 2, overflow: "hidden" }}>
-            <div ref={bar} style={{ width: 0, height: "100%", background: "linear-gradient(90deg,#caa07a,#b06a45)", borderRadius: 2, transition: "width 4.6s cubic-bezier(.45,.05,.25,1)" }} />
-          </div>
-          <div ref={loadLbl} style={{ fontSize: 9.5, letterSpacing: ".26em", textTransform: "uppercase", color: "#a98a6e", fontVariantNumeric: "tabular-nums" }}>Brygger dit arbejdsrum</div>
-        </div>
+      {/* overskrift */}
+      <div style={{ position: "absolute", left: 0, right: 0, top: "50%", transform: "translateY(-50%)", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "0 24px" }}>
+        <div ref={pre} style={{ fontSize: "clamp(11px,2.4vw,15px)", letterSpacing: ".42em", textTransform: "uppercase", fontWeight: 600, color: "#b06a45", opacity: 0, transform: "translateY(10px)", transition: "all .6s cubic-bezier(.2,.8,.3,1)" }}>Velkommen til</div>
+        <div ref={big} style={{ fontSize: "clamp(54px,13vw,124px)", fontWeight: 800, letterSpacing: "-0.01em", lineHeight: 0.95, color: "#2c2824", textTransform: "uppercase", opacity: 0, transform: "scale(.4)", transition: "all .7s cubic-bezier(.2,1.5,.35,1)", textShadow: "0 6px 40px rgba(226,145,111,.4)" }}>Astrid</div>
+        <div ref={sub} style={{ marginTop: 16, fontSize: "clamp(11px,2.2vw,13px)", letterSpacing: ".28em", textTransform: "uppercase", color: "#9a6a47", opacity: 0, transition: "opacity .7s ease" }}>Din digitale kollega</div>
       </div>
     </div>
   );
