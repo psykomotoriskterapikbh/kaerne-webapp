@@ -336,7 +336,7 @@ export default function KarlaLanding() {
         <div className="flex items-center gap-2">
           <AuthButton />
           <span className="hidden sm:inline-flex"><StreakChip /></span>
-          <a href="#" onClick={(e) => { e.preventDefault(); inputRef.current?.focus(); }} className="text-[13px] px-5 py-2.5 rounded-full cursor-pointer hover:opacity-90 transition-opacity" style={{ color: "var(--kaerne-sand)", background: "var(--kaerne-ink)" }}>
+          <a href="#" onClick={(e) => { e.preventDefault(); inputRef.current?.focus(); }} className="text-[13px] px-5 py-2.5 rounded-full cursor-pointer hover:opacity-90 transition-opacity" style={{ color: "#fff", background: "linear-gradient(135deg,#ef9355,#d96637)", boxShadow: "0 4px 14px rgba(217,102,55,.32)" }}>
             Tal med Astrid →
           </a>
         </div>
@@ -365,8 +365,8 @@ export default function KarlaLanding() {
             </h1>
             {!chatActive && (
               <p className="k-fade3 mb-6" style={{ fontFamily: "var(--font-serif)", fontSize: 17.5, fontWeight: 300, lineHeight: 1.6, color: "var(--kaerne-ink-soft)" }}>
-                Sagssparring, Barnets Lov og Serviceloven, journalnotater, frister og det
-                rette match af indsats og aktør — alt sammen lige her i chatten.
+                Jura, journalnotater, frister og den rette indsats — klaret på minutter,
+                så du kan bruge din tid der, hvor den tæller: hos borgeren.
                 <br />Hvad ligger der på dit bord i dag?
               </p>
             )}
