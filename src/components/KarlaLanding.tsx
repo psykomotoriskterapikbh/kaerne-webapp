@@ -6,6 +6,7 @@ import AstridFigur from "@/components/AstridFigur";
 import SplashScreen from "@/components/SplashScreen";
 import { StreakChip, KaosKontrolBar, GuldkornPopup, LukSagButton, anonymiser, SLASH_COMMANDS } from "@/components/AstridUpgrades";
 import AuthButton from "@/components/AuthButton";
+import DikterButton from "@/components/DikterButton";
 import type { SlashCmd } from "@/components/AstridUpgrades";
 import { FristBeregner, ParagrafOversaetter, Faq } from "@/components/Vaerktoejer";
 
@@ -474,6 +475,7 @@ export default function KarlaLanding() {
                 >
                   ⎙ Upload sag (.txt)
                 </button>
+                <DikterButton onText={(t) => setInput((v) => (v ? v + " " : "") + t)} />
                 <button
                   type="button"
                   onClick={() => { const a = anonymiser(input); if (a !== input) setInput(a); }}
@@ -563,6 +565,7 @@ export default function KarlaLanding() {
       <footer className="px-6 md:px-12 py-6 border-t text-center text-[11px]" style={{ borderColor: "var(--kaerne-border)", color: "var(--kaerne-muted)" }}>
         <span style={{ fontFamily: "var(--font-script)", fontSize: 14 }}>Astrid</span> · Din digitale kollega i socialforvaltningen · Støtte, ikke skøn ·{" "}
         <span style={{ color: "var(--kaerne-terracotta)", fontFamily: "var(--font-script)", fontSize: 13 }}>Astrid tænker med — du bestemmer ♡</span>
+        <br /><a href="/privatliv" style={{ color: "var(--kaerne-muted)", textDecoration: "underline" }}>Privatliv & sikkerhed</a>
       </footer>
     </div>
   );
