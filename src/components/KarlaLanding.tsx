@@ -209,35 +209,7 @@ export default function KarlaLanding() {
       });
 
     let full = "";
-    let revealed = 0;
-    let streamDone = false;
     let failed = false;
-
-    // Skriv svaret gradvist frem — i et roligt, læsbart tempo (som en der taler)
-    const reveal = () =>
-      new Promise<void>((resolve) => {
-        const tick = () => {
-          if (revealed < full.length) {
-            const ch = full[revealed];
-            revealed += 1;
-            setLast(full.slice(0, revealed));
-            // Roligt, menneskeligt tempo — med små pauser ved tegnsætning
-            let delay = 46;
-            if (ch === " ") delay = 75;
-            if (ch === "," || ch === ";" || ch === ":") delay = 300;
-            if (ch === "." || ch === "!" || ch === "?") delay = 480;
-            if (ch === "\n") delay = 340;
-            // Hvis hun er kommet meget bagud (langt svar), holder hun stadig et roligt tempo
-            if (full.length - revealed > 700) delay = Math.min(delay, 30);
-            setTimeout(tick, delay);
-          } else if (streamDone) {
-            resolve();
-          } else {
-            setTimeout(tick, 70);
-          }
-        };
-        tick();
-      });
 
     try {
       const res = await fetch("/api/chat", {
@@ -254,19 +226,13 @@ export default function KarlaLanding() {
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
 
-      // Astrid tænker lidt længere, før hun begynder at svare
-      await new Promise((r) => setTimeout(r, 2400));
-
-      const readLoop = (async () => {
-        for (;;) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          full += decoder.decode(value, { stream: true });
-        }
-        streamDone = true;
-      })();
-
-      await Promise.all([readLoop, reveal()]);
+      // vis svaret løbende mens det streamer ind
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        full += decoder.decode(value, { stream: true });
+        setLast(full);
+      }
     } catch (e) {
       failed = true;
       const msg =
@@ -480,7 +446,6 @@ export default function KarlaLanding() {
                 style={{ border: "0.5px solid var(--kaerne-border)", boxShadow: "0 2px 14px rgba(90,80,72,0.06)" }}
                 placeholder={chatActive ? "Skriv til Astrid..." : "Skriv til mig — bare som du tænker..."}
                 aria-label="Skriv til Astrid"
-                disabled={loading}
               />
               <button
                 type="submit"
@@ -504,7 +469,6 @@ export default function KarlaLanding() {
                 <button
                   type="button"
                   onClick={() => fileRef.current?.click()}
-                  disabled={loading}
                   className="cursor-pointer px-3.5 py-1.5 rounded-full text-[11.5px] hover:opacity-75 transition-opacity disabled:opacity-50"
                   style={{ border: "0.5px solid var(--kaerne-border)", color: "var(--kaerne-ink-soft)", background: "#fff" }}
                 >
@@ -513,7 +477,7 @@ export default function KarlaLanding() {
                 <button
                   type="button"
                   onClick={() => { const a = anonymiser(input); if (a !== input) setInput(a); }}
-                  disabled={loading || !input.trim()}
+                  disabled={!input.trim()}
                   className="cursor-pointer px-3.5 py-1.5 rounded-full text-[11.5px] hover:opacity-75 transition-opacity disabled:opacity-50"
                   style={{ border: "0.5px solid var(--kaerne-border)", color: "var(--kaerne-ink-soft)", background: "#fff" }}
                   title="Fjern CPR, navne, adresser m.m. fra teksten i feltet"
