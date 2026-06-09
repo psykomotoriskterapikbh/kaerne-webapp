@@ -14,7 +14,6 @@ export default function AuthButton() {
   const [email, setEmail] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return;
     let sb;
     try { sb = createClient(); } catch { return; }
     setReady(true);
