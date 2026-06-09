@@ -12,7 +12,7 @@ export default function LoginPage() {
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const configured = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL);
+  const configured = true;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
