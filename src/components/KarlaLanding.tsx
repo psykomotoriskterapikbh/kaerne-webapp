@@ -104,6 +104,14 @@ function formatSvar(raw: string): string {
 
 const QUICK_REPLIES = ["Uddyb det", "Hvad er mit næste skridt?", "Formulér det som journalnotat", "Kortere, tak"];
 
+const PLACEHOLDERS = [
+  "Beskriv en sag, så får du et fagligt oplæg…",
+  "Hjælp mig med et §20-notat",
+  "Hvilken paragraf passer til min sag?",
+  "Lav et mødereferat ud fra mine noter",
+  "Find den rette aktør til en ung med ADHD",
+];
+
 const CHIPS = [
   { label: "Sagssparring", prompt: "Jeg vil gerne sparre om en sag (anonymiseret). Hjælp mig med at strukturere den, hvad vil du vide?" },
   { label: "§ Paragraf-hjælp", prompt: "Jeg har brug for hjælp til at finde den rette paragraf i Barnets Lov eller Serviceloven. Hvor starter vi?" },
@@ -127,6 +135,7 @@ export default function KarlaLanding() {
   const [timeLabel, setTimeLabel] = useState("Velkommen");
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [input, setInput] = useState("");
+  const [phIdx, setPhIdx] = useState(0);
   const [loading, setLoading] = useState(false);
   const [typing, setTyping] = useState(false);
   const [gdprWarning, setGdprWarning] = useState(false);
@@ -136,6 +145,7 @@ export default function KarlaLanding() {
   const [inlineSel, setInlineSel] = useState<{ text: string; x: number; y: number } | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => { const id = setInterval(() => setPhIdx((v) => (v + 1) % PLACEHOLDERS.length), 3400); return () => clearInterval(id); }, []);
   const fileRef = useRef<HTMLInputElement>(null);
   const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -470,8 +480,9 @@ export default function KarlaLanding() {
                 }}
                 className="w-full bg-white rounded-[20px] py-[19px] pl-6 pr-16 text-[15px] focus:outline-none transition-shadow focus:shadow-[0_4px_20px_rgba(90,80,72,0.12)]"
                 style={{ border: "0.5px solid var(--kaerne-border)", boxShadow: "0 2px 14px rgba(90,80,72,0.06)" }}
-                placeholder={chatActive ? "Skriv til Astrid..." : "Skriv til mig, bare som du tænker..."}
+                placeholder={chatActive ? "Skriv til Astrid..." : PLACEHOLDERS[phIdx]}
                 aria-label="Skriv til Astrid"
+                autoFocus
               />
               <button
                 type="submit"
