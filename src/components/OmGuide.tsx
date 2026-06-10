@@ -66,6 +66,9 @@ export function OmGuide() {
           <div style={{ fontFamily: "var(--font-serif)", fontSize: 19, color: "var(--kaerne-terracotta-deep)" }}>Gratis at prøve</div>
           <div style={{ fontSize: 13.5, color: "var(--kaerne-ink-soft)", marginTop: 2 }}>Skal hele teamet eller forvaltningen med, laver vi en aftale for jeres kommune.</div>
         </div>
+        <div style={{ marginBottom: 14 }}>
+          <a href="mailto:kontakt@kaerne.dk?subject=Astrid%20%E2%80%93%20book%20en%20demo%20for%20vores%20forvaltning" style={{ display: "inline-block", padding: "13px 28px", borderRadius: 999, background: "linear-gradient(135deg,#ef9355,#d96637)", color: "#fff", fontWeight: 600, fontSize: 15.5, textDecoration: "none", boxShadow: "0 5px 16px rgba(217,102,55,.34)" }}>Book 15 min for din forvaltning →</a>
+        </div>
         <p style={{ fontSize: 14, color: "var(--kaerne-ink-soft)", margin: "4px 0 0" }}>
           Vil din kommune høre mere, eller har du spørgsmål? <a href="mailto:kontakt@kaerne.dk" style={{ color: "var(--kaerne-terracotta-deep)", textDecoration: "underline" }}>Skriv til os</a>.
         </p>
