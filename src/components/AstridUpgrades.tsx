@@ -59,11 +59,11 @@ export function KaosKontrolBar() {
     return () => window.removeEventListener("astrid:saglukket", onClose);
   }, []);
   const col = pct < 40 ? "#e0a16a" : pct < 75 ? "#cdbf6a" : "#7fb89f";
-  const label = pct < 40 ? "Travlt — vi tager den én sag ad gangen" : pct < 75 ? "Godt på vej" : "Næsten i mål — flot uge!";
+  const label = pct < 40 ? "Godt i gang, vi tager den én sag ad gangen" : pct < 75 ? "Godt på vej" : "Næsten i mål, flot uge!";
   return (
     <div className="k-kaos mb-5">
       <div className="flex justify-between items-center mb-2" style={{ fontSize: 12, color: "var(--kaerne-muted)" }}>
-        <span>Fra kaos til kontrol</span><span style={{ color: col, fontWeight: 600 }}>{pct}%</span>
+        <span>Din fremdrift</span><span style={{ color: col, fontWeight: 600 }}>{pct}%</span>
       </div>
       <div className="k-kaos-track"><div className="k-kaos-fill" style={{ width: pct + "%", background: col }} /></div>
       <div style={{ fontSize: 11.5, color: "var(--kaerne-muted)", marginTop: 7 }}>{label}</div>
@@ -73,11 +73,11 @@ export function KaosKontrolBar() {
 
 /* ============ Daglige AI-guldkorn ============ */
 const GULDKORN = [
-  "Ny principmeddelelse fra Ankestyrelsen om §32 — vil du have et resumé?",
+  "Ny principmeddelelse fra Ankestyrelsen om §32, vil du have et resumé?",
   "Husk: 3 af dine sager har genbehandlingsfrist i denne måned.",
-  "Tip: Børnesamtalen skal afholdes før afgørelsen — skal jeg lave en spørgeguide?",
+  "Tip: Børnesamtalen skal afholdes før afgørelsen, skal jeg lave en spørgeguide?",
   "Vidste du? Du har sparet ca. 4 timer på journalnotater i sidste uge ✨",
-  "God idé: start ugen med at lukke den ældste åbne sag — jeg hjælper.",
+  "God idé: start ugen med at lukke den ældste åbne sag, jeg hjælper.",
   "Ny vejledning om ungestøtte (§§114-116) er værd at kigge på.",
 ];
 export function GuldkornPopup() {
