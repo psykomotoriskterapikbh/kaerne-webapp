@@ -25,8 +25,7 @@ export default function PrivatlivPage() {
 
         <section style={sec}>
           <h2 style={h2}>Dataansvarlig</h2>
-          <p style={p}>Dataansvarlig for medarbejderes brug af Astrid er <strong>[KOMMUNENS NAVN]</strong>. Spørgsmål om databeskyttelse kan rettes til kommunens databeskyttelsesrådgiver (DPO): <strong>[DPO E-MAIL / TELEFON]</strong>.</p>
-          <p style={note}>Udfyld kommunenavn og DPO-kontakt før idriftsættelse.</p>
+          <p style={p}>Når Astrid tages i brug i en kommune, er den pågældende kommune dataansvarlig for sine medarbejderes brug, og spørgsmål om databeskyttelse rettes til kommunens databeskyttelsesrådgiver (DPO). I udviklings- og pilotfasen drives Astrid af holdet bag løsningen, der kan kontaktes om databeskyttelse.</p>
         </section>
 
         <section style={sec}>
