@@ -1,4 +1,4 @@
-// Vejledende aktør-oversigt — baseret på offentligt tilgængelige oplysninger
+// Vejledende leverandør-oversigt — baseret på offentligt tilgængelige oplysninger
 // (virksomhedernes egne sider, CVR/proff.dk). Ikke en rangering eller anbefaling.
 
 export type Aktor = {
