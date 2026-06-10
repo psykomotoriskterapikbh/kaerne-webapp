@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import AktorMatch from "@/components/AktorMatch";
 import AstridFigur from "@/components/AstridFigur";
 import SplashScreen from "@/components/SplashScreen";
-import { StreakChip, KaosKontrolBar, GuldkornPopup, LukSagButton, anonymiser, SLASH_COMMANDS } from "@/components/AstridUpgrades";
+import { KaosKontrolBar, GuldkornPopup, LukSagButton, anonymiser, SLASH_COMMANDS } from "@/components/AstridUpgrades";
 import AuthButton from "@/components/AuthButton";
 import DikterButton from "@/components/DikterButton";
 import ProfilePanel from "@/components/ProfilePanel";
@@ -103,7 +103,7 @@ function formatSvar(raw: string): string {
 const QUICK_REPLIES = ["Uddyb det", "Hvad er mit næste skridt?", "Formulér det som journalnotat", "Kortere, tak"];
 
 const CHIPS = [
-  { label: "Sagssparring", prompt: "Jeg vil gerne sparre om en sag (anonymiseret). Hjælp mig med at strukturere den — hvad vil du vide?" },
+  { label: "Sagssparring", prompt: "Jeg vil gerne sparre om en sag (anonymiseret). Hjælp mig med at strukturere den, hvad vil du vide?" },
   { label: "§ Paragraf-hjælp", prompt: "Jeg har brug for hjælp til at finde den rette paragraf i Barnets Lov eller Serviceloven. Hvor starter vi?" },
   { label: "Notat-hjælp", prompt: "Hjælp mig med at omsætte mine løse noter til et professionelt journalnotat." },
   { label: "Forbered et møde", prompt: "Jeg skal forberede et svært møde i en sag. Hjælp mig med dagsorden, de svære spørgsmål og borgerens perspektiv." },
@@ -121,13 +121,14 @@ const PANELS = [
 type PanelId = (typeof PANELS)[number]["id"];
 
 export default function KarlaLanding() {
-  const [greeting, setGreeting] = useState("Hej kollega — godt at se dig.");
+  const [greeting, setGreeting] = useState("Hej kollega, godt at se dig.");
   const [timeLabel, setTimeLabel] = useState("Velkommen");
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [typing, setTyping] = useState(false);
   const [gdprWarning, setGdprWarning] = useState(false);
+  const [anonMsg, setAnonMsg] = useState<string | null>(null);
   const [panel, setPanel] = useState<PanelId | null>(null);
   const [slash, setSlash] = useState(false);
   const [inlineSel, setInlineSel] = useState<{ text: string; x: number; y: number } | null>(null);
@@ -173,11 +174,11 @@ export default function KarlaLanding() {
     const now = new Date();
     const h = now.getHours();
     let part = "aften";
-    let g = "Hej kollega — godt at se dig.";
-    if (h < 10) { part = "morgen"; g = "Godmorgen — skal vi tage dagens sager sammen?"; }
-    else if (h < 14) { part = "formiddag"; g = "God formiddag — hvad arbejder du med?"; }
-    else if (h < 18) { part = "eftermiddag"; g = "God eftermiddag — træk lige vejret."; }
-    else if (h < 22) { part = "aften"; g = "God aften — lang dag i felten?"; }
+    let g = "Hej kollega, godt at se dig.";
+    if (h < 10) { part = "morgen"; g = "Godmorgen, skal vi tage dagens sager sammen?"; }
+    else if (h < 14) { part = "formiddag"; g = "God formiddag, hvad arbejder du med?"; }
+    else if (h < 18) { part = "eftermiddag"; g = "God eftermiddag, træk lige vejret."; }
+    else if (h < 22) { part = "aften"; g = "God aften, lang dag i felten?"; }
     else { part = "nat"; g = "Sent oppe med en sag, kollega?"; }
     setTimeLabel(`${days[now.getDay()]} ${part}`);
     setGreeting(g);
@@ -254,12 +255,12 @@ export default function KarlaLanding() {
         if (abortRef.current === controller) setLast(full);
       }
     } catch (e) {
-      if (controller.signal.aborted) return; // omdirigeret — den nye besked overtager
+      if (controller.signal.aborted) return; // omdirigeret, den nye besked overtager
       failed = true;
       const msg =
         e instanceof Error && e.message && !e.message.includes("fetch")
           ? e.message
-          : "Hov — jeg kunne ikke få forbindelse lige nu. Prøv igen om et øjeblik.";
+          : "Hov, jeg kunne ikke få forbindelse lige nu. Prøv igen om et øjeblik.";
       if (abortRef.current === controller) setLast(msg);
     } finally {
       if (abortRef.current === controller) {
@@ -325,7 +326,6 @@ export default function KarlaLanding() {
         </div>
         <div className="flex items-center gap-2">
           <AuthButton />
-          <span className="hidden sm:inline-flex"><StreakChip /></span>
           <a href="#" onClick={(e) => { e.preventDefault(); inputRef.current?.focus(); }} className="text-[13px] px-5 py-2.5 rounded-full cursor-pointer hover:opacity-90 transition-opacity" style={{ color: "#fff", background: "linear-gradient(135deg,#ef9355,#d96637)", boxShadow: "0 4px 14px rgba(217,102,55,.32)" }}>
             Tal med Astrid →
           </a>
@@ -355,7 +355,7 @@ export default function KarlaLanding() {
             </h1>
             {!chatActive && (
               <p className="k-fade3 mb-6" style={{ fontFamily: "var(--font-serif)", fontSize: 17.5, fontWeight: 300, lineHeight: 1.6, color: "var(--kaerne-ink-soft)" }}>
-                Jura, journalnotater, frister og den rette indsats — klaret på minutter,
+                Jura, journalnotater, frister og den rette indsats, klaret på minutter,
                 så du kan bruge din tid der, hvor den tæller: hos borgeren.
                 <br />Hvad ligger der på dit bord i dag?
               </p>
@@ -434,7 +434,7 @@ export default function KarlaLanding() {
 
             {gdprWarning && (
               <div className="mb-4 rounded-[14px] px-5 py-3.5 text-[14px] leading-relaxed" style={{ background: "#fdf0e7", border: "0.5px solid #ecc9ae", color: "#864b35" }}>
-                <strong>Stop lige —</strong> det ligner et CPR-nummer. Astrid arbejder kun med anonymiserede
+                <strong>Stop lige.</strong> Det ligner et CPR-nummer. Astrid arbejder kun med anonymiserede
                 oplysninger (GDPR). Fjern personnumre og navne, og prøv igen.
               </div>
             )}
@@ -468,7 +468,7 @@ export default function KarlaLanding() {
                 }}
                 className="w-full bg-white rounded-[20px] py-[19px] pl-6 pr-16 text-[15px] focus:outline-none transition-shadow focus:shadow-[0_4px_20px_rgba(90,80,72,0.12)]"
                 style={{ border: "0.5px solid var(--kaerne-border)", boxShadow: "0 2px 14px rgba(90,80,72,0.06)" }}
-                placeholder={chatActive ? "Skriv til Astrid..." : "Skriv til mig — bare som du tænker..."}
+                placeholder={chatActive ? "Skriv til Astrid..." : "Skriv til mig, bare som du tænker..."}
                 aria-label="Skriv til Astrid"
               />
               <button
@@ -487,8 +487,11 @@ export default function KarlaLanding() {
 
             <div className="mt-2.5 flex items-center justify-between gap-3 flex-wrap">
               <p className="text-[11.5px]" style={{ color: "var(--kaerne-muted)", lineHeight: 1.5 }}>
-                Astrid støtter din faglighed — afgørelser er altid dine. Del aldrig CPR-numre eller navne.
+                Astrid støtter din faglighed, afgørelser er altid dine. Del aldrig CPR-numre eller navne.
               </p>
+              {anonMsg && (
+                <p className="text-[11.5px] w-full" style={{ color: "var(--kaerne-terracotta-deep)", lineHeight: 1.5 }}>{anonMsg}</p>
+              )}
               <div className="flex gap-2 flex-wrap justify-end">
                 <button
                   type="button"
@@ -503,11 +506,16 @@ export default function KarlaLanding() {
                 <SamtalerPanel messages={messages} onOpen={(m) => setMessages(m)} />
                 <button
                   type="button"
-                  onClick={() => { const a = anonymiser(input); if (a !== input) setInput(a); }}
+                  onClick={() => {
+                    const a = anonymiser(input);
+                    if (a !== input) { setInput(a); setAnonMsg("Fjernede tydelige personoplysninger (CPR, telefon, e-mail, adresse). Læs selv teksten igennem for navne, dem kan automatikken ikke fange."); }
+                    else { setAnonMsg("Fandt ingen tydelige personoplysninger. Husk selv at tjekke for navne, før du sender."); }
+                    setTimeout(() => setAnonMsg(null), 7000);
+                  }}
                   disabled={!input.trim()}
                   className="cursor-pointer px-3.5 py-1.5 rounded-full text-[11.5px] hover:opacity-75 transition-opacity disabled:opacity-50"
                   style={{ border: "0.5px solid var(--kaerne-border)", color: "var(--kaerne-ink-soft)", background: "#fff" }}
-                  title="Fjern CPR, navne, adresser m.m. fra teksten i feltet"
+                  title="Fjerner CPR, telefon, e-mail og adresser. Navne skal du selv tjekke."
                 >
                   ⦸ Anonymisér
                 </button>
@@ -517,7 +525,7 @@ export default function KarlaLanding() {
                     type="button"
                     onClick={() => {
                       const txt = messages.map((m) => `${m.role === "user" ? "Mig" : "Astrid"}:\n${m.content}`).join("\n\n---\n\n");
-                      const blob = new Blob([`Samtale med Astrid — ${new Date().toLocaleDateString("da-DK")}\n\n${txt}`], { type: "text/plain;charset=utf-8" });
+                      const blob = new Blob([`Samtale med Astrid, ${new Date().toLocaleDateString("da-DK")}\n\n${txt}`], { type: "text/plain;charset=utf-8" });
                       const a = document.createElement("a");
                       a.href = URL.createObjectURL(blob);
                       a.download = "astrid-samtale.txt";
@@ -579,7 +587,7 @@ export default function KarlaLanding() {
         </div>
 
         <div className="max-w-5xl mx-auto mt-12 flex flex-wrap justify-center gap-2.5">
-          {["Ingen samtaler gemmes", "Automatisk CPR-blokering", "Bygget på Barnets Lov 2024", "Støtte — ikke skøn", "Gratis at prøve"].map((b) => (
+          {["Ingen samtaler gemmes", "Automatisk CPR-blokering", "Bygget på Barnets Lov 2024", "Støtte, ikke skøn", "Gratis at prøve"].map((b) => (
             <span key={b} className="px-4 py-2 rounded-full text-[12px]" style={{ background: "var(--kaerne-cream)", border: "0.5px solid var(--kaerne-border-soft)", color: "var(--kaerne-ink-soft)", letterSpacing: "0.04em" }}>
               {b}
             </span>
@@ -589,7 +597,7 @@ export default function KarlaLanding() {
 
       <footer className="px-6 md:px-12 py-6 border-t text-center text-[11px]" style={{ borderColor: "var(--kaerne-border)", color: "var(--kaerne-muted)" }}>
         <span style={{ fontFamily: "var(--font-script)", fontSize: 14 }}>Astrid</span> · Din digitale kollega i socialforvaltningen · Støtte, ikke skøn ·{" "}
-        <span style={{ color: "var(--kaerne-terracotta)", fontFamily: "var(--font-script)", fontSize: 13 }}>Astrid tænker med — du bestemmer ♡</span>
+        <span style={{ color: "var(--kaerne-terracotta)", fontFamily: "var(--font-script)", fontSize: 13 }}>Astrid tænker med, du bestemmer ♡</span>
         <br /><a href="/privatliv" style={{ color: "var(--kaerne-muted)", textDecoration: "underline" }}>Privatliv & sikkerhed</a>
       </footer>
     </div>
