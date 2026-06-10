@@ -19,39 +19,66 @@ function playStartChime() {
     const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     const c = new AC();
     if (c.state === "suspended") c.resume();
+    const now = c.currentTime;
     const master = c.createGain();
+    master.gain.value = 0.85;
     master.connect(c.destination);
-    master.gain.setValueAtTime(0.0001, c.currentTime);
-    master.gain.exponentialRampToValueAtTime(0.07, c.currentTime + 0.05);
-    master.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 1.9);
-    const notes = [523.25, 659.25, 783.99];
-    notes.forEach((f, i) => {
-      const t0 = c.currentTime + i * 0.13;
-      [1, 2].forEach((mult, k) => {
-        const o = c.createOscillator();
-        const g = c.createGain();
-        o.type = "sine";
-        o.frequency.value = f * mult;
-        const peak = k === 0 ? 0.5 : 0.16;
+
+    // rumklang (syntetiseret impuls)
+    const conv = c.createConvolver();
+    const len = Math.floor(c.sampleRate * 2.4);
+    const ir = c.createBuffer(2, len, c.sampleRate);
+    for (let ch = 0; ch < 2; ch++) {
+      const d = ir.getChannelData(ch);
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6);
+    }
+    conv.buffer = ir;
+    const wet = c.createGain(); wet.gain.value = 0.55; conv.connect(wet); wet.connect(master);
+    const dry = c.createGain(); dry.gain.value = 0.8; dry.connect(master);
+    const send = (node: AudioNode) => { node.connect(dry); node.connect(conv); };
+
+    // varmt akkord-swell (F-dur pad)
+    const pad = c.createGain();
+    pad.gain.setValueAtTime(0.0001, now);
+    pad.gain.exponentialRampToValueAtTime(0.16, now + 0.9);
+    pad.gain.setValueAtTime(0.16, now + 2.4);
+    pad.gain.exponentialRampToValueAtTime(0.0001, now + 4.4);
+    send(pad);
+    [174.61, 220.0, 261.63, 349.23].forEach((f) => {
+      const o = c.createOscillator(); o.type = "sawtooth"; o.frequency.value = f;
+      const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 1500; lp.Q.value = 0.6;
+      const g = c.createGain(); g.gain.value = 0.22;
+      o.connect(lp); lp.connect(g); g.connect(pad);
+      o.start(now); o.stop(now + 4.5);
+    });
+
+    // opadgaaende klokke-melodi
+    const motif = [{ f: 523.25, t: 0.55 }, { f: 659.25, t: 0.95 }, { f: 783.99, t: 1.35 }, { f: 1046.5, t: 1.85 }];
+    motif.forEach((m) => {
+      const t0 = now + m.t;
+      [1, 2, 3].forEach((mult, k) => {
+        const o = c.createOscillator(); o.type = "sine"; o.frequency.value = m.f * mult;
+        const g = c.createGain(); const peak = [0.5, 0.18, 0.07][k];
         g.gain.setValueAtTime(0.0001, t0);
-        g.gain.exponentialRampToValueAtTime(peak, t0 + 0.02);
-        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.95);
-        o.connect(g); g.connect(master);
-        o.start(t0); o.stop(t0 + 1.05);
+        g.gain.exponentialRampToValueAtTime(peak, t0 + 0.015);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.7);
+        o.connect(g); send(g);
+        o.start(t0); o.stop(t0 + 1.8);
       });
     });
-    const pad = c.createOscillator();
-    const pg = c.createGain();
-    pad.type = "triangle";
-    pad.frequency.value = 196;
-    pg.gain.setValueAtTime(0.0001, c.currentTime);
-    pg.gain.exponentialRampToValueAtTime(0.12, c.currentTime + 0.15);
-    pg.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 1.7);
-    pad.connect(pg); pg.connect(master);
-    pad.start(c.currentTime); pad.stop(c.currentTime + 1.8);
-    setTimeout(() => { try { c.close(); } catch {} }, 2300);
+
+    // afsluttende skinnende top-tone
+    const sh = c.createOscillator(); sh.type = "triangle"; sh.frequency.value = 1567.98;
+    const sg = c.createGain();
+    sg.gain.setValueAtTime(0.0001, now + 2.1);
+    sg.gain.exponentialRampToValueAtTime(0.05, now + 2.5);
+    sg.gain.exponentialRampToValueAtTime(0.0001, now + 4.7);
+    sh.connect(sg); send(sg);
+    sh.start(now + 2.1); sh.stop(now + 4.8);
+
+    setTimeout(() => { try { c.close(); } catch {} }, 5400);
   } catch {
-    // lyd kan være blokeret af browseren indtil første interaktion
+    // browser kan blokere lyd indtil foerste interaktion
   }
 }
 
