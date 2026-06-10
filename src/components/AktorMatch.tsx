@@ -48,7 +48,7 @@ export default function AktorMatch({ onAsk }: Props) {
     <section id="aktoer" className="max-w-5xl mx-auto">
       <p className="text-center mx-auto mb-5" style={{ maxWidth: 580, fontSize: 14, lineHeight: 1.6, color: "var(--kaerne-ink-soft)" }}>
         Astrid kender hele oversigten — beskriv opgaven i chatten, så giver hun sit faglige
-        bud på indsats, paragraf og konkrete aktører. Eller filtrér selv her.
+        bud på indsats, paragraf og konkrete leverandører. Eller filtrér selv her.
       </p>
 
       <div className="flex flex-wrap justify-center gap-3 mb-6">
@@ -73,7 +73,7 @@ export default function AktorMatch({ onAsk }: Props) {
           placeholder="Søg — fx §32, autisme, BFU..."
           className="px-4 py-2.5 rounded-full text-[13px] w-[210px] focus:outline-none"
           style={selectStyle}
-          aria-label="Søg i aktører"
+          aria-label="Søg i leverandører"
         />
       </div>
 
@@ -110,7 +110,7 @@ export default function AktorMatch({ onAsk }: Props) {
             <div style={{ fontSize: 11.5, color: "var(--kaerne-muted)" }}>{a.geografi}</div>
             <div className="flex gap-2 mt-1">
               <button
-                onClick={() => onAsk(`Jeg overvejer ${a.navn} (${a.kategori.toLowerCase()}, ${a.paragraffer.join(", ")}, ${a.geografi}). Hvad skal jeg afklare og spørge om, før jeg vælger aktør til sådan en opgave?`)}
+                onClick={() => onAsk(`Jeg overvejer ${a.navn} (${a.kategori.toLowerCase()}, ${a.paragraffer.join(", ")}, ${a.geografi}). Hvad skal jeg afklare og spørge om, før jeg vælger leverandør til sådan en opgave?`)}
                 className="cursor-pointer px-3.5 py-2 rounded-full text-[12px] hover:opacity-90 transition-opacity"
                 style={{ background: "var(--kaerne-ink)", color: "var(--kaerne-sand)" }}
               >
@@ -132,12 +132,12 @@ export default function AktorMatch({ onAsk }: Props) {
 
       {resultater.length === 0 && (
         <p className="text-center mt-6" style={{ fontSize: 14, color: "var(--kaerne-muted)" }}>
-          Ingen aktører matcher — prøv et bredere filter, eller beskriv opgaven for Astrid i chatten.
+          Ingen leverandører matcher — prøv et bredere filter, eller beskriv opgaven for Astrid i chatten.
         </p>
       )}
 
       <p className="text-center mx-auto mt-6" style={{ maxWidth: 640, fontSize: 11.5, lineHeight: 1.6, color: "var(--kaerne-muted)" }}>
-        Vejledende oversigt baseret på offentligt tilgængelige oplysninger — ingen aktør er sponsoreret
+        Vejledende oversigt baseret på offentligt tilgængelige oplysninger — ingen leverandør er sponsoreret
         eller fremhævet. Astrids bud er faglig støtte, ikke en afgørelse. Tjek altid Tilbudsportalen,
         tilsynsrapporter, takster og økonomi. Valget er altid dit og kommunens.
       </p>
