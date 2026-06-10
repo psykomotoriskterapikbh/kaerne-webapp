@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [pw, setPw] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [consent, setConsent] = useState(false);
 
   const configured = true;
 
@@ -19,6 +20,10 @@ export default function LoginPage() {
     setMsg(null);
     if (!configured) {
       setMsg("Login er ikke konfigureret endnu (Supabase-nøgler mangler i miljøet).");
+      return;
+    }
+    if (!consent) {
+      setMsg("Du skal acceptere privatlivspolitikken for at fortsætte.");
       return;
     }
     setBusy(true);
@@ -58,7 +63,11 @@ export default function LoginPage() {
         <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <input type="email" required placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} style={inputStyle} autoComplete="email" />
           <input type="password" required placeholder="Adgangskode" value={pw} onChange={(e) => setPw(e.target.value)} style={inputStyle} autoComplete={mode === "in" ? "current-password" : "new-password"} minLength={6} />
-          <button type="submit" disabled={busy} style={{ marginTop: 4, padding: "12px 14px", borderRadius: 12, border: "none", cursor: busy ? "default" : "pointer", background: "var(--kaerne-ink,#2c2824)", color: "var(--kaerne-sand,#f3e7d4)", fontSize: 14, opacity: busy ? 0.6 : 1 }}>
+          <label style={{ display: "flex", gap: 8, alignItems: "flex-start", fontSize: 12.5, color: "var(--kaerne-muted,#8a7a66)", lineHeight: 1.5, cursor: "pointer" }}>
+            <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ marginTop: 2 }} />
+            <span>Jeg har læst og accepterer <a href="/privatliv" target="_blank" style={{ color: "#9a6a47", textDecoration: "underline" }}>privatlivspolitikken</a>.</span>
+          </label>
+          <button type="submit" disabled={busy || !consent} style={{ marginTop: 4, padding: "12px 14px", borderRadius: 12, border: "none", cursor: busy || !consent ? "default" : "pointer", background: "var(--kaerne-ink,#2c2824)", color: "var(--kaerne-sand,#f3e7d4)", fontSize: 14, opacity: busy || !consent ? 0.6 : 1 }}>
             {busy ? "Et øjeblik…" : mode === "in" ? "Log ind" : "Opret konto"}
           </button>
         </form>
