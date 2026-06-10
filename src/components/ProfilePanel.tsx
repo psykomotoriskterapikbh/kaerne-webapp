@@ -41,7 +41,7 @@ export default function ProfilePanel() {
           color: aktiv ? "#fff" : "var(--kaerne-ink-soft)",
           background: aktiv ? "var(--kaerne-sage-deep,#5ea36f)" : "#fff",
         }}
-        title="Fortæl Astrid lidt om dig, så hun tilpasser sig — gemmes kun i din browser"
+        title="Fortæl Astrid lidt om dig, så hun tilpasser sig, gemmes kun i din browser"
       >
         ☺ Min profil
       </button>
@@ -54,7 +54,7 @@ export default function ProfilePanel() {
           <div style={{ width: "100%", maxWidth: 400, background: "var(--kaerne-sand,#fbf6ec)", border: "0.5px solid var(--kaerne-border,#d8c6a8)", borderRadius: 20, padding: "26px 24px", boxShadow: "0 18px 50px rgba(120,92,67,.22)" }}>
             <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 21, fontWeight: 400, color: "var(--kaerne-ink,#2c2824)", margin: "0 0 4px" }}>Min profil</h2>
             <p style={{ fontSize: 12.5, color: "var(--kaerne-muted,#8a7a66)", margin: "0 0 18px", lineHeight: 1.5 }}>
-              Hjælper Astrid med at ramme dig fagligt og i tonen. Gemmes kun i din browser — aldrig på en server, aldrig delt. Skriv ikke borgeroplysninger her.
+              Hjælper Astrid med at ramme dig fagligt og i tonen. Gemmes kun i din browser, aldrig på en server, aldrig delt. Skriv ikke borgeroplysninger her.
             </p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 13 }}>
