@@ -88,6 +88,7 @@ export default function WelcomeTrailer() {
 
   useEffect(() => {
     if (!open) return;
+    setRect(null);
     const s = STEPS[step];
     const el = findEl(s);
     targetRef.current = el;
