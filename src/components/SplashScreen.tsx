@@ -13,6 +13,48 @@ import { useEffect, useRef, useState } from "react";
 const SPLASH_BG =
   "https://media.glif.app/i:r/c_limit,w_3840/f_auto/q_auto/fucn4fhdx5txpp7ddqre";
 
+function playStartChime() {
+  if (typeof window === "undefined") return;
+  try {
+    const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    const c = new AC();
+    if (c.state === "suspended") c.resume();
+    const master = c.createGain();
+    master.connect(c.destination);
+    master.gain.setValueAtTime(0.0001, c.currentTime);
+    master.gain.exponentialRampToValueAtTime(0.07, c.currentTime + 0.05);
+    master.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 1.9);
+    const notes = [523.25, 659.25, 783.99];
+    notes.forEach((f, i) => {
+      const t0 = c.currentTime + i * 0.13;
+      [1, 2].forEach((mult, k) => {
+        const o = c.createOscillator();
+        const g = c.createGain();
+        o.type = "sine";
+        o.frequency.value = f * mult;
+        const peak = k === 0 ? 0.5 : 0.16;
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(peak, t0 + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.95);
+        o.connect(g); g.connect(master);
+        o.start(t0); o.stop(t0 + 1.05);
+      });
+    });
+    const pad = c.createOscillator();
+    const pg = c.createGain();
+    pad.type = "triangle";
+    pad.frequency.value = 196;
+    pg.gain.setValueAtTime(0.0001, c.currentTime);
+    pg.gain.exponentialRampToValueAtTime(0.12, c.currentTime + 0.15);
+    pg.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 1.7);
+    pad.connect(pg); pg.connect(master);
+    pad.start(c.currentTime); pad.stop(c.currentTime + 1.8);
+    setTimeout(() => { try { c.close(); } catch {} }, 2300);
+  } catch {
+    // lyd kan være blokeret af browseren indtil første interaktion
+  }
+}
+
 export default function SplashScreen() {
   const [show, setShow] = useState(false);
   const [gone, setGone] = useState(false);
@@ -36,6 +78,7 @@ export default function SplashScreen() {
     if (reduce) { setGone(true); return; }
     try { sessionStorage.setItem("astrid_splash_seen", "1"); } catch {}
     setShow(true);
+    playStartChime();
   }, []);
 
   useEffect(() => {
