@@ -9,6 +9,7 @@ import AuthButton from "@/components/AuthButton";
 import DikterButton from "@/components/DikterButton";
 import ProfilePanel from "@/components/ProfilePanel";
 import { loadProfile } from "@/lib/profile";
+import { fireConfetti } from "@/lib/confetti";
 import type { SlashCmd } from "@/components/AstridUpgrades";
 import { FristBeregner, ParagrafOversaetter, Faq } from "@/components/Vaerktoejer";
 
@@ -187,6 +188,12 @@ export default function KarlaLanding() {
     if (nearBottom) chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, loading]);
 
+  useEffect(() => {
+    const onLukket = () => fireConfetti();
+    window.addEventListener("astrid:saglukket", onLukket);
+    return () => window.removeEventListener("astrid:saglukket", onLukket);
+  }, []);
+
   const send = async (text: string) => {
     const t = text.trim();
     if (!t) return;
@@ -202,12 +209,14 @@ export default function KarlaLanding() {
     const controller = new AbortController();
     abortRef.current = controller;
 
+    const isFirstMessage = messages.length === 0;
     const history: ChatMsg[] = [...messages, { role: "user", content: t }];
     setMessages(history);
     setInput("");
     setSlash(false);
     setTyping(false);
     setLoading(true);
+    if (isFirstMessage) fireConfetti();
     setMessages((m) => [...m, { role: "assistant", content: "" }]);
 
     const setLast = (content: string) =>
