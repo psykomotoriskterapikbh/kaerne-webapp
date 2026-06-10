@@ -81,10 +81,9 @@ export default function WelcomeTrailer() {
 
   const measure = useCallback(() => {
     const el = targetRef.current;
-    if (!el) { setRect((p) => (p === null ? p : null)); return; }
+    if (!el) { setRect(null); return; }
     const r = el.getBoundingClientRect();
-    const nr = { x: r.left, y: r.top, w: r.width, h: r.height };
-    setRect((p) => (p && Math.abs(p.x - nr.x) < 0.5 && Math.abs(p.y - nr.y) < 0.5 && Math.abs(p.w - nr.w) < 0.5 && Math.abs(p.h - nr.h) < 0.5 ? p : nr));
+    setRect({ x: r.left, y: r.top, w: r.width, h: r.height });
   }, []);
 
   useEffect(() => {
@@ -95,6 +94,10 @@ export default function WelcomeTrailer() {
     targetRef.current = el;
     if (el) {
       el.scrollIntoView({ behavior: "auto", block: "center" });
+      const raf = requestAnimationFrame(() => { measure(); requestAnimationFrame(measure); });
+      const t1 = setTimeout(measure, 160);
+      const t2 = setTimeout(measure, 360);
+      return () => { cancelAnimationFrame(raf); clearTimeout(t1); clearTimeout(t2); };
     } else {
       setRect(null);
     }
@@ -102,10 +105,10 @@ export default function WelcomeTrailer() {
 
   useEffect(() => {
     if (!open) return;
-    let raf = 0;
-    const loop = () => { measure(); raf = requestAnimationFrame(loop); };
-    raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
+    const h = () => measure();
+    window.addEventListener("resize", h);
+    window.addEventListener("scroll", h, true);
+    return () => { window.removeEventListener("resize", h); window.removeEventListener("scroll", h, true); };
   }, [open, measure]);
 
   useEffect(() => {
@@ -150,7 +153,7 @@ export default function WelcomeTrailer() {
       {open && (
         <div style={{ position: "fixed", inset: 0, zIndex: 1100 }}>
           {s.type === "spot" && rect ? (
-            <div style={{ position: "absolute", top: rect.y - PAD, left: rect.x - PAD, width: rect.w + PAD * 2, height: rect.h + PAD * 2, borderRadius: 16, boxShadow: "0 0 0 9999px rgba(18,15,24,0.80), 0 0 0 3px #ef9355, 0 0 30px rgba(239,147,85,.75)", pointerEvents: "none" }} />
+            <div style={{ position: "absolute", top: rect.y - PAD, left: rect.x - PAD, width: rect.w + PAD * 2, height: rect.h + PAD * 2, borderRadius: 16, boxShadow: "0 0 0 9999px rgba(18,15,24,0.80), 0 0 0 3px #ef9355, 0 0 30px rgba(239,147,85,.75)", transition: "top .3s ease, left .3s ease, width .3s ease, height .3s ease", pointerEvents: "none" }} />
           ) : (
             <div style={{ position: "absolute", inset: 0, background: "rgba(18,15,24,0.86)", backdropFilter: "blur(4px)" }} />
           )}
