@@ -557,6 +557,7 @@ export default function KarlaLanding() {
             </div>
 
             {!chatActive && (
+              <>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-5 mb-2.5">
                 {TRYCARDS.map((tc) => (
                   <button key={tc.title} type="button" onClick={() => send(tc.prompt)} className="k-trycard cursor-pointer text-left">
@@ -573,6 +574,7 @@ export default function KarlaLanding() {
                   </button>
                 ))}
               </div>
+              </>
             )}
           </div>
         </div>
