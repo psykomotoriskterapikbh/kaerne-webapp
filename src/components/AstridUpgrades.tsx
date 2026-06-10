@@ -161,3 +161,53 @@ export const SLASH_COMMANDS: SlashCmd[] = [
   { cmd: "/aktør", desc: "Find den rette aktør", panel: "aktoer" },
   { cmd: "/frist", desc: "Beregn en frist", panel: "frister" },
 ];
+
+
+/* ============ Sparet tid i dag (rigtig taeller) ============ */
+function tidKey() { return "astrid_tid_" + new Date().toISOString().slice(0, 10); }
+export function SparetTid() {
+  const [min, setMin] = useState(0);
+  const [bump, setBump] = useState(false);
+  useEffect(() => {
+    const read = () => { try { return parseInt(localStorage.getItem(tidKey()) || "0", 10) || 0; } catch { return 0; } };
+    setMin(read());
+    const addMin = (n) => {
+      let nv = read() + n;
+      try { localStorage.setItem(tidKey(), String(nv)); } catch {}
+      setMin(nv); setBump(true); setTimeout(() => setBump(false), 650);
+    };
+    const onSvar = () => addMin(6);
+    const onLukket = () => addMin(15);
+    window.addEventListener("astrid:svarklar", onSvar);
+    window.addEventListener("astrid:saglukket", onLukket);
+    return () => { window.removeEventListener("astrid:svarklar", onSvar); window.removeEventListener("astrid:saglukket", onLukket); };
+  }, []);
+  if (min <= 0) return null;
+  const t = min >= 60 ? (Math.floor(min / 60) + " t " + (min % 60) + " min") : (min + " min");
+  return (
+    <div className={"k-tid" + (bump ? " k-tid-bump" : "")} title="Anslaaet tid sparet i dag, ud fra dine svar og lukkede sager">
+      <span aria-hidden="true">⏱</span> Sparet i dag: ~{t}
+    </div>
+  );
+}
+
+/* ============ Pro-vaerktoejer laast op (let, ikke-blokerende) ============ */
+export function ProUnlock() {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const onLukket = () => {
+      try { if (localStorage.getItem("astrid_pro_unlock") === "1") return; localStorage.setItem("astrid_pro_unlock", "1"); } catch {}
+      setShow(true); setTimeout(() => setShow(false), 7000);
+    };
+    window.addEventListener("astrid:saglukket", onLukket);
+    return () => window.removeEventListener("astrid:saglukket", onLukket);
+  }, []);
+  if (!show) return null;
+  return (
+    <div className="k-unlock" role="status">
+      <div style={{ fontSize: 13, fontWeight: 700, color: "var(--kaerne-terracotta-deep)", marginBottom: 4 }}>✦ Din første sag er lukket</div>
+      <div style={{ fontSize: 12.5, lineHeight: 1.5, color: "var(--kaerne-ink)" }}>Godt arbejde. Pro-værktøjerne er åbne for dig: Frist-beregner, Paragraf-oversætter og Find aktør, øverst på siden.</div>
+      <button onClick={() => setShow(false)} aria-label="Luk" style={{ position: "absolute", top: 8, right: 10, background: "none", border: "none", cursor: "pointer", color: "var(--kaerne-muted)", fontSize: 14, lineHeight: 1 }}>✕</button>
+    </div>
+  );
+}
