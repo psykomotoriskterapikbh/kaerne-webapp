@@ -7,6 +7,8 @@ import SplashScreen from "@/components/SplashScreen";
 import { StreakChip, KaosKontrolBar, GuldkornPopup, LukSagButton, anonymiser, SLASH_COMMANDS } from "@/components/AstridUpgrades";
 import AuthButton from "@/components/AuthButton";
 import DikterButton from "@/components/DikterButton";
+import ProfilePanel from "@/components/ProfilePanel";
+import { loadProfile } from "@/lib/profile";
 import type { SlashCmd } from "@/components/AstridUpgrades";
 import { FristBeregner, ParagrafOversaetter, Faq } from "@/components/Vaerktoejer";
 
@@ -222,7 +224,7 @@ export default function KarlaLanding() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: history }),
+        body: JSON.stringify({ messages: history, profile: loadProfile() ?? undefined }),
         signal: controller.signal,
       });
       if (!res.ok) {
@@ -487,6 +489,7 @@ export default function KarlaLanding() {
                   ⎙ Upload sag (.txt)
                 </button>
                 <DikterButton onText={(t) => setInput((v) => (v ? v + " " : "") + t)} />
+                <ProfilePanel />
                 <button
                   type="button"
                   onClick={() => { const a = anonymiser(input); if (a !== input) setInput(a); }}
