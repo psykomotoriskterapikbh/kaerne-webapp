@@ -26,7 +26,7 @@ function persist(list: Samtale[]) {
 
 type Props = { messages: Msg[]; onOpen: (m: Msg[]) => void };
 
-/* Mine samtaler — gemmes KUN lokalt i browseren (localStorage). Ingen server. */
+/* Mine samtaler, gemmes KUN lokalt i browseren (localStorage). Ingen server. */
 export default function SamtalerPanel({ messages, onOpen }: Props) {
   const [open, setOpen] = useState(false);
   const [list, setList] = useState<Samtale[]>([]);
@@ -73,7 +73,7 @@ export default function SamtalerPanel({ messages, onOpen }: Props) {
         onClick={() => setOpen(true)}
         className="cursor-pointer px-3.5 py-1.5 rounded-full text-[11.5px] hover:opacity-75 transition-opacity"
         style={{ border: "0.5px solid var(--kaerne-border)", color: "var(--kaerne-ink-soft)", background: "#fff" }}
-        title="Gem og genåbn dine samtaler — gemmes kun i din browser"
+        title="Gem og genåbn dine samtaler, gemmes kun i din browser"
       >
         🗂 Mine samtaler
       </button>
@@ -86,7 +86,7 @@ export default function SamtalerPanel({ messages, onOpen }: Props) {
           <div style={{ width: "100%", maxWidth: 440, maxHeight: "82vh", overflow: "auto", background: "var(--kaerne-sand,#fbf6ec)", border: "0.5px solid var(--kaerne-border,#d8c6a8)", borderRadius: 20, padding: "24px 22px", boxShadow: "0 18px 50px rgba(120,92,67,.22)" }}>
             <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 21, fontWeight: 400, color: "var(--kaerne-ink,#2c2824)", margin: "0 0 4px" }}>Mine samtaler</h2>
             <p style={{ fontSize: 12.5, color: "var(--kaerne-muted,#8a7a66)", margin: "0 0 16px", lineHeight: 1.5 }}>
-              Gemmes kun i din browser — aldrig på en server. Husk at samtaler bør være anonyme.
+              Gemmes kun i din browser, aldrig på en server. Husk at samtaler bør være anonyme.
             </p>
 
             <button
