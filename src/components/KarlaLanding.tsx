@@ -109,7 +109,7 @@ const PLACEHOLDERS = [
   "Hjælp mig med et §20-notat",
   "Hvilken paragraf passer til min sag?",
   "Lav et mødereferat ud fra mine noter",
-  "Find den rette aktør til en ung med ADHD",
+  "Find den rette leverandør til en ung med ADHD",
 ];
 
 const CHIPS = [
@@ -117,7 +117,7 @@ const CHIPS = [
   { label: "§ Paragraf-hjælp", prompt: "Jeg har brug for hjælp til at finde den rette paragraf i Barnets Lov eller Serviceloven. Hvor starter vi?" },
   { label: "Notat-hjælp", prompt: "Hjælp mig med at omsætte mine løse noter til et professionelt journalnotat." },
   { label: "Forbered et møde", prompt: "Jeg skal forberede et svært møde i en sag. Hjælp mig med dagsorden, de svære spørgsmål og borgerens perspektiv." },
-  { label: "Find den rette indsats", prompt: "Jeg skal finde den rette type indsats og aktør til en sag. Hvad skal jeg overveje?" },
+  { label: "Find den rette indsats", prompt: "Jeg skal finde den rette type indsats og leverandør til en sag. Hvad skal jeg overveje?" },
   { label: "Mødereferat", prompt: "Jeg skal lave et mødereferat. Bed mig om at indsætte mine anonymiserede noter eller transskription, og lav så et struktureret referat med beslutninger, aftaler, ansvarlige og frister." },
 ];
 
@@ -130,7 +130,7 @@ const TRYCARDS = [
 const PANELS = [
   { id: "frister", label: "⏱ Frist-beregner" },
   { id: "paragraf", label: "§ Paragraf-oversætter" },
-  { id: "aktoer", label: "⌂ Find aktør" },
+  { id: "aktoer", label: "⌂ Find leverandør" },
   { id: "faq", label: "✦ Spørgsmål & svar" },
 ] as const;
 
