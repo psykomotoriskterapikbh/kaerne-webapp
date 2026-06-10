@@ -171,7 +171,7 @@ export function SparetTid() {
   useEffect(() => {
     const read = () => { try { return parseInt(localStorage.getItem(tidKey()) || "0", 10) || 0; } catch { return 0; } };
     setMin(read());
-    const addMin = (n) => {
+    const addMin = (n: number) => {
       let nv = read() + n;
       try { localStorage.setItem(tidKey(), String(nv)); } catch {}
       setMin(nv); setBump(true); setTimeout(() => setBump(false), 650);
