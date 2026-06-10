@@ -13,6 +13,7 @@ import { loadProfile } from "@/lib/profile";
 import { fireConfetti } from "@/lib/confetti";
 import type { SlashCmd } from "@/components/AstridUpgrades";
 import { FristBeregner, ParagrafOversaetter, Faq } from "@/components/Vaerktoejer";
+import { OmGuide } from "@/components/OmGuide";
 
 type ChatMsg = { role: "user" | "assistant"; content: string };
 
@@ -593,6 +594,7 @@ export default function KarlaLanding() {
             </span>
           ))}
         </div>
+        <OmGuide />
       </main>
 
       <footer className="px-6 md:px-12 py-6 border-t text-center text-[11px]" style={{ borderColor: "var(--kaerne-border)", color: "var(--kaerne-muted)" }}>
