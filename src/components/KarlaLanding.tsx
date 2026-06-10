@@ -131,6 +131,7 @@ export default function KarlaLanding() {
   const inputRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -186,13 +187,18 @@ export default function KarlaLanding() {
 
   const send = async (text: string) => {
     const t = text.trim();
-    if (!t || loading) return;
+    if (!t) return;
 
     if (CPR_REGEX.test(t)) {
       setGdprWarning(true);
       return;
     }
     setGdprWarning(false);
+
+    // afbryd evt. igangvaerende svar og omdirigér til den nye besked
+    if (abortRef.current) abortRef.current.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
 
     const history: ChatMsg[] = [...messages, { role: "user", content: t }];
     setMessages(history);
@@ -217,6 +223,7 @@ export default function KarlaLanding() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: history }),
+        signal: controller.signal,
       });
       if (!res.ok) {
         const err = await res.text().catch(() => "");
@@ -232,19 +239,23 @@ export default function KarlaLanding() {
         const { done, value } = await reader.read();
         if (done) break;
         full += decoder.decode(value, { stream: true });
-        setLast(full);
+        if (abortRef.current === controller) setLast(full);
       }
     } catch (e) {
+      if (controller.signal.aborted) return; // omdirigeret — den nye besked overtager
       failed = true;
       const msg =
         e instanceof Error && e.message && !e.message.includes("fetch")
           ? e.message
           : "Hov — jeg kunne ikke få forbindelse lige nu. Prøv igen om et øjeblik.";
-      setLast(msg);
+      if (abortRef.current === controller) setLast(msg);
     } finally {
-      if (!failed) setLast(full);
-      setLoading(false);
-      inputRef.current?.focus();
+      if (abortRef.current === controller) {
+        if (!failed) setLast(full);
+        setLoading(false);
+        abortRef.current = null;
+        inputRef.current?.focus();
+      }
     }
   };
 
@@ -451,7 +462,7 @@ export default function KarlaLanding() {
               <button
                 type="submit"
                 aria-label="Send til Astrid"
-                disabled={loading || !input.trim()}
+                disabled={!input.trim()}
                 className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform disabled:opacity-50 disabled:hover:scale-100"
                 style={{ background: "var(--kaerne-terracotta)", color: "#fff", boxShadow: "0 3px 10px rgba(226,145,111,0.45)" }}
               >
