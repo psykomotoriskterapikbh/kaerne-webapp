@@ -80,7 +80,22 @@ function profilContext(p?: Record<string, unknown>): string {
   return "OM BRUGEREN (tilpas dig dette, men det ændrer ikke dine faglige grænser): " + dele.join(" ");
 }
 
+const RL = new Map<string, number[]>();
+function rateLimited(ip: string): boolean {
+  const now = Date.now();
+  const arr = (RL.get(ip) || []).filter((t) => now - t < 60000);
+  arr.push(now);
+  RL.set(ip, arr);
+  if (RL.size > 5000) RL.clear();
+  return arr.length > 20;
+}
+
 export async function POST(req: Request) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "ukendt";
+  if (rateLimited(ip)) {
+    return new Response("Lige lidt for hurtigt. Vent et øjeblik og prøv igen.", { status: 429 });
+  }
+
   let body: { messages?: Msg[]; profile?: Record<string, unknown> };
   try {
     body = await req.json();
