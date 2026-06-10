@@ -227,8 +227,8 @@ const FAQ_ITEMS = [
     a: "Astrid er gratis at prøve, bare begynd at skrive. Skal hele teamet eller forvaltningen med, kan der laves en aftale for jeres kommune.",
   },
   {
-    q: "Er aktør-oversigten neutral?",
-    a: "Ja. Ingen aktør betaler for at være med eller blive fremhævet. Astrid anbefaler alene ud fra fagligt match, målgruppe og geografi, og valget er altid dit og kommunens. Tjek altid Tilbudsportalen og tilsynsrapporter.",
+    q: "Er leverandør-oversigten neutral?",
+    a: "Ja. Ingen leverandør betaler for at være med eller blive fremhævet. Astrid anbefaler alene ud fra fagligt match, målgruppe og geografi, og valget er altid dit og kommunens. Tjek altid Tilbudsportalen og tilsynsrapporter.",
   },
   {
     q: "Hvordan kommer jeg i gang?",
