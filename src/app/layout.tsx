@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     template: "%s · Astrid",
   },
   description:
-    "Astrid hjælper socialrådgivere, sagsbehandlere og indkøbere med sagssparring, Barnets Lov og Serviceloven, notater, frister og valg af den rette indsats og aktør. Gratis at prøve. Støtte — ikke skøn.",
+    "Astrid hjælper socialrådgivere, sagsbehandlere og indkøbere med sagssparring, Barnets Lov og Serviceloven, notater, frister og valg af den rette indsats og leverandør. Gratis at prøve. Støtte — ikke skøn.",
   applicationName: "Astrid",
   keywords: [
     "socialrådgiver",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     "AI-kollega",
     "journalnotat",
     "frister",
-    "aktørvalg",
+    "leverandørvalg",
   ],
   authors: [{ name: "Astrid" }],
   robots: { index: true, follow: true },
