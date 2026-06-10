@@ -35,9 +35,14 @@ export default function LoginPage() {
         router.push("/");
         router.refresh();
       } else {
-        const { error } = await sb.auth.signUp({ email, password: pw });
+        const { data, error } = await sb.auth.signUp({ email, password: pw });
         if (error) throw error;
-        setMsg("Næsten i mål — tjek din mail for at bekræfte din konto.");
+        if (data.session) {
+          router.push("/");
+          router.refresh();
+        } else {
+          setMsg("Næsten i mål — tjek din mail (også spam) for at bekræfte din konto, og log derefter ind.");
+        }
       }
     } catch (err) {
       setMsg(err instanceof Error ? err.message : "Noget gik galt. Prøv igen.");
