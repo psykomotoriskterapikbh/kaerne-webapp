@@ -31,8 +31,24 @@ export default function AuthButton() {
       try { await createClient().auth.signOut(); } catch {}
       setEmail(null);
     };
+    const sletKonto = async () => {
+      if (!window.confirm("Vil du slette din konto og dine data permanent? Det kan ikke fortrydes.")) return;
+      try {
+        const sb = createClient();
+        const { error } = await sb.rpc("delete_user");
+        if (error) throw error;
+        try { localStorage.removeItem("astrid_profile_v1"); } catch {}
+        await sb.auth.signOut();
+        setEmail(null);
+      } catch {
+        window.alert("Kontosletning er ikke aktiveret endnu. Skriv til os, så sletter vi din konto manuelt.");
+      }
+    };
     return (
-      <button onClick={signOut} style={pill} title={email}>Log ud</button>
+      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <button onClick={signOut} style={pill} title={email}>Log ud</button>
+        <button onClick={sletKonto} style={{ ...pill, color: "#a14b32" }} title="Slet din konto og data permanent">Slet konto</button>
+      </div>
     );
   }
   return <a href="/login" style={pill}>Log ind</a>;
