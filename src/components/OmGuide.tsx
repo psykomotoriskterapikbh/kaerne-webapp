@@ -15,7 +15,7 @@ const VAERKTOEJER = [
   { i: "🎙", t: "Diktér", d: "Tal i stedet for at skrive. Kun til anonym tekst." },
   { i: "⦸", t: "Anonymisér", d: "Fjerner CPR, telefon, e-mail og adresse fra teksten." },
   { i: "⎙", t: "Upload sag", d: "Smid en anonym fil ind, så læser Astrid den." },
-  { i: "⌂", t: "Find aktør m.m.", d: "Hurtige værktøjer: aktør-match, frist-beregner og paragraf-oversætter." },
+  { i: "⌂", t: "Find leverandør m.m.", d: "Hurtige værktøjer: leverandør-match, frist-beregner og paragraf-oversætter." },
 ];
 
 const card: React.CSSProperties = {
