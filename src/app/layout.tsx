@@ -31,12 +31,21 @@ export const metadata: Metadata = {
     type: "website",
     locale: "da_DK",
     siteName: "Astrid",
+    images: [
+      {
+        url: "https://media.glif.app/i:r/c_fill,w_1200,h_630/f_auto/q_auto/fucn4fhdx5txpp7ddqre",
+        width: 1200,
+        height: 630,
+        alt: "Astrid — din digitale kollega i socialforvaltningen",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Astrid — Din digitale kollega i socialforvaltningen",
     description:
       "Sagssparring, jura og notathjælp — den varme AI-kollega for kommunalt socialarbejde.",
+    images: ["https://media.glif.app/i:r/c_fill,w_1200,h_630/f_auto/q_auto/fucn4fhdx5txpp7ddqre"],
   },
 };
 
