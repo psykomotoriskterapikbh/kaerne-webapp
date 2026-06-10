@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import AktorMatch from "@/components/AktorMatch";
 import AstridFigur from "@/components/AstridFigur";
 import SplashScreen from "@/components/SplashScreen";
-import { KaosKontrolBar, GuldkornPopup, LukSagButton, anonymiser, SLASH_COMMANDS } from "@/components/AstridUpgrades";
+import { KaosKontrolBar, GuldkornPopup, LukSagButton, anonymiser, SLASH_COMMANDS, SparetTid, ProUnlock } from "@/components/AstridUpgrades";
 import AuthButton from "@/components/AuthButton";
 import DikterButton from "@/components/DikterButton";
 import ProfilePanel from "@/components/ProfilePanel";
@@ -119,6 +119,12 @@ const CHIPS = [
   { label: "Forbered et møde", prompt: "Jeg skal forberede et svært møde i en sag. Hjælp mig med dagsorden, de svære spørgsmål og borgerens perspektiv." },
   { label: "Find den rette indsats", prompt: "Jeg skal finde den rette type indsats og aktør til en sag. Hvad skal jeg overveje?" },
   { label: "Mødereferat", prompt: "Jeg skal lave et mødereferat. Bed mig om at indsætte mine anonymiserede noter eller transskription, og lav så et struktureret referat med beslutninger, aftaler, ansvarlige og frister." },
+];
+
+const TRYCARDS = [
+  { icon: "✍", title: "Skriv et journalnotat", sub: "Løse noter → fagligt notat", prompt: "Hjælp mig med at omsætte mine løse, anonymiserede noter til et professionelt journalnotat. Bed mig om at indsætte noterne." },
+  { icon: "§", title: "Find den rette paragraf", sub: "Barnets Lov & Serviceloven", prompt: "Jeg har brug for hjælp til at finde den rette paragraf i Barnets Lov eller Serviceloven. Beskriv kort hvad du har brug for at vide." },
+  { icon: "🗣", title: "Forbered en svær samtale", sub: "Dagsorden & spørgsmål", prompt: "Jeg skal forberede en svær samtale i en sag. Hjælp mig med dagsorden, de svære spørgsmål og borgerens perspektiv." },
 ];
 
 const PANELS = [
@@ -276,7 +282,7 @@ export default function KarlaLanding() {
       if (abortRef.current === controller) setLast(msg);
     } finally {
       if (abortRef.current === controller) {
-        if (!failed) setLast(full);
+        if (!failed) { setLast(full); if (full.trim().length > 120) { try { window.dispatchEvent(new Event("astrid:svarklar")); } catch {} } }
         setLoading(false);
         abortRef.current = null;
         inputRef.current?.focus();
@@ -310,6 +316,7 @@ export default function KarlaLanding() {
       <style>{`.k-caret{display:inline-block;width:7px;height:1.02em;background:var(--kaerne-terracotta);margin-left:3px;vertical-align:-2px;border-radius:1px;animation:k-caretb 1s steps(1) infinite}@keyframes k-caretb{50%{opacity:0}}`}</style>
       <SplashScreen />
       <GuldkornPopup />
+      <ProUnlock />
       {inlineSel && (
         <div className="k-inline" style={{ left: inlineSel.x, top: inlineSel.y, transform: "translate(-50%,-100%)" }}>
           <button type="button" onClick={() => inlineAction("Gør denne tekst mere professionel")}>Gør professionel</button>
@@ -366,6 +373,7 @@ export default function KarlaLanding() {
               </p>
             )}
 
+            <SparetTid />
             {chatActive && <KaosKontrolBar />}
 
             {chatActive && (
@@ -445,7 +453,7 @@ export default function KarlaLanding() {
             )}
 
             <form
-              className="k-fade4 relative"
+              className={"k-fade4 relative" + (chatActive ? " k-stickym" : "")}
               onSubmit={(e) => {
                 e.preventDefault();
                 send(input);
@@ -549,7 +557,16 @@ export default function KarlaLanding() {
             </div>
 
             {!chatActive && (
-              <div className="flex gap-2.5 mt-5 flex-wrap">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-5 mb-2.5">
+                {TRYCARDS.map((tc) => (
+                  <button key={tc.title} type="button" onClick={() => send(tc.prompt)} className="k-trycard cursor-pointer text-left">
+                    <span className="k-trycard-ic" aria-hidden="true">{tc.icon}</span>
+                    <span className="k-trycard-t">{tc.title}</span>
+                    <span className="k-trycard-s">{tc.sub}</span>
+                  </button>
+                ))}
+              </div>
+              <div className="flex gap-2.5 flex-wrap">
                 {CHIPS.map((c) => (
                   <button key={c.label} onClick={() => send(c.prompt)} className="k-chip cursor-pointer px-4 py-2.5 rounded-full text-[13px]">
                     {c.label}
