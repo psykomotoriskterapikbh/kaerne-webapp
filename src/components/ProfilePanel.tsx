@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AstridProfile, TOM_PROFIL, loadProfile, saveProfile, clearProfile, hasProfile } from "@/lib/profile";
+import { KOMMUNER } from "@/data/kommuner";
 
 const ROLLER = ["Socialrådgiver", "Sagsbehandler", "Myndighed", "Indkøber", "Leder", "Andet"];
 const OMRAADER = ["Børn & unge", "Familie", "Voksne", "Beskæftigelse", "Blandet"];
@@ -76,8 +77,11 @@ export default function ProfilePanel() {
                 </select>
               </div>
               <div>
-                <label style={label}>Kommune / region</label>
-                <input style={field} value={p.region} maxLength={60} onChange={(e) => setP({ ...p, region: e.target.value })} placeholder="Fx Aarhus Kommune" />
+                <label style={label}>Kommune</label>
+                <select style={field} value={p.region} onChange={(e) => setP({ ...p, region: e.target.value })}>
+                  <option value="">Vælg…</option>
+                  {KOMMUNER.map((k) => <option key={k} value={k}>{k}</option>)}
+                </select>
               </div>
               <div>
                 <label style={label}>Hvordan vil du have svar?</label>
