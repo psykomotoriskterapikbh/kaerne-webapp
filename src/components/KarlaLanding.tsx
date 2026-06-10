@@ -8,6 +8,7 @@ import { StreakChip, KaosKontrolBar, GuldkornPopup, LukSagButton, anonymiser, SL
 import AuthButton from "@/components/AuthButton";
 import DikterButton from "@/components/DikterButton";
 import ProfilePanel from "@/components/ProfilePanel";
+import SamtalerPanel from "@/components/SamtalerPanel";
 import { loadProfile } from "@/lib/profile";
 import { fireConfetti } from "@/lib/confetti";
 import type { SlashCmd } from "@/components/AstridUpgrades";
@@ -499,6 +500,7 @@ export default function KarlaLanding() {
                 </button>
                 <DikterButton onText={(t) => setInput((v) => (v ? v + " " : "") + t)} />
                 <ProfilePanel />
+                <SamtalerPanel messages={messages} onOpen={(m) => setMessages(m)} />
                 <button
                   type="button"
                   onClick={() => { const a = anonymiser(input); if (a !== input) setInput(a); }}
