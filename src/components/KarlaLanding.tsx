@@ -347,15 +347,8 @@ export default function KarlaLanding() {
       <main className="flex-1 px-6 md:px-12 py-8 md:py-12">
         <div className="grid md:grid-cols-[280px_1fr] gap-10 md:gap-14 items-start max-w-5xl mx-auto">
 
-          <div className="relative w-[250px] h-[300px] flex items-center justify-center mx-auto md:mx-0 md:sticky md:top-28">
+          <div className="relative w-[250px] min-h-[300px] flex items-center justify-center mx-auto md:mx-0 md:sticky md:top-28">
             <AstridFigur loading={loading} typing={typing} chatActive={chatActive} />
-
-            <div className="absolute -bottom-2 left-0 right-0 text-center">
-              <div style={{ fontFamily: "var(--font-script)", fontSize: 26, color: "var(--kaerne-ink)", lineHeight: 1 }}>Astrid</div>
-              <div className="mt-1" style={{ fontSize: 10, letterSpacing: "0.2em", color: "var(--kaerne-muted)", textTransform: "uppercase" }}>
-                din digitale kollega
-              </div>
-            </div>
           </div>
 
           <div className="max-w-2xl">
