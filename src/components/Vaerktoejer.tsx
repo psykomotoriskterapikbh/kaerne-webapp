@@ -7,11 +7,11 @@ import { useMemo, useState } from "react";
 type Frist = { id: string; navn: string; mdr?: number; timer?: number; note: string };
 
 const FRISTER: Frist[] = [
-  { id: "bfu", navn: "Børnefaglig undersøgelse — BL §20", mdr: 4, note: "Skal afsluttes senest 4 måneder efter, at kommunen er blevet bekendt med, at barnet kan have behov for særlig støtte." },
-  { id: "plan", navn: "Barnets plan — BL §91", mdr: 3, note: "Udarbejdes senest 3 måneder efter afgørelsen om en støttende indsats eller anbringelse." },
-  { id: "opf", navn: "Første opfølgning på indsats — BL §95", mdr: 3, note: "Følg op på indsatsen senest 3 måneder efter, at den er iværksat." },
-  { id: "underretning", navn: "Vurdering af underretning — BL §136", timer: 24, note: "Vurdér inden for 24 timer, om barnets sundhed eller udvikling er i fare, og om der skal handles akut." },
-  { id: "egen", navn: "Egen frist — vælg antal måneder", note: "Til genbehandlingsfrister, handleplansrevision eller andet med fast interval." },
+  { id: "bfu", navn: "Børnefaglig undersøgelse, BL §20", mdr: 4, note: "Skal afsluttes senest 4 måneder efter, at kommunen er blevet bekendt med, at barnet kan have behov for særlig støtte." },
+  { id: "plan", navn: "Barnets plan, BL §91", mdr: 3, note: "Udarbejdes senest 3 måneder efter afgørelsen om en støttende indsats eller anbringelse." },
+  { id: "opf", navn: "Første opfølgning på indsats, BL §95", mdr: 3, note: "Følg op på indsatsen senest 3 måneder efter, at den er iværksat." },
+  { id: "underretning", navn: "Vurdering af underretning, BL §136", timer: 24, note: "Vurdér inden for 24 timer, om barnets sundhed eller udvikling er i fare, og om der skal handles akut." },
+  { id: "egen", navn: "Egen frist, vælg antal måneder", note: "Til genbehandlingsfrister, handleplansrevision eller andet med fast interval." },
 ];
 
 function plusMonths(d: Date, m: number): Date {
@@ -43,7 +43,7 @@ function downloadIcs(titel: string, note: string, deadline: Date) {
     `DTSTART;VALUE=DATE:${icsDate(deadline)}`,
     `DTEND;VALUE=DATE:${icsDate(dagEfter)}`,
     `SUMMARY:Frist: ${titel}`,
-    `DESCRIPTION:${note.replace(/,/g, "\\,")} (Beregnet med Astrid — kontrollér altid fristen i sagen.)`,
+    `DESCRIPTION:${note.replace(/,/g, "\\,")} (Beregnet med Astrid, kontrollér altid fristen i sagen.)`,
     "BEGIN:VALARM",
     "TRIGGER:-P7D",
     "ACTION:DISPLAY",
@@ -92,7 +92,7 @@ export function FristBeregner() {
       <div>
         <div className="mb-1" style={{ fontFamily: "var(--font-serif)", fontSize: 19, color: "var(--kaerne-ink)" }}>Frist-beregner</div>
         <div style={{ fontSize: 13, lineHeight: 1.55, color: "var(--kaerne-ink-soft)" }}>
-          Vælg frist og startdato — få deadline med det samme, og læg den direkte i Outlook med ét klik.
+          Vælg frist og startdato, få deadline med det samme, og læg den direkte i Outlook med ét klik.
         </div>
       </div>
 
@@ -136,7 +136,7 @@ export function FristBeregner() {
       )}
 
       <div style={{ fontSize: 11, lineHeight: 1.5, color: "var(--kaerne-muted)" }}>
-        Vejledende beregning — kontrollér altid fristen i den konkrete sag og jeres interne retningslinjer.
+        Vejledende beregning, kontrollér altid fristen i den konkrete sag og jeres interne retningslinjer.
       </div>
     </div>
   );
@@ -176,13 +176,13 @@ export function ParagrafOversaetter() {
       <div>
         <div className="mb-1" style={{ fontFamily: "var(--font-serif)", fontSize: 19, color: "var(--kaerne-ink)" }}>Paragraf-oversætter</div>
         <div style={{ fontSize: 13, lineHeight: 1.55, color: "var(--kaerne-ink-soft)" }}>
-          Fra gammel Servicelov til Barnets Lov — slå op på sekunder. Spørg Astrid i chatten, hvis du vil have paragraffen forklaret.
+          Fra gammel Servicelov til Barnets Lov, slå op på sekunder. Spørg Astrid i chatten, hvis du vil have paragraffen forklaret.
         </div>
       </div>
       <input
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder="Søg — fx §50, efterværn, handleplan..."
+        placeholder="Søg, fx §50, efterværn, handleplan..."
         className="px-4 py-2.5 rounded-full text-[13px] focus:outline-none"
         style={{ border: "0.5px solid var(--kaerne-border)", background: "#fff", color: "var(--kaerne-ink)", boxShadow: "0 2px 10px rgba(90,80,72,0.05)" }}
         aria-label="Søg i paragraf-oversigten"
@@ -197,11 +197,11 @@ export function ParagrafOversaetter() {
           </div>
         ))}
         {hits.length === 0 && (
-          <div className="py-3" style={{ fontSize: 13, color: "var(--kaerne-muted)" }}>Ingen match — prøv et bredere ord, eller spørg Astrid i chatten.</div>
+          <div className="py-3" style={{ fontSize: 13, color: "var(--kaerne-muted)" }}>Ingen match, prøv et bredere ord, eller spørg Astrid i chatten.</div>
         )}
       </div>
       <div style={{ fontSize: 11, lineHeight: 1.5, color: "var(--kaerne-muted)" }}>
-        Vejledende oversigt over de mest brugte bestemmelser — se den fulde lov på retsinformation.dk.
+        Vejledende oversigt over de mest brugte bestemmelser, se den fulde lov på retsinformation.dk.
       </div>
     </div>
   );
@@ -212,23 +212,35 @@ export function ParagrafOversaetter() {
 const FAQ_ITEMS = [
   {
     q: "Træffer Astrid afgørelser i mine sager?",
-    a: "Nej — aldrig. Astrid er støtte, ikke skøn. Hun strukturerer, foreslår og finder vinkler, men det socialfaglige skøn og alle afgørelser ligger hos dig og din kommune. Det er et bevidst designvalg, ikke en begrænsning.",
+    a: "Nej, aldrig. Astrid er støtte, ikke skøn. Hun strukturerer, foreslår og finder vinkler, men det socialfaglige skøn og alle afgørelser ligger hos dig og din kommune. Det er et bevidst designvalg, ikke en begrænsning.",
   },
   {
     q: "Hvad sker der med det, jeg skriver til Astrid?",
-    a: "Din samtale bruges kun til at generere svaret her og nu — Astrid gemmer ingen samtaler på en server, og der er ingen profil eller historik. Skriv aldrig CPR-numre, navne eller adresser; Astrid blokerer automatisk beskeder, der ligner CPR-numre.",
+    a: "Din samtale bruges kun til at generere svaret her og nu, Astrid gemmer ingen samtaler på en server, og din profil og gemte samtaler ligger kun lokalt i din browser, aldrig på en server. Skriv aldrig CPR-numre, navne eller adresser; Astrid blokerer automatisk beskeder, der ligner CPR-numre.",
   },
   {
     q: "Kan jeg stole på paragrafferne?",
-    a: "Astrid er trænet på Barnets Lov (2024) og Serviceloven og siger ærligt til, hvis hun er usikker. Men AI kan fejle — brug hendes svar som kvalificeret udkast, og slå altid efter på retsinformation.dk, før noget lander i en afgørelse.",
+    a: "Astrid er trænet på Barnets Lov (2024) og Serviceloven og siger ærligt til, hvis hun er usikker. Men AI kan fejle, brug hendes svar som kvalificeret udkast, og slå altid efter på retsinformation.dk, før noget lander i en afgørelse.",
   },
   {
     q: "Hvad koster det?",
-    a: "Astrid er gratis at prøve — bare begynd at skrive. Skal hele teamet eller forvaltningen med, kan der laves en aftale for jeres kommune.",
+    a: "Astrid er gratis at prøve, bare begynd at skrive. Skal hele teamet eller forvaltningen med, kan der laves en aftale for jeres kommune.",
   },
   {
     q: "Er aktør-oversigten neutral?",
-    a: "Ja. Ingen aktør betaler for at være med eller blive fremhævet. Astrid anbefaler alene ud fra fagligt match, målgruppe og geografi — og valget er altid dit og kommunens. Tjek altid Tilbudsportalen og tilsynsrapporter.",
+    a: "Ja. Ingen aktør betaler for at være med eller blive fremhævet. Astrid anbefaler alene ud fra fagligt match, målgruppe og geografi, og valget er altid dit og kommunens. Tjek altid Tilbudsportalen og tilsynsrapporter.",
+  },
+  {
+    q: "Hvordan kommer jeg i gang?",
+    a: "Bare skriv hvad du tumler med, eller klik på en af forslags-knapperne under skrivefeltet. Astrid svarer med det samme. Du behøver ikke logge ind for at prøve.",
+  },
+  {
+    q: "Kan Astrid huske mig og gemme mine samtaler?",
+    a: "Ja, men kun lokalt på din egen enhed. Det du sætter under Min profil, og de samtaler du gemmer under Mine samtaler, ligger i din browser, aldrig på en server. Du kan altid rydde det igen.",
+  },
+  {
+    q: "Kan jeg tale i stedet for at skrive?",
+    a: "Ja, brug Diktér-knappen. Den bruger browserens tale-tjeneste, så brug den kun til anonym tekst, aldrig borgeroplysninger.",
   },
 ];
 
