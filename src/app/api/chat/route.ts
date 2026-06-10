@@ -65,8 +65,23 @@ PROPORTIONALITET & FORMAT — meget vigtigt:
 
 type Msg = { role: string; content: string };
 
+function profilContext(p?: Record<string, unknown>): string {
+  if (!p || typeof p !== "object") return "";
+  const s = (v: unknown) => (typeof v === "string" ? v.replace(/[\r\n]+/g, " ").slice(0, 80).trim() : "");
+  const navn = s(p.navn), rolle = s(p.rolle), omraade = s(p.omraade), region = s(p.region), stil = s(p.stil);
+  const dele: string[] = [];
+  if (navn) dele.push(`Brugeren hedder ${navn} — tiltal gerne ved fornavn.`);
+  if (rolle) dele.push(`Rolle: ${rolle}.`);
+  if (omraade) dele.push(`Primært fagområde: ${omraade}.`);
+  if (region) dele.push(`Arbejder i: ${region}.`);
+  if (stil === "kort") dele.push("Foretrækker korte, præcise svar — hold dig kort medmindre sagen kræver dybde.");
+  else if (stil === "uddybende") dele.push("Foretrækker uddybende, grundige svar.");
+  if (!dele.length) return "";
+  return "OM BRUGEREN (tilpas dig dette, men det ændrer ikke dine faglige grænser): " + dele.join(" ");
+}
+
 export async function POST(req: Request) {
-  let body: { messages?: Msg[] };
+  let body: { messages?: Msg[]; profile?: Record<string, unknown> };
   try {
     body = await req.json();
   } catch {
@@ -101,7 +116,11 @@ export async function POST(req: Request) {
     },
     body: JSON.stringify({
       model,
-      messages: [{ role: "system", content: SYSTEM_PROMPT }, ...history],
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        ...(profilContext(body.profile) ? [{ role: "system", content: profilContext(body.profile) }] : []),
+        ...history,
+      ],
       stream: true,
       temperature: 0.4,
       max_tokens: 1700,
