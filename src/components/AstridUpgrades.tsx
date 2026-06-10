@@ -51,15 +51,15 @@ export function StreakChip() {
 
 /* ============ Kaos → kontrol statusbar ============ */
 export function KaosKontrolBar() {
-  const [pct, setPct] = useState(34);
+  const [pct, setPct] = useState(0);
   useEffect(() => {
-    try { const v = parseInt(localStorage.getItem("astrid_kaos") || "34", 10); if (!isNaN(v)) setPct(Math.max(0, Math.min(100, v))); } catch {}
+    try { const v = parseInt(localStorage.getItem("astrid_kaos") || "0", 10); if (!isNaN(v)) setPct(Math.max(0, Math.min(100, v))); } catch {}
     const onClose = () => setPct((p) => { const np = Math.min(100, p + 11); try { localStorage.setItem("astrid_kaos", String(np)); } catch {} return np; });
     window.addEventListener("astrid:saglukket", onClose);
     return () => window.removeEventListener("astrid:saglukket", onClose);
   }, []);
   const col = pct < 40 ? "#e0a16a" : pct < 75 ? "#cdbf6a" : "#7fb89f";
-  const label = pct < 40 ? "Godt i gang, vi tager den én sag ad gangen" : pct < 75 ? "Godt på vej" : "Næsten i mål, flot uge!";
+  const label = pct === 0 ? "Luk din første sag, så vokser din fremdrift" : pct < 40 ? "Godt i gang, vi tager den én sag ad gangen" : pct < 75 ? "Godt på vej" : "Næsten i mål, flot uge!";
   return (
     <div className="k-kaos mb-5">
       <div className="flex justify-between items-center mb-2" style={{ fontSize: 12, color: "var(--kaerne-muted)" }}>
