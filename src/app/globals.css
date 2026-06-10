@@ -275,3 +275,31 @@ a:active { transform: scale(0.97); }
 @media (prefers-reduced-motion: reduce) {
   .astrid-orb, .astrid-orb.thinking, .k-card { animation: none !important; transition: none !important; }
 }
+
+
+/* ===== Prøv-dette ikon-kort ===== */
+.k-trycard{display:flex;flex-direction:column;gap:3px;background:#fff;border:0.5px solid var(--kaerne-border);border-radius:16px;padding:15px 16px;box-shadow:0 2px 12px rgba(90,80,72,.05);transition:transform .18s cubic-bezier(.34,1.4,.5,1),box-shadow .18s,border-color .18s}
+.k-trycard:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(90,80,72,.13);border-color:var(--kaerne-terracotta)}
+.k-trycard-ic{font-size:22px;line-height:1;margin-bottom:5px}
+.k-trycard-t{font-size:14.5px;font-weight:600;color:var(--kaerne-ink)}
+.k-trycard-s{font-size:12.5px;color:var(--kaerne-muted)}
+
+/* ===== Sparet tid i dag ===== */
+.k-tid{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--kaerne-terracotta-deep);background:var(--kaerne-cream);border:0.5px solid var(--kaerne-border-soft);border-radius:999px;padding:5px 13px;margin-bottom:14px}
+.k-tid-bump{animation:k-tidb .6s ease}
+@keyframes k-tidb{0%{transform:scale(1)}30%{transform:scale(1.13)}100%{transform:scale(1)}}
+
+/* ===== Pro-oplåsning toast ===== */
+.k-unlock{position:fixed;left:18px;bottom:18px;z-index:1200;max-width:300px;background:#fff;border:0.5px solid var(--kaerne-border);border-radius:16px;padding:14px 34px 14px 16px;box-shadow:0 14px 40px rgba(120,92,67,.22);animation:k-unlockin .42s cubic-bezier(.34,1.4,.5,1)}
+@keyframes k-unlockin{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===== Sticky skrivefelt paa mobil ===== */
+@media (max-width:767px){
+  .k-stickym{position:sticky;bottom:10px;z-index:30;background:var(--kaerne-sand);border-radius:22px;box-shadow:0 0 0 10px var(--kaerne-sand),0 -6px 18px rgba(90,80,72,.10)}
+}
+
+@media (prefers-reduced-motion: reduce){
+  .k-trycard,.k-trycard:hover{transition:none;transform:none}
+  .k-tid-bump{animation:none}
+  .k-unlock{animation:none}
+}
