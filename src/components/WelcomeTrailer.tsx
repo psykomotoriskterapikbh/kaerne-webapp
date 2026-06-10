@@ -52,9 +52,11 @@ export default function WelcomeTrailer() {
     const el = s.input || s.find ? findEl(s) : null;
     targetRef.current = el;
     if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
-      const t = setTimeout(measure, 430);
-      return () => clearTimeout(t);
+      el.scrollIntoView({ behavior: "auto", block: "center" });
+      const raf = requestAnimationFrame(() => { measure(); requestAnimationFrame(measure); });
+      const t1 = setTimeout(measure, 140);
+      const t2 = setTimeout(measure, 320);
+      return () => { cancelAnimationFrame(raf); clearTimeout(t1); clearTimeout(t2); };
     } else {
       setRect(null);
     }
