@@ -488,7 +488,7 @@ export default function KarlaLanding() {
               <p className="text-[11.5px]" style={{ color: "var(--kaerne-muted)", lineHeight: 1.5 }}>
                 Astrid støtter din faglighed — afgørelser er altid dine. Del aldrig CPR-numre eller navne.
               </p>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap justify-end">
                 <button
                   type="button"
                   onClick={() => fileRef.current?.click()}
