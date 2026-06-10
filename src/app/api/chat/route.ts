@@ -90,9 +90,34 @@ function rateLimited(ip: string): boolean {
   return arr.length > 20;
 }
 
+// Delt, persistent tæller via eksisterende Supabase (gratis). Falder tilbage til
+// hukommelses-tælleren hvis RPC'en ikke er sat op endnu, så intet går i stykker.
+async function persistentLimited(ip: string): Promise<boolean | null> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://aaffwzthatvilcwwgcbq.supabase.co";
+  const key =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "sb_publishable_8dcg491ccBHJA_kxA-MFRQ_v8IrBn6L";
+  try {
+    const ctrl = new AbortController();
+    const to = setTimeout(() => ctrl.abort(), 1200);
+    const r = await fetch(`${url}/rest/v1/rpc/rate_hit`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: key, Authorization: `Bearer ${key}` },
+      body: JSON.stringify({ p_ip: ip, p_max: 20 }),
+      signal: ctrl.signal,
+    });
+    clearTimeout(to);
+    if (!r.ok) return null;
+    return (await r.json()) === true;
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(req: Request) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "ukendt";
-  if (rateLimited(ip)) {
+  const persistent = await persistentLimited(ip);
+  const limited = persistent === null ? rateLimited(ip) : persistent;
+  if (limited) {
     return new Response("Lige lidt for hurtigt. Vent et øjeblik og prøv igen.", { status: 429 });
   }
 
