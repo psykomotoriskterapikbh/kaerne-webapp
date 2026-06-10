@@ -37,7 +37,7 @@ export default function AstridFigur({ loading, typing }: Props) {
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
       <div style={{ position: "relative", width: 150, height: 150 }}>
-        <div style={{ position: "absolute", inset: -22, borderRadius: "50%", background: "radial-gradient(circle, rgba(246,200,150,.45), transparent 70%)", filter: "blur(6px)", pointerEvents: "none" }} />
+        <div className="astrid-halo" style={{ position: "absolute", inset: -22, borderRadius: "50%", background: "radial-gradient(circle, rgba(246,200,150,.45), transparent 70%)", filter: "blur(6px)", pointerEvents: "none" }} />
         <div
           className={cls}
           aria-hidden="true"
@@ -47,6 +47,7 @@ export default function AstridFigur({ loading, typing }: Props) {
             boxShadow: "0 0 26px rgba(243,179,107,.5), inset 0 0 30px rgba(255,255,255,.08)",
           }}
         />
+        <div className="astrid-shimmer" aria-hidden="true" />
       </div>
       <div style={{ fontFamily: "var(--font-script, cursive)", fontSize: 30, color: "var(--kaerne-ink)", marginTop: 14, lineHeight: 1 }}>Astrid</div>
       <div style={{ fontSize: 10.5, letterSpacing: ".22em", textTransform: "uppercase", color: "var(--kaerne-muted)", marginTop: 6 }}>Din digitale kollega</div>
