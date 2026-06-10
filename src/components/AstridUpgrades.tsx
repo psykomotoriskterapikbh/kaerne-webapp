@@ -158,7 +158,7 @@ export const SLASH_COMMANDS: SlashCmd[] = [
   { cmd: "/resume", desc: "Resumé + tidslinje + næste skridt", prompt: "Lav ud fra denne (anonymiserede) tekst: 1) et kort resumé, 2) en kronologisk tidslinje over vigtigste hændelser, diagnoser og indsatser, 3) hvad der mangler at blive belyst (officialprincippet), 4) forslag til næste skridt og relevante frister. Objektivt, fagligt sprog:\n\n" },
   { cmd: "/referat", desc: "Noter/transskription → mødereferat", prompt: "Lav et struktureret mødereferat ud fra disse (anonymiserede) noter eller transskription. Inkludér: deltagere og roller (hvis nævnt), dagsordenspunkter, vigtigste drøftelser, BESLUTNINGER, aftaler med ANSVARLIG og FRIST, samt opfølgningspunkter. Objektivt, fagligt sprog:\n\n" },
   { cmd: "/paragraf", desc: "Åbn paragraf-oversætter", panel: "paragraf" },
-  { cmd: "/aktør", desc: "Find den rette aktør", panel: "aktoer" },
+  { cmd: "/leverandør", desc: "Find den rette leverandør", panel: "aktoer" },
   { cmd: "/frist", desc: "Beregn en frist", panel: "frister" },
 ];
 
@@ -206,7 +206,7 @@ export function ProUnlock() {
   return (
     <div className="k-unlock" role="status">
       <div style={{ fontSize: 13, fontWeight: 700, color: "var(--kaerne-terracotta-deep)", marginBottom: 4 }}>✦ Din første sag er lukket</div>
-      <div style={{ fontSize: 12.5, lineHeight: 1.5, color: "var(--kaerne-ink)" }}>Godt arbejde. Pro-værktøjerne er åbne for dig: Frist-beregner, Paragraf-oversætter og Find aktør, øverst på siden.</div>
+      <div style={{ fontSize: 12.5, lineHeight: 1.5, color: "var(--kaerne-ink)" }}>Godt arbejde. Pro-værktøjerne er åbne for dig: Frist-beregner, Paragraf-oversætter og Find leverandør, øverst på siden.</div>
       <button onClick={() => setShow(false)} aria-label="Luk" style={{ position: "absolute", top: 8, right: 10, background: "none", border: "none", cursor: "pointer", color: "var(--kaerne-muted)", fontSize: 14, lineHeight: 1 }}>✕</button>
     </div>
   );
