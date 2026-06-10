@@ -41,7 +41,7 @@ export default function LoginPage() {
           router.push("/");
           router.refresh();
         } else {
-          setMsg("Næsten i mål — tjek din mail (også spam) for at bekræfte din konto, og log derefter ind.");
+          setMsg("Næsten i mål, tjek din mail (også spam) for at bekræfte din konto, og log derefter ind.");
         }
       }
     } catch (err) {
@@ -84,7 +84,7 @@ export default function LoginPage() {
         </button>
 
         <p style={{ marginTop: 22, fontSize: 11, color: "var(--kaerne-muted,#8a7a66)", lineHeight: 1.5 }}>
-          Astrid er beslutningsstøtte — ikke skøn. Del aldrig CPR eller navne i samtaler.
+          Astrid er beslutningsstøtte, ikke skøn. Del aldrig CPR eller navne i samtaler.
         </p>
       </div>
     </main>
