@@ -32,12 +32,13 @@ export default function DikterButton({ onText }: Props) {
     const r = new SR();
     r.lang = "da-DK";
     r.continuous = true;
-    r.interimResults = false;
+    r.interimResults = true;
     r.onresult = (e) => {
       let s = "";
       for (let i = e.resultIndex; i < e.results.length; i++) {
         if (e.results[i].isFinal) s += e.results[i][0].transcript;
       }
+      // interimResults er slået til for hurtigere respons; kun færdige (isFinal) segmenter sendes videre
       if (s) onText(s.trim());
     };
     r.onend = () => setActive(false);
@@ -56,7 +57,7 @@ export default function DikterButton({ onText }: Props) {
         color: active ? "#fff" : "var(--kaerne-ink-soft)",
         background: active ? "var(--kaerne-terracotta)" : "#fff",
       }}
-      title="Diktér med din stemme — husk at anonymisere før afsendelse"
+      title="Diktér med din stemme. Bruger browserens tale-tjeneste, så diktér kun anonym tekst (ingen navne eller CPR)."
     >
       {active ? "● Lytter…" : "🎙 Diktér"}
     </button>
