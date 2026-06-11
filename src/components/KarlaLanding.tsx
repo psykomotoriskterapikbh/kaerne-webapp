@@ -379,10 +379,10 @@ export default function KarlaLanding() {
           </div>
 
           <div className="max-w-2xl">
-            <div className="k-fade1 mb-3 text-[11px]" style={{ letterSpacing: "0.2em", color: "var(--kaerne-sage)", textTransform: "uppercase" }}>
+            <div className="k-fade1 mb-3 text-[11px]" suppressHydrationWarning style={{ letterSpacing: "0.2em", color: "var(--kaerne-sage)", textTransform: "uppercase" }}>
               {timeLabel}
             </div>
-            <h1 className="k-fade2 mb-4" style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(28px, 4vw, 40px)", fontWeight: 300, lineHeight: 1.12, letterSpacing: "-0.015em", color: "var(--kaerne-ink)" }}>
+            <h1 className="k-fade2 mb-4" suppressHydrationWarning style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(28px, 4vw, 40px)", fontWeight: 300, lineHeight: 1.12, letterSpacing: "-0.015em", color: "var(--kaerne-ink)" }}>
               {greeting}
             </h1>
             {!chatActive && (
@@ -644,7 +644,7 @@ export default function KarlaLanding() {
       <footer className="px-6 md:px-12 py-6 border-t text-center text-[11px]" style={{ borderColor: "var(--kaerne-border)", color: "var(--kaerne-muted)" }}>
         <span style={{ fontFamily: "var(--font-script)", fontSize: 14 }}>Astrid</span> · Din digitale kollega i socialforvaltningen · Støtte, ikke skøn ·{" "}
         <span style={{ color: "var(--kaerne-terracotta)", fontFamily: "var(--font-script)", fontSize: 13 }}>Astrid tænker med, du bestemmer ♡</span>
-        <br /><a href="/privatliv" style={{ color: "var(--kaerne-muted)", textDecoration: "underline" }}>Privatliv & sikkerhed</a>
+        <br /><a href="/om-os" style={{ color: "var(--kaerne-muted)", textDecoration: "underline" }}>Om os</a> · <a href="/privatliv" style={{ color: "var(--kaerne-muted)", textDecoration: "underline" }}>Privatliv & sikkerhed</a>
       </footer>
     </div>
   );
