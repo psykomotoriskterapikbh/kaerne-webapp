@@ -313,3 +313,12 @@ a:active { transform: scale(0.97); }
 @keyframes astrid-spin{to{transform:rotate(360deg)}}
 .astrid-shimmer{position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 0deg,transparent 0deg,rgba(255,238,205,.5) 60deg,transparent 140deg,transparent 230deg,rgba(180,212,192,.42) 310deg,transparent 360deg);filter:blur(5px);mix-blend-mode:screen;animation:astrid-spin 8s linear infinite;pointer-events:none}
 @media (prefers-reduced-motion: reduce){.astrid-orb,.astrid-halo,.astrid-shimmer{animation:none}}
+
+
+/* ===== Luksus panel-knapper (k-tab) ===== */
+.k-tab{background:linear-gradient(180deg,#ffffff,var(--kaerne-cream));border:0.5px solid var(--kaerne-border);color:var(--kaerne-ink-soft);font-weight:500;box-shadow:0 1px 2px rgba(90,80,72,.06),inset 0 1px 0 rgba(255,255,255,.7);transition:transform .22s cubic-bezier(.34,1.5,.5,1),box-shadow .22s,border-color .22s,color .2s,background .2s}
+.k-tab:hover{transform:translateY(-2px);border-color:var(--kaerne-terracotta);color:var(--kaerne-ink);box-shadow:0 8px 20px rgba(217,102,55,.18),inset 0 1px 0 rgba(255,255,255,.85)}
+.k-tab:active{transform:translateY(0) scale(.97)}
+.k-tab-active{background:linear-gradient(135deg,#ef9355,#d96637);border-color:transparent;color:#fff;box-shadow:0 6px 18px rgba(217,102,55,.38),inset 0 1px 0 rgba(255,255,255,.28)}
+.k-tab-active:hover{transform:translateY(-2px);color:#fff;border-color:transparent;box-shadow:0 11px 26px rgba(217,102,55,.46),inset 0 1px 0 rgba(255,255,255,.32)}
+@media (prefers-reduced-motion: reduce){.k-tab,.k-tab:hover,.k-tab:active,.k-tab-active:hover{transition:none;transform:none}}
