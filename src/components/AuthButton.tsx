@@ -47,7 +47,7 @@ export default function AuthButton() {
     return (
       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
         <button onClick={signOut} style={pill} title={email}>Log ud</button>
-        <button onClick={sletKonto} style={{ ...pill, color: "#a14b32" }} title="Slet din konto og data permanent">Slet konto</button>
+        <button onClick={sletKonto} style={{ fontSize: 11, padding: "4px 6px", border: "none", background: "transparent", cursor: "pointer", color: "var(--kaerne-muted,#8a7f72)", textDecoration: "underline", whiteSpace: "nowrap" }} title="Slet din konto og data permanent">Slet konto</button>
       </div>
     );
   }
