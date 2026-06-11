@@ -8,7 +8,7 @@ import { fireConfetti } from "@/lib/confetti";
    Fagligt mikro-laering, ikke pjat: hvert svar har en kort forklaring,
    og man kan bede Astrid uddybe med ét klik. */
 
-type QuizQ = {
+export type QuizQ = {
   q: string;
   valg: string[];
   rigtig: number;
@@ -16,7 +16,7 @@ type QuizQ = {
   prompt: string;
 };
 
-const ALLE: QuizQ[] = [
+export const ALLE: QuizQ[] = [
   {
     q: "Hvornår skal en børnefaglig undersøgelse (Barnets Lov §20) senest være afsluttet?",
     valg: ["Inden 2 måneder", "Inden 4 måneder", "Inden 6 måneder"],
@@ -102,7 +102,7 @@ const ALLE: QuizQ[] = [
   },
 ];
 
-function dagensSporgsmal(): QuizQ[] {
+export function dagensSporgsmal(): QuizQ[] {
   const nu = new Date();
   const start = new Date(nu.getFullYear(), 0, 0);
   const dag = Math.floor((nu.getTime() - start.getTime()) / 86400000);
@@ -111,7 +111,7 @@ function dagensSporgsmal(): QuizQ[] {
   return res;
 }
 
-function opdaterStreak(): number {
+export function opdaterStreak(): number {
   try {
     const idag = new Date().toDateString();
     const igaar = new Date(Date.now() - 86400000).toDateString();
