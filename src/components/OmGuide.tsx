@@ -1,5 +1,8 @@
 "use client";
 
+import EksempelSvar from "@/components/EksempelSvar";
+import LeadMagnet from "@/components/LeadMagnet";
+
 /* Forsidesektion: Sådan virker det, brug-guide, om Astrid, pris (gratis) og kontakt.
    Hjælper både nye brugere og kommuner, der lander på siden, med at forstå tilbuddet. */
 
@@ -26,56 +29,9 @@ const h2: React.CSSProperties = { fontFamily: "var(--font-serif)", fontSize: 24,
 const lead: React.CSSProperties = { fontSize: 14, color: "var(--kaerne-muted)", textAlign: "center", margin: "0 0 22px" };
 
 export function OmGuide() {
-  const hentSkabelon = () => {
-    const md = [
-      "# §20 Børnefaglig undersøgelse — notatskabelon",
-      "",
-      "## 1. Anledning og baggrund",
-      "- Hvad udløste undersøgelsen (underretning, ansøgning, bekymring):",
-      "- Frist: 4 måneder fra beslutning (Barnets Lov §20).",
-      "",
-      "## 2. Barnets perspektiv",
-      "- Børnesamtale afholdt (dato):",
-      "- Barnets egne ønsker og oplevelser:",
-      "",
-      "## 3. Belysning (ICS-temaer)",
-      "- Udvikling og adfærd:",
-      "- Familieforhold:",
-      "- Skole / dagtilbud:",
-      "- Sundhed:",
-      "- Fritid og venskaber:",
-      "- Forældrekompetencer:",
-      "",
-      "## 4. Belastnings- og beskyttelsesfaktorer",
-      "- Belastning:",
-      "- Beskyttelse:",
-      "",
-      "## 5. Faglig vurdering",
-      "- Sammenfatning:",
-      "",
-      "## 6. Indstilling og indsats",
-      "- Foreslået indsats (fx §32 familiebehandling / kontaktperson):",
-      "- Næste skridt og frister:",
-      "",
-      "## 7. Partshøring og inddragelse",
-      "- Partshøring gennemført (dato):",
-      "- Netværk inddraget:",
-      "",
-      "Skabelon fra Astrid. Astrid er beslutningsstøtte — skøn og afgørelse er sagsbehandlerens. Skriv aldrig CPR eller navne i delt tekst.",
-    ].join("\n");
-    try {
-      const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "astrid-paragraf20-notatskabelon.md";
-      a.click();
-      URL.revokeObjectURL(a.href);
-    } catch {
-      // ignorér
-    }
-  };
   return (
     <section className="max-w-5xl mx-auto mt-20 px-6 md:px-0">
+      <EksempelSvar />
       {/* Sådan virker det */}
       <h2 style={h2}>Sådan virker det</h2>
       <p style={lead}>Tre enkle trin, fra tanke til handling.</p>
@@ -128,7 +84,26 @@ export function OmGuide() {
         </p>
         <div style={{ marginTop: 18, paddingTop: 16, borderTop: "0.5px solid var(--kaerne-border)" }}>
           <div style={{ fontSize: 13.5, color: "var(--kaerne-ink-soft)", marginBottom: 9 }}>Gratis bonus: en klar skabelon til §20-notatet.</div>
-          <button type="button" onClick={hentSkabelon} style={{ padding: "10px 20px", borderRadius: 999, border: "0.5px solid var(--kaerne-border)", background: "#fff", color: "var(--kaerne-ink)", fontWeight: 600, fontSize: 14, cursor: "pointer" }}>↓ Hent §20-notatskabelon</button>
+              <LeadMagnet />
+        </div>
+      </div>
+      <div style={{ marginTop: 56, textAlign: "center" }}>
+        <div style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--kaerne-sage)", marginBottom: 8 }}>Tidlig adgang</div>
+        <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 24, fontWeight: 400, color: "var(--kaerne-ink)", margin: "0 0 8px" }}>Vær blandt de første kommuner</h2>
+        <p style={{ fontSize: 15, lineHeight: 1.65, color: "var(--kaerne-ink-soft)", maxWidth: 600, margin: "0 auto 22px" }}>Astrid er ny, og de første forvaltninger er med til at forme hende. Som tidlig kommune får I en gratis pilot, direkte linje til holdet bag, og indflydelse på hvad vi bygger næst.</p>
+        <div className="grid gap-3.5 md:grid-cols-3" style={{ maxWidth: 720, margin: "0 auto", textAlign: "left" }}>
+          <div className="k-card" style={{ background: "#fff", border: "0.5px solid var(--kaerne-border)", borderRadius: 16, padding: "16px 16px" }}>
+            <div style={{ fontSize: 14.5, fontWeight: 600, color: "var(--kaerne-ink)", marginBottom: 3 }}>Gratis pilotperiode</div>
+            <div style={{ fontSize: 13, lineHeight: 1.5, color: "var(--kaerne-ink-soft)" }}>Prøv Astrid i et team uden binding eller licensaftale.</div>
+          </div>
+          <div className="k-card" style={{ background: "#fff", border: "0.5px solid var(--kaerne-border)", borderRadius: 16, padding: "16px 16px" }}>
+            <div style={{ fontSize: 14.5, fontWeight: 600, color: "var(--kaerne-ink)", marginBottom: 3 }}>Præg udviklingen</div>
+            <div style={{ fontSize: 13, lineHeight: 1.5, color: "var(--kaerne-ink-soft)" }}>Jeres input går direkte ind i, hvad vi bygger næst.</div>
+          </div>
+          <div className="k-card" style={{ background: "#fff", border: "0.5px solid var(--kaerne-border)", borderRadius: 16, padding: "16px 16px" }}>
+            <div style={{ fontSize: 14.5, fontWeight: 600, color: "var(--kaerne-ink)", marginBottom: 3 }}>Tæt support</div>
+            <div style={{ fontSize: 13, lineHeight: 1.5, color: "var(--kaerne-ink-soft)" }}>Direkte linje til holdet bag — ikke en helpdesk-kø.</div>
+          </div>
         </div>
       </div>
     </section>
