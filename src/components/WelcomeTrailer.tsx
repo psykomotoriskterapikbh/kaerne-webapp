@@ -32,6 +32,89 @@ const sStep = () => tone(640, 0.13, 0.045);
 const sOpen = () => { tone(523, 0.18, 0.05); tone(784, 0.22, 0.04, 0.08); };
 const sDone = () => { tone(523, 0.2, 0.05); tone(659, 0.22, 0.045, 0.08); tone(784, 0.3, 0.05, 0.16); };
 
+// ---- blid baggrundsmusik (genereres live, ingen filer) ----
+let musikStop: (() => void) | null = null;
+
+function startMusik() {
+  if (musikStop) return; // spiller allerede
+  const c = ac(); if (!c) return;
+  try {
+    const master = c.createGain();
+    master.gain.setValueAtTime(0.0001, c.currentTime);
+    master.gain.linearRampToValueAtTime(0.05, c.currentTime + 2.5);
+    master.connect(c.destination);
+
+    // bloed syntetiseret rumklang
+    const conv = c.createConvolver();
+    const len = Math.floor(c.sampleRate * 2.0);
+    const ir = c.createBuffer(2, len, c.sampleRate);
+    for (let ch = 0; ch < 2; ch++) {
+      const d = ir.getChannelData(ch);
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.8);
+    }
+    conv.buffer = ir;
+    const wet = c.createGain(); wet.gain.value = 0.5; conv.connect(wet); wet.connect(master);
+    const send = (g: GainNode) => { g.connect(master); g.connect(conv); };
+
+    // rolig akkordrunde i F-dur: F - Dm - Bb - C
+    const AKKORDER = [
+      [174.61, 220.0, 261.63, 349.23],
+      [146.83, 220.0, 293.66, 349.23],
+      [116.54, 174.61, 233.08, 293.66],
+      [130.81, 196.0, 261.63, 329.63],
+    ];
+    let trin = 0;
+    const spilAkkord = () => {
+      const t0 = c.currentTime;
+      AKKORDER[trin % AKKORDER.length].forEach((f, i) => {
+        const o = c.createOscillator(); o.type = "triangle"; o.frequency.value = f;
+        const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 850; lp.Q.value = 0.5;
+        const g = c.createGain();
+        const top = i === 3 ? 0.10 : 0.16;
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.linearRampToValueAtTime(top, t0 + 1.8);
+        g.gain.setValueAtTime(top, t0 + 3.6);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 5.6);
+        o.connect(lp); lp.connect(g); send(g);
+        o.start(t0); o.stop(t0 + 5.8);
+      });
+      trin++;
+    };
+    spilAkkord();
+    const akkordId = setInterval(spilAkkord, 4800);
+
+    // sarte klokketoner (F-pentatont droes)
+    const TONER = [523.25, 587.33, 659.25, 698.46, 783.99, 880.0, 1046.5];
+    const klokke = () => {
+      if (Math.random() > 0.72) return;
+      const f = TONER[Math.floor(Math.random() * TONER.length)];
+      const t0 = c.currentTime + Math.random() * 0.6;
+      [1, 2].forEach((mult, k) => {
+        const o = c.createOscillator(); o.type = "sine"; o.frequency.value = f * mult;
+        const g = c.createGain(); const top = k === 0 ? 0.05 : 0.013;
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(top, t0 + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 2.4);
+        o.connect(g); send(g);
+        o.start(t0); o.stop(t0 + 2.5);
+      });
+    };
+    const klokkeId = setInterval(klokke, 2100);
+
+    musikStop = () => {
+      musikStop = null;
+      clearInterval(akkordId); clearInterval(klokkeId);
+      try {
+        master.gain.cancelScheduledValues(c.currentTime);
+        master.gain.setValueAtTime(Math.max(master.gain.value, 0.0001), c.currentTime);
+        master.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 1.0);
+      } catch {}
+      setTimeout(() => { try { master.disconnect(); conv.disconnect(); } catch {} }, 1200);
+    };
+  } catch {}
+}
+function stopMusik() { if (musikStop) musikStop(); }
+
 type Step =
   | { type: "orb" }
   | { type: "spot"; find?: string; input?: boolean; tag: string; title: string; text: string }
@@ -68,6 +151,7 @@ export default function WelcomeTrailer() {
   const targetRef = useRef<HTMLElement | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const manual = useRef(false);
+  const [musik, setMusik] = useState(true);
 
   const markSeen = () => { try { localStorage.setItem("astrid_intro_seen", "1"); } catch {} };
 
@@ -121,7 +205,7 @@ export default function WelcomeTrailer() {
   useEffect(() => {
     if (!open) return;
     const k = (e: KeyboardEvent) => {
-      if (e.key === "Escape") { if (timer.current) clearTimeout(timer.current); setOpen(false); setStep(0); }
+      if (e.key === "Escape") { if (timer.current) clearTimeout(timer.current); stopMusik(); setOpen(false); setStep(0); }
       else if (e.key === "ArrowRight") { manual.current = true; setStep((v) => Math.min(STEPS.length - 1, v + 1)); }
       else if (e.key === "ArrowLeft") { manual.current = true; setStep((v) => Math.max(1, v - 1)); }
     };
@@ -141,12 +225,13 @@ export default function WelcomeTrailer() {
     if (open && STEPS[step].type === "finish") { try { fireConfetti(); } catch {} }
   }, [open, step]);
 
-  const openTour = () => { sOpen(); manual.current = false; setStep(0); setOpen(true); };
-  const close = () => { if (timer.current) clearTimeout(timer.current); setOpen(false); setStep(0); };
-  const next = () => { sStep(); manual.current = true; setStep((v) => Math.min(STEPS.length - 1, v + 1)); };
+  const openTour = () => { sOpen(); manual.current = false; setStep(0); setOpen(true); if (musik) startMusik(); };
+  const close = () => { if (timer.current) clearTimeout(timer.current); stopMusik(); setOpen(false); setStep(0); };
+  const next = () => { sStep(); manual.current = true; if (musik) startMusik(); setStep((v) => Math.min(STEPS.length - 1, v + 1)); };
   const prev = () => { sStep(); manual.current = true; setStep((v) => Math.max(1, v - 1)); };
   const focusInput = () => { const el = document.querySelector('input[aria-label="Skriv til Astrid"]') as HTMLInputElement | null; el?.focus(); el?.scrollIntoView({ behavior: "smooth", block: "center" }); };
   const proev = () => { sDone(); close(); setTimeout(focusInput, 320); };
+  const skiftMusik = () => { setMusik((m) => { const ny = !m; if (ny) startMusik(); else stopMusik(); return ny; }); };
 
   const s = STEPS[step];
   const PAD = 8;
@@ -215,6 +300,7 @@ export default function WelcomeTrailer() {
             </div>
           )}
 
+          <button type="button" onClick={skiftMusik} aria-label={musik ? "Sluk musik" : "Taend musik"} title={musik ? "Sluk musik" : "Tænd musik"} style={{ position: "absolute", top: 18, right: 70, zIndex: 5, background: "rgba(255,255,255,.14)", border: "0.5px solid rgba(255,255,255,.25)", backdropFilter: "blur(6px)", color: "#fff", width: 40, height: 40, borderRadius: "50%", fontSize: 16, cursor: "pointer", opacity: musik ? 1 : 0.5, textDecoration: musik ? "none" : "line-through" }}>&#9834;</button>
           <button type="button" onClick={close} aria-label="Luk" className="wt-luk" style={{ position: "absolute", top: 18, right: 20, zIndex: 5, background: "rgba(255,255,255,.14)", border: "0.5px solid rgba(255,255,255,.25)", backdropFilter: "blur(6px)", color: "#fff", width: 40, height: 40, borderRadius: "50%", fontSize: 22, cursor: "pointer" }}>&times;</button>
 
           {s.type === "orb" && Card(
@@ -227,7 +313,7 @@ export default function WelcomeTrailer() {
               <div style={{ fontSize: 12, letterSpacing: ".24em", textTransform: "uppercase", color: "#f3a06b", fontWeight: 700, marginBottom: 12, animation: "wt-in .6s " + fjedring + " .12s both" }}>Velkommen</div>
               <div className="wt-shimmer" style={{ fontFamily: "var(--font-serif)", fontSize: 58, lineHeight: 1.05, animation: "wt-in .6s " + fjedring + " .2s both" }}>M&oslash;d Astrid</div>
               <div style={{ fontSize: 18, color: "rgba(255,255,255,.84)", marginTop: 12, maxWidth: 480, lineHeight: 1.5, animation: "wt-in .6s " + fjedring + " .3s both" }}>Din digitale kollega, der klarer jura, notater og frister, s&aring; du kan bruge tiden hos borgeren.</div>
-              <button type="button" className="wt-cta" onClick={() => { sStep(); setStep(1); }} style={{ marginTop: 28, padding: "14px 30px", borderRadius: 999, border: "0.5px solid rgba(255,255,255,.35)", cursor: "pointer", background: "linear-gradient(135deg,#ef9355,#d96637)", color: "#fff", fontWeight: 600, fontSize: 15, boxShadow: "0 8px 26px rgba(217,102,55,.45), inset 0 1px 0 rgba(255,255,255,.35)", animation: "wt-in .6s " + fjedring + " .42s both" }}>Vis mig rundt (30 sek) &rarr;</button>
+              <button type="button" className="wt-cta" onClick={() => { sStep(); if (musik) startMusik(); setStep(1); }} style={{ marginTop: 28, padding: "14px 30px", borderRadius: 999, border: "0.5px solid rgba(255,255,255,.35)", cursor: "pointer", background: "linear-gradient(135deg,#ef9355,#d96637)", color: "#fff", fontWeight: 600, fontSize: 15, boxShadow: "0 8px 26px rgba(217,102,55,.45), inset 0 1px 0 rgba(255,255,255,.35)", animation: "wt-in .6s " + fjedring + " .42s both" }}>Vis mig rundt (30 sek) &rarr;</button>
               <button type="button" onClick={close} style={{ marginTop: 14, background: "none", border: "none", color: "rgba(255,255,255,.6)", cursor: "pointer", fontSize: 13, animation: "wt-in .6s " + fjedring + " .5s both" }}>Spring over</button>
             </>
           )}
