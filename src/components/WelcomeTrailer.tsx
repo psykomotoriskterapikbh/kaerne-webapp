@@ -144,6 +144,30 @@ function findEl(s: Step): HTMLElement | null {
   return null;
 }
 
+function TypeTekst({ tekst }: { tekst: string }) {
+  const [n, setN] = useState(tekst.length);
+  useEffect(() => {
+    let reduce = false;
+    try { reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch {}
+    if (reduce) { setN(tekst.length); return; }
+    setN(0);
+    const id = setInterval(() => {
+      setN((v) => {
+        if (v >= tekst.length) { clearInterval(id); return v; }
+        return v + 2;
+      });
+    }, 16);
+    return () => clearInterval(id);
+  }, [tekst]);
+  const faerdig = n >= tekst.length;
+  return (
+    <span>
+      {tekst.slice(0, n)}
+      {!faerdig && <span className="wt-caret" aria-hidden="true" />}
+    </span>
+  );
+}
+
 export default function WelcomeTrailer() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
@@ -272,7 +296,14 @@ export default function WelcomeTrailer() {
         ".wt-luk{transition:transform .25s ease,background .25s ease}",
         ".wt-luk:hover{transform:rotate(90deg) scale(1.08);background:rgba(255,255,255,.26)}",
         ".wt-shimmer{background:linear-gradient(110deg,#fff 38%,#ffd2a8 50%,#fff 62%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:wt-skin 4.6s linear infinite}",
-        "@media (prefers-reduced-motion: reduce){.wt-fab,.wt-spot,.wt-card,.wt-shimmer,.wt-anim,.wt-prt{animation:none !important}}",
+        "@keyframes wt-scan{0%{top:-6%;opacity:0}12%{opacity:.95}88%{opacity:.95}100%{top:103%;opacity:0}}",
+        "@keyframes wt-hudind{0%{opacity:0;transform:scale(1.3)}100%{opacity:1;transform:scale(1)}}",
+        "@keyframes wt-aur{0%{transform:rotate(0deg) scale(1)}50%{transform:rotate(180deg) scale(1.18)}100%{transform:rotate(360deg) scale(1)}}",
+        "@keyframes wt-orbit{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}",
+        "@keyframes wt-blink{0%,100%{opacity:1}50%{opacity:.2}}",
+        ".wt-hud{animation:wt-hudind .5s cubic-bezier(.2,.9,.3,1.25) both}",
+        ".wt-caret{display:inline-block;width:7px;height:.95em;vertical-align:-2px;border-radius:1px;background:#d96637;margin-left:3px;animation:wt-blink .75s steps(1) infinite}",
+        "@media (prefers-reduced-motion: reduce){.wt-fab,.wt-spot,.wt-card,.wt-shimmer,.wt-anim,.wt-prt,.wt-hud,.wt-scan,.wt-caret{animation:none !important}}",
       ].join("")}</style>
 
       <button type="button" onClick={openTour} aria-label="Se hvad Astrid kan" className="wt-fab"
@@ -287,6 +318,14 @@ export default function WelcomeTrailer() {
               <div onClick={next} aria-hidden="true" style={{ position: "absolute", inset: 0, cursor: "pointer" }} />
               <div style={{ position: "absolute", top: rect.y - PAD, left: rect.x - PAD, width: rect.w + PAD * 2, height: rect.h + PAD * 2, borderRadius: 18, boxShadow: "0 0 0 9999px rgba(16,12,22,0.82)", transition: "top .45s " + fjedring + ", left .45s " + fjedring + ", width .45s " + fjedring + ", height .45s " + fjedring, pointerEvents: "none" }} />
               <div className="wt-spot" style={{ position: "absolute", top: rect.y - PAD, left: rect.x - PAD, width: rect.w + PAD * 2, height: rect.h + PAD * 2, borderRadius: 18, transition: "top .45s " + fjedring + ", left .45s " + fjedring + ", width .45s " + fjedring + ", height .45s " + fjedring, pointerEvents: "none" }} />
+              <div key={"hud" + step} className="wt-hud" aria-hidden="true" style={{ position: "absolute", top: rect.y - PAD - 7, left: rect.x - PAD - 7, width: rect.w + PAD * 2 + 14, height: rect.h + PAD * 2 + 14, transition: "top .45s " + fjedring + ", left .45s " + fjedring + ", width .45s " + fjedring + ", height .45s " + fjedring, pointerEvents: "none" }}>
+                {[0, 1, 2, 3].map((h) => (
+                  <span key={h} style={{ position: "absolute", width: 17, height: 17, borderColor: "rgba(255,217,176,.95)", borderStyle: "solid", borderWidth: 0, filter: "drop-shadow(0 0 6px rgba(239,147,85,.8))", top: h < 2 ? 0 : undefined, bottom: h >= 2 ? 0 : undefined, left: h % 2 === 0 ? 0 : undefined, right: h % 2 === 1 ? 0 : undefined, borderTopWidth: h < 2 ? 2 : 0, borderBottomWidth: h >= 2 ? 2 : 0, borderLeftWidth: h % 2 === 0 ? 2 : 0, borderRightWidth: h % 2 === 1 ? 2 : 0, borderTopLeftRadius: h === 0 ? 9 : 0, borderTopRightRadius: h === 1 ? 9 : 0, borderBottomLeftRadius: h === 2 ? 9 : 0, borderBottomRightRadius: h === 3 ? 9 : 0 }} />
+                ))}
+                <div style={{ position: "absolute", inset: 7, borderRadius: 16, overflow: "hidden" }}>
+                  <div className="wt-scan" key={"scan" + step} style={{ position: "absolute", left: 0, right: 0, height: 2, top: "-6%", background: "linear-gradient(90deg, transparent, rgba(255,228,195,.95), transparent)", boxShadow: "0 0 14px rgba(239,147,85,.85)", animation: "wt-scan 1.5s ease-in-out .25s 1 both" }} />
+                </div>
+              </div>
             </>
           ) : (
             <div style={{ position: "absolute", inset: 0, background: "radial-gradient(120% 120% at 50% 38%, rgba(28,20,34,0.84) 0%, rgba(14,10,20,0.92) 100%)", backdropFilter: "blur(6px)" }} />
@@ -294,6 +333,7 @@ export default function WelcomeTrailer() {
 
           {(s.type === "orb" || s.type === "finish") && (
             <div aria-hidden="true" style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
+              <div className="wt-anim" style={{ position: "absolute", inset: "-25%", background: "radial-gradient(42% 36% at 30% 36%, rgba(239,147,85,.17), transparent 70%), radial-gradient(38% 32% at 72% 62%, rgba(134,189,143,.13), transparent 70%), radial-gradient(30% 26% at 56% 22%, rgba(247,186,160,.12), transparent 70%)", filter: "blur(34px)", animation: "wt-aur 26s linear infinite" }} />
               {PARTIKLER.map((x, i) => (
                 <span key={i} className="wt-prt" style={{ position: "absolute", left: x + "%", bottom: "26%", width: i % 3 === 0 ? 5 : 3, height: i % 3 === 0 ? 5 : 3, borderRadius: "50%", background: i % 4 === 0 ? "rgba(255,214,170,.95)" : "rgba(255,244,225,.8)", filter: "blur(.4px)", animation: "wt-part " + (4.6 + (i % 5)) + "s linear " + (i * 0.65) + "s infinite" }} />
               ))}
@@ -309,6 +349,12 @@ export default function WelcomeTrailer() {
                 <div style={{ position: "absolute", inset: -64, borderRadius: "50%", background: "radial-gradient(circle, rgba(246,200,150,.55), transparent 70%)", filter: "blur(10px)" }} />
                 <div className="wt-anim" style={{ position: "absolute", inset: -16, borderRadius: "50%", background: "conic-gradient(from 0deg, transparent 0%, transparent 38%, rgba(255,199,140,.95) 50%, transparent 62%, transparent 100%)", WebkitMaskImage: "radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px))", maskImage: "radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px))", animation: "wt-ring 6.5s linear infinite" }} />
                 <div className="wt-anim" style={{ position: "absolute", inset: 0, borderRadius: "50%", backgroundImage: "url(" + ORB + ")", backgroundSize: "cover", backgroundPosition: "center", boxShadow: "0 0 90px rgba(243,179,107,.6), inset 0 0 30px rgba(255,255,255,.18)", animation: "wt-sv 5.2s ease-in-out infinite" }} />
+                <div aria-hidden="true" className="wt-anim" style={{ position: "absolute", inset: -34, animation: "wt-orbit 9s linear infinite" }}>
+                  <span style={{ position: "absolute", top: -3, left: "50%", width: 7, height: 7, marginLeft: -3.5, borderRadius: "50%", background: "#ffd9b0", boxShadow: "0 0 14px rgba(255,200,140,.95)" }} />
+                </div>
+                <div aria-hidden="true" className="wt-anim" style={{ position: "absolute", inset: -52, animation: "wt-orbit 15s linear infinite reverse" }}>
+                  <span style={{ position: "absolute", top: -2, left: "50%", width: 5, height: 5, marginLeft: -2.5, borderRadius: "50%", background: "#cadfc1", boxShadow: "0 0 10px rgba(160,210,170,.9)" }} />
+                </div>
               </div>
               <div style={{ fontSize: 12, letterSpacing: ".24em", textTransform: "uppercase", color: "#f3a06b", fontWeight: 700, marginBottom: 12, animation: "wt-in .6s " + fjedring + " .12s both" }}>Velkommen</div>
               <div className="wt-shimmer" style={{ fontFamily: "var(--font-serif)", fontSize: 58, lineHeight: 1.05, animation: "wt-in .6s " + fjedring + " .2s both" }}>M&oslash;d Astrid</div>
@@ -347,7 +393,7 @@ export default function WelcomeTrailer() {
                 <span style={{ fontSize: 11.5, color: "var(--kaerne-muted,#8a7a66)", fontVariantNumeric: "tabular-nums" }}>{spotNo} / {SPOT_TOTAL}</span>
               </div>
               <div style={{ fontFamily: "var(--font-serif)", fontSize: 19, color: "var(--kaerne-ink,#2c2824)", marginBottom: 5, lineHeight: 1.2 }}>{s.title}</div>
-              <div style={{ fontSize: 13.5, lineHeight: 1.55, color: "var(--kaerne-ink-soft,#5f5648)" }}>{s.text}</div>
+              <div style={{ fontSize: 13.5, lineHeight: 1.55, color: "var(--kaerne-ink-soft,#5f5648)", minHeight: 63 }}><TypeTekst tekst={s.text} /></div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 14 }}>
                 <button type="button" onClick={prev} disabled={step <= 1} style={{ background: "none", border: "none", cursor: step <= 1 ? "default" : "pointer", color: step <= 1 ? "#cfc3b0" : "var(--kaerne-ink-soft,#5f5648)", fontSize: 13 }}>&larr; Forrige</button>
                 <button type="button" onClick={next} className="wt-cta" style={{ padding: "9px 20px", borderRadius: 999, border: "none", cursor: "pointer", background: "linear-gradient(135deg,#ef9355,#d96637)", color: "#fff", fontWeight: 600, fontSize: 13.5, boxShadow: "0 5px 16px rgba(217,102,55,.4), inset 0 1px 0 rgba(255,255,255,.3)" }}>N&aelig;ste &rarr;</button>
