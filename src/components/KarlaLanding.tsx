@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import AktorMatch from "@/components/AktorMatch";
 import AstridFigur from "@/components/AstridFigur";
+import AstridQuizBobler from "@/components/AstridQuizBobler";
 import SplashScreen from "@/components/SplashScreen";
 import { KaosKontrolBar, GuldkornPopup, LukSagButton, anonymiser, SLASH_COMMANDS, SparetTid, ProUnlock } from "@/components/AstridUpgrades";
 import AuthButton from "@/components/AuthButton";
@@ -370,8 +371,11 @@ export default function KarlaLanding() {
       <main className="flex-1 px-6 md:px-12 py-8 md:py-12">
         <div className="grid md:grid-cols-[280px_1fr] gap-10 md:gap-14 items-start max-w-5xl mx-auto">
 
-          <div className="relative w-[250px] min-h-[300px] flex items-center justify-center mx-auto md:mx-0 md:sticky md:top-28">
-            <AstridFigur loading={loading} typing={typing} chatActive={chatActive} />
+          <div className="relative w-[250px] flex flex-col items-center mx-auto md:mx-0 md:sticky md:top-28">
+            <div className="relative min-h-[300px] flex items-center justify-center">
+              <AstridFigur loading={loading} typing={typing} chatActive={chatActive} />
+            </div>
+            {!chatActive && <AstridQuizBobler />}
           </div>
 
           <div className="max-w-2xl">
