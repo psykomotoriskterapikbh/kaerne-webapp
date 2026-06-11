@@ -2,7 +2,6 @@
 
 import EksempelSvar from "@/components/EksempelSvar";
 import LeadMagnet from "@/components/LeadMagnet";
-import ParagrafQuiz from "@/components/ParagrafQuiz";
 
 /* Forsidesektion: Sådan virker det, brug-guide, om Astrid, pris (gratis) og kontakt.
    Hjælper både nye brugere og kommuner, der lander på siden, med at forstå tilbuddet. */
@@ -79,9 +78,6 @@ export function OmGuide() {
           </div>
         ))}
       </div>
-
-      {/* Dagens faglige quiz */}
-      <ParagrafQuiz />
 
       {/* Om + Gratis + Kontakt */}
       <div style={{ ...card, marginTop: 56, padding: "30px 28px", background: "var(--kaerne-cream)", border: "0.5px solid var(--kaerne-border-soft)", textAlign: "center" }}>
