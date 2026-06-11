@@ -137,33 +137,38 @@ export default function SplashScreen() {
         });
       }
     };
-    T(doGlint, 1150);
-    T(doGlint, 2900);
+    T(doGlint, 900);
+    T(doGlint, 2000);
 
     // overskrift
-    T(() => { if (pre.current) { pre.current.style.opacity = "1"; pre.current.style.transform = "translateY(0)"; } }, 1500);
-    T(() => { if (big.current) { big.current.style.opacity = "1"; big.current.style.transform = "translateY(0) scale(1)"; } }, 1800);
-    T(() => { if (sub.current) sub.current.style.opacity = "1"; }, 2500);
+    T(() => { if (pre.current) { pre.current.style.opacity = "1"; pre.current.style.transform = "translateY(0)"; } }, 600);
+    T(() => { if (big.current) { big.current.style.opacity = "1"; big.current.style.transform = "translateY(0) scale(1)"; } }, 850);
+    T(() => { if (sub.current) sub.current.style.opacity = "1"; }, 1350);
 
     // lyssweep
-    T(() => { if (sweep.current) { sweep.current.style.transition = "transform 1.25s cubic-bezier(.4,0,.2,1), opacity .3s ease"; sweep.current.style.opacity = "1"; sweep.current.style.transform = "translateX(170%) skewX(-16deg)"; } }, 2300);
-    T(() => { if (sweep.current) sweep.current.style.opacity = "0"; }, 3550);
+    T(() => { if (sweep.current) { sweep.current.style.transition = "transform 1.25s cubic-bezier(.4,0,.2,1), opacity .3s ease"; sweep.current.style.opacity = "1"; sweep.current.style.transform = "translateX(170%) skewX(-16deg)"; } }, 1500);
+    T(() => { if (sweep.current) sweep.current.style.opacity = "0"; }, 2600);
 
     // elegant fade-out: indhold toner først, så driver hele scenen blødt væk
-    T(() => { [pre.current, big.current, sub.current].forEach((e) => { if (e) e.style.opacity = "0"; }); }, 5200);
-    T(() => { if (ovRef.current) { ovRef.current.style.opacity = "0"; ovRef.current.style.transform = "scale(1.04)"; ovRef.current.style.filter = "blur(3px)"; } }, 5500);
-    T(() => { setGone(true); }, 7600);
+    T(() => { [pre.current, big.current, sub.current].forEach((e) => { if (e) e.style.opacity = "0"; }); }, 3100);
+    T(() => { if (ovRef.current) { ovRef.current.style.opacity = "0"; ovRef.current.style.transform = "scale(1.04)"; ovRef.current.style.filter = "blur(3px)"; } }, 3350);
+    T(() => { setGone(true); }, 5000);
 
     return () => { timers.forEach(clearTimeout); };
   }, [show]);
 
+  const skip = () => {
+    if (ovRef.current) { ovRef.current.style.transition = "opacity .45s ease"; ovRef.current.style.opacity = "0"; }
+    setTimeout(() => setGone(true), 470);
+  };
+
   if (gone || !show) return null;
 
   return (
-    <div ref={ovRef} aria-hidden="true" style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "radial-gradient(circle at 50% 42%,#fef9f2 0%,#f6ecdd 52%,#ecdfcd 100%)", transition: "opacity 2s cubic-bezier(.4,0,.2,1), transform 2s cubic-bezier(.4,0,.2,1), filter 2s ease", transformOrigin: "50% 42%", overflow: "hidden" }}>
+    <div ref={ovRef} aria-hidden="true" onClick={skip} style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "radial-gradient(circle at 50% 42%,#fef9f2 0%,#f6ecdd 52%,#ecdfcd 100%)", transition: "opacity 2s cubic-bezier(.4,0,.2,1), transform 2s cubic-bezier(.4,0,.2,1), filter 2s ease", transformOrigin: "50% 42%", overflow: "hidden" }}>
       <style>{`
         @keyframes asp-zoom{0%{transform:scale(1.1)}100%{transform:scale(1)}}
-        .asp-hero{animation:asp-zoom 7.6s cubic-bezier(.16,.7,.28,1) forwards}
+        .asp-hero{animation:asp-zoom 5s cubic-bezier(.16,.7,.28,1) forwards}
         @keyframes asp-pulseK{0%,100%{opacity:.45;transform:translate(-50%,-50%) scale(1)}50%{opacity:.9;transform:translate(-50%,-50%) scale(1.1)}}
         .asp-pulse{animation:asp-pulseK 3.6s ease-in-out infinite}
         @keyframes asp-pulse2K{0%,100%{opacity:.35;transform:translate(-50%,-50%) scale(.96)}50%{opacity:.7;transform:translate(-50%,-50%) scale(1.06)}}
@@ -193,7 +198,7 @@ export default function SplashScreen() {
       {/* overskrift */}
       <div style={{ position: "absolute", left: 0, right: 0, bottom: "16%", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "0 24px" }}>
         <div ref={pre} style={{ fontSize: "clamp(11px,2.4vw,15px)", letterSpacing: ".42em", textTransform: "uppercase", fontWeight: 600, color: "#b06a45", opacity: 0, transform: "translateY(10px)", transition: "all .7s cubic-bezier(.2,.8,.3,1)" }}>Velkommen til</div>
-        <div ref={big} style={{ marginTop: 8, fontSize: "clamp(44px,9vw,96px)", fontWeight: 800, letterSpacing: "-0.01em", lineHeight: 1, color: "#2d2a26", textTransform: "uppercase", opacity: 0, transform: "translateY(12px) scale(.88)", transition: "all .8s cubic-bezier(.2,1.4,.35,1)", textShadow: "0 4px 34px rgba(226,145,111,.34)" }}>Astrid AI</div>
+        <div ref={big} style={{ marginTop: 8, fontSize: "clamp(44px,9vw,96px)", fontWeight: 420, letterSpacing: "-0.02em", lineHeight: 1.05, color: "#2d2a26", fontFamily: "var(--font-serif)", opacity: 0, transform: "translateY(12px) scale(.88)", transition: "all .8s cubic-bezier(.2,1.4,.35,1)", textShadow: "0 4px 34px rgba(226,145,111,.34)" }}>Astrid</div>
         <div ref={sub} style={{ marginTop: 12, fontSize: "clamp(10.5px,2.1vw,12px)", letterSpacing: ".3em", textTransform: "uppercase", color: "#9a6a47", opacity: 0, transition: "opacity .8s ease" }}>Din digitale kollega</div>
       </div>
     </div>
