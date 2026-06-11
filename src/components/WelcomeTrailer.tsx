@@ -199,6 +199,7 @@ export default function WelcomeTrailer() {
         <div style={{ position: "fixed", inset: 0, zIndex: 1100 }}>
           {s.type === "spot" && rect ? (
             <>
+              <div onClick={next} aria-hidden="true" style={{ position: "absolute", inset: 0, cursor: "pointer" }} />
               <div style={{ position: "absolute", top: rect.y - PAD, left: rect.x - PAD, width: rect.w + PAD * 2, height: rect.h + PAD * 2, borderRadius: 18, boxShadow: "0 0 0 9999px rgba(16,12,22,0.82)", transition: "top .45s " + fjedring + ", left .45s " + fjedring + ", width .45s " + fjedring + ", height .45s " + fjedring, pointerEvents: "none" }} />
               <div className="wt-spot" style={{ position: "absolute", top: rect.y - PAD, left: rect.x - PAD, width: rect.w + PAD * 2, height: rect.h + PAD * 2, borderRadius: 18, transition: "top .45s " + fjedring + ", left .45s " + fjedring + ", width .45s " + fjedring + ", height .45s " + fjedring, pointerEvents: "none" }} />
             </>
