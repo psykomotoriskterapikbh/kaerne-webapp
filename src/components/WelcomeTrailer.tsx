@@ -41,75 +41,107 @@ function startMusik() {
   try {
     const master = c.createGain();
     master.gain.setValueAtTime(0.0001, c.currentTime);
-    master.gain.linearRampToValueAtTime(0.05, c.currentTime + 2.5);
+    master.gain.linearRampToValueAtTime(0.062, c.currentTime + 1.6);
     master.connect(c.destination);
 
     // bloed syntetiseret rumklang
     const conv = c.createConvolver();
-    const len = Math.floor(c.sampleRate * 2.0);
+    const len = Math.floor(c.sampleRate * 1.6);
     const ir = c.createBuffer(2, len, c.sampleRate);
     for (let ch = 0; ch < 2; ch++) {
       const d = ir.getChannelData(ch);
-      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.8);
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6);
     }
     conv.buffer = ir;
-    const wet = c.createGain(); wet.gain.value = 0.5; conv.connect(wet); wet.connect(master);
+    const wet = c.createGain(); wet.gain.value = 0.33; conv.connect(wet); wet.connect(master);
     const send = (g: GainNode) => { g.connect(master); g.connect(conv); };
 
-    // rolig akkordrunde i F-dur: F - Dm - Bb - C
+    // stoejbuffer til sarte hi-hats
+    const hatBuf = c.createBuffer(1, Math.floor(c.sampleRate * 0.06), c.sampleRate);
+    const hd = hatBuf.getChannelData(0);
+    for (let i = 0; i < hd.length; i++) hd[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / hd.length, 2);
+
+    // glad og let: 104 BPM, F - C - Dm - Bb
+    const TAKT = 60 / 104;
     const AKKORDER = [
       [174.61, 220.0, 261.63, 349.23],
+      [196.0, 261.63, 329.63, 392.0],
       [146.83, 220.0, 293.66, 349.23],
-      [116.54, 174.61, 233.08, 293.66],
-      [130.81, 196.0, 261.63, 329.63],
+      [116.54, 233.08, 293.66, 349.23],
     ];
-    let trin = 0;
-    const spilAkkord = () => {
-      const t0 = c.currentTime;
-      AKKORDER[trin % AKKORDER.length].forEach((f, i) => {
-        const o = c.createOscillator(); o.type = "triangle"; o.frequency.value = f;
-        const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 850; lp.Q.value = 0.5;
-        const g = c.createGain();
-        const top = i === 3 ? 0.10 : 0.16;
-        g.gain.setValueAtTime(0.0001, t0);
-        g.gain.linearRampToValueAtTime(top, t0 + 1.8);
-        g.gain.setValueAtTime(top, t0 + 3.6);
-        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 5.6);
-        o.connect(lp); lp.connect(g); send(g);
-        o.start(t0); o.stop(t0 + 5.8);
-      });
-      trin++;
-    };
-    spilAkkord();
-    const akkordId = setInterval(spilAkkord, 4800);
+    const MONSTER = [0, 1, 2, 3, 2, 3, 1, 2];
+    let takt = 0;
 
-    // sarte klokketoner (F-pentatont droes)
-    const TONER = [523.25, 587.33, 659.25, 698.46, 783.99, 880.0, 1046.5];
-    const klokke = () => {
-      if (Math.random() > 0.72) return;
-      const f = TONER[Math.floor(Math.random() * TONER.length)];
-      const t0 = c.currentTime + Math.random() * 0.6;
-      [1, 2].forEach((mult, k) => {
-        const o = c.createOscillator(); o.type = "sine"; o.frequency.value = f * mult;
-        const g = c.createGain(); const top = k === 0 ? 0.05 : 0.013;
-        g.gain.setValueAtTime(0.0001, t0);
-        g.gain.exponentialRampToValueAtTime(top, t0 + 0.02);
-        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 2.4);
-        o.connect(g); send(g);
-        o.start(t0); o.stop(t0 + 2.5);
-      });
+    const pluk = (f: number, t0: number, vol: number) => {
+      const o = c.createOscillator(); o.type = "triangle"; o.frequency.value = f;
+      const g = c.createGain();
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(vol, t0 + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.34);
+      o.connect(g); send(g);
+      o.start(t0); o.stop(t0 + 0.4);
     };
-    const klokkeId = setInterval(klokke, 2100);
+    const puls = (t0: number, dyb: boolean) => {
+      const o = c.createOscillator(); o.type = "sine";
+      o.frequency.setValueAtTime(dyb ? 120 : 95, t0);
+      o.frequency.exponentialRampToValueAtTime(42, t0 + 0.12);
+      const g = c.createGain();
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(dyb ? 0.1 : 0.055, t0 + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.2);
+      o.connect(g); g.connect(master);
+      o.start(t0); o.stop(t0 + 0.25);
+    };
+    const hat = (t0: number) => {
+      const src = c.createBufferSource(); src.buffer = hatBuf;
+      const hp = c.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 6500;
+      const g = c.createGain(); g.gain.setValueAtTime(0.02, t0);
+      src.connect(hp); hp.connect(g); g.connect(master);
+      src.start(t0);
+    };
+
+    const spilTakt = () => {
+      const t0 = c.currentTime + 0.04;
+      const akkord = AKKORDER[takt % AKKORDER.length];
+      // varmt pad under det hele
+      akkord.forEach((f, i) => {
+        const o = c.createOscillator(); o.type = "triangle"; o.frequency.value = f;
+        const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 1100; lp.Q.value = 0.5;
+        const g = c.createGain();
+        const top = i === 3 ? 0.07 : 0.11;
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.linearRampToValueAtTime(top, t0 + 0.5);
+        g.gain.setValueAtTime(top, t0 + TAKT * 4 - 0.6);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + TAKT * 4 + 0.2);
+        o.connect(lp); lp.connect(g); send(g);
+        o.start(t0); o.stop(t0 + TAKT * 4 + 0.3);
+      });
+      // sprode plukke-arpeggioer i ottendedele
+      MONSTER.forEach((idx, k) => {
+        const t = t0 + k * (TAKT / 2);
+        pluk(akkord[idx] * 2, t, k % 2 === 0 ? 0.068 : 0.05);
+      });
+      // lille glimmer-tone i slutningen af hver anden takt
+      if (takt % 2 === 1) pluk(akkord[1] * 4, t0 + 3.5 * TAKT, 0.034);
+      // blid puls og sarte hi-hats
+      for (let s = 0; s < 4; s++) {
+        puls(t0 + s * TAKT, s % 2 === 0);
+        hat(t0 + s * TAKT + TAKT / 2);
+      }
+      takt++;
+    };
+    spilTakt();
+    const taktId = setInterval(spilTakt, TAKT * 4 * 1000);
 
     musikStop = () => {
       musikStop = null;
-      clearInterval(akkordId); clearInterval(klokkeId);
+      clearInterval(taktId);
       try {
         master.gain.cancelScheduledValues(c.currentTime);
         master.gain.setValueAtTime(Math.max(master.gain.value, 0.0001), c.currentTime);
-        master.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 1.0);
+        master.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 0.9);
       } catch {}
-      setTimeout(() => { try { master.disconnect(); conv.disconnect(); } catch {} }, 1200);
+      setTimeout(() => { try { master.disconnect(); conv.disconnect(); } catch {} }, 1100);
     };
   } catch {}
 }
