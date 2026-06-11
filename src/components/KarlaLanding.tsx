@@ -214,6 +214,20 @@ export default function KarlaLanding() {
     return () => window.removeEventListener("astrid:saglukket", onLukket);
   }, []);
 
+  // Lad andre sektioner (fx Dagens faglige quiz) sende et sporgsmaal til Astrid
+  const sendRef = useRef<(t: string) => void>(() => {});
+  useEffect(() => {
+    const onAsk = (e: Event) => {
+      const d = (e as CustomEvent).detail;
+      if (typeof d === "string" && d.trim()) {
+        sendRef.current(d);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    };
+    window.addEventListener("astrid:ask", onAsk);
+    return () => window.removeEventListener("astrid:ask", onAsk);
+  }, []);
+
   const send = async (text: string) => {
     const t = text.trim();
     if (!t) return;
@@ -289,6 +303,8 @@ export default function KarlaLanding() {
       }
     }
   };
+
+  sendRef.current = send;
 
   const chooseSlash = (cmd: SlashCmd) => {
     setSlash(false);
