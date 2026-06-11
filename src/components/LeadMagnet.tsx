@@ -14,21 +14,21 @@ function bygSkabelon(): string {
     "- Kort, objektiv beskrivelse af hvad notatet handler om, og hvorfor det skrives nu.",
     "",
     "2. FAKTISKE OPLYSNINGER",
-    "- Relevante, dokumenterbare oplysninger (hvem, hvad, hvornaar). Hold fakta adskilt fra vurdering.",
+    "- Relevante, dokumenterbare oplysninger (hvem, hvad, hvornår). Hold fakta adskilt fra vurdering.",
     "",
     "3. BARNETS / DEN UNGES PERSPEKTIV",
-    "- Er barnet hoert? Hvordan? Gengiv synspunkter (boernesamtale foer afgoerelse).",
+    "- Er barnet hørt? Hvordan? Gengiv synspunkter (børnesamtale før afgørelse).",
     "",
     "4. FAGLIG VURDERING",
     "- Din socialfaglige vurdering, koblet til lovgrundlag (fx Barnets Lov §§ ...).",
     "- Proportionalitet: er indsatsen mindst indgribende og bedst egnede?",
     "",
     "5. INDSTILLING / NÆSTE SKRIDT",
-    "- Hvad indstilles der til, og hvad er de naeste konkrete skridt og frister?",
+    "- Hvad indstilles der til, og hvad er de næste konkrete skridt og frister?",
     "",
-    "Partshoering gennemfoert: [ ] ja  [ ] nej     Begrundelse vedlagt: [ ] ja  [ ] nej",
+    "Partshøring gennemført: [ ] ja  [ ] nej     Begrundelse vedlagt: [ ] ja  [ ] nej",
     "",
-    "Skoennet og myndighedsansvaret er altid dit. Astrid er beslutningsstoette, ikke afgoerelse.",
+    "Skønnet og myndighedsansvaret er altid dit. Astrid er beslutningsstøtte, ikke afgørelse.",
   ].join("\n");
 }
 
@@ -71,8 +71,8 @@ export default function LeadMagnet() {
 
   return (
     <div style={card}>
-      <div style={{ fontFamily: "var(--font-serif)", fontSize: 18, color: "var(--kaerne-terracotta-deep)", marginBottom: 4 }}>Gratis vaerktoej: §20-notatskabelon</div>
-      <div style={{ fontSize: 13.5, color: "var(--kaerne-ink-soft)", lineHeight: 1.55, marginBottom: 14 }}>En klar, faglig skabelon til dine §20-notater. Skriv din arbejds-e-mail, saa kan du downloade den med det samme.</div>
+      <div style={{ fontFamily: "var(--font-serif)", fontSize: 18, color: "var(--kaerne-terracotta-deep)", marginBottom: 4 }}>Gratis værktøj: §20-notatskabelon</div>
+      <div style={{ fontSize: 13.5, color: "var(--kaerne-ink-soft)", lineHeight: 1.55, marginBottom: 14 }}>En klar, faglig skabelon til dine §20-notater. Skriv din arbejds-e-mail, så kan du downloade den med det samme.</div>
       {!open && !done && (
         <button type="button" style={knap} onClick={() => setOpen(true)}>↓ Hent §20-skabelon</button>
       )}
