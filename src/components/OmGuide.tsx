@@ -2,6 +2,7 @@
 
 import EksempelSvar from "@/components/EksempelSvar";
 import LeadMagnet from "@/components/LeadMagnet";
+import ParagrafQuiz from "@/components/ParagrafQuiz";
 
 /* Forsidesektion: Sådan virker det, brug-guide, om Astrid, pris (gratis) og kontakt.
    Hjælper både nye brugere og kommuner, der lander på siden, med at forstå tilbuddet. */
@@ -19,6 +20,13 @@ const VAERKTOEJER = [
   { i: "⦸", t: "Anonymisér", d: "Fjerner CPR, telefon, e-mail og adresse fra teksten." },
   { i: "⎙", t: "Upload sag", d: "Smid en anonym fil ind, så læser Astrid den." },
   { i: "⌂", t: "Find leverandør m.m.", d: "Hurtige værktøjer: leverandør-match, frist-beregner og paragraf-oversætter." },
+];
+
+const TRYGHED = [
+  { t: "Samtaler gemmes kun i din browser", d: "Dine samtaler gemmes ikke hos os. Det, du vælger at gemme, ligger lokalt i din egen browser, og du kan slette det når som helst." },
+  { t: "Automatisk CPR-blokering", d: "Beskeder med CPR-numre afvises, før de sendes, og 1-kliks anonymisering fjerner telefon, e-mail og adresse. Navne skal du selv tjekke." },
+  { t: "Støtte, ikke skøn", d: "Astrid træffer aldrig afgørelser. Det socialfaglige skøn og myndighedsansvaret ligger altid hos dig og din kommune." },
+  { t: "Åbenhed om databehandling", d: "Spørg os direkte om GDPR, databehandling og sikkerhed på kontakt@kaerne.dk, og læs vores privatlivspolitik nederst på siden." },
 ];
 
 const card: React.CSSProperties = {
@@ -59,6 +67,21 @@ export function OmGuide() {
           </div>
         ))}
       </div>
+
+      {/* Tryghed & ansvarlig AI */}
+      <h2 style={{ ...h2, marginTop: 56 }}>Tryghed &amp; ansvarlig AI</h2>
+      <p style={lead}>Bygget til en hverdag med følsomme sager. Ingen smarte løfter, kun det der passer.</p>
+      <div className="grid gap-3.5 md:grid-cols-2">
+        {TRYGHED.map((v) => (
+          <div key={v.t} className="k-card" style={{ ...card, padding: "15px 18px" }}>
+            <div style={{ fontSize: 14.5, fontWeight: 600, color: "var(--kaerne-ink)", marginBottom: 2 }}>{v.t}</div>
+            <div style={{ fontSize: 13.5, lineHeight: 1.55, color: "var(--kaerne-ink-soft)" }}>{v.d}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Dagens faglige quiz */}
+      <ParagrafQuiz />
 
       {/* Om + Gratis + Kontakt */}
       <div style={{ ...card, marginTop: 56, padding: "30px 28px", background: "var(--kaerne-cream)", border: "0.5px solid var(--kaerne-border-soft)", textAlign: "center" }}>
