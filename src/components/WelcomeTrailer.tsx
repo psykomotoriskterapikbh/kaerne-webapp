@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { fireConfetti } from "@/lib/confetti";
 
 const ORB = "https://media.glif.app/i:r/c_limit,w_1200/f_auto/q_auto/fucn4fhdx5txpp7ddqre";
 
@@ -136,6 +137,10 @@ export default function WelcomeTrailer() {
     return () => { if (timer.current) clearTimeout(timer.current); };
   }, [open, step]);
 
+  useEffect(() => {
+    if (open && STEPS[step].type === "finish") { try { fireConfetti(); } catch {} }
+  }, [open, step]);
+
   const openTour = () => { sOpen(); manual.current = false; setStep(0); setOpen(true); };
   const close = () => { if (timer.current) clearTimeout(timer.current); setOpen(false); setStep(0); };
   const next = () => { sStep(); manual.current = true; setStep((v) => Math.min(STEPS.length - 1, v + 1)); };
@@ -160,64 +165,105 @@ export default function WelcomeTrailer() {
     <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: 24 }}>{children}</div>
   );
 
+  const PARTIKLER = [8, 22, 37, 55, 68, 81, 93, 14, 46, 74, 60, 30];
+  const fjedring = "cubic-bezier(.22,1,.36,1)";
+
   return (
     <>
-      <button type="button" onClick={openTour} aria-label="Se hvad Astrid kan"
-        style={{ position: "fixed", right: 18, bottom: 18, zIndex: 900, cursor: "pointer", display: "flex", alignItems: "center", gap: 7, padding: "10px 16px", borderRadius: 999, border: "none", color: "#fff", fontSize: 13, fontWeight: 600, background: "linear-gradient(135deg,#ef9355,#d96637)", boxShadow: "0 6px 20px rgba(217,102,55,.42)" }}>
-        <span aria-hidden="true">✦</span> Se hvad Astrid kan
+      <style>{[
+        "@keyframes wt-in{0%{opacity:0;transform:translateY(16px) scale(.97)}100%{opacity:1;transform:translateY(0) scale(1)}}",
+        "@keyframes wt-pop{0%{opacity:0;transform:translateY(12px) scale(.94)}100%{opacity:1;transform:translateY(0) scale(1)}}",
+        "@keyframes wt-halo{0%,100%{box-shadow:0 0 0 2.5px rgba(239,147,85,.95),0 0 22px rgba(239,147,85,.5)}50%{box-shadow:0 0 0 6px rgba(239,147,85,.45),0 0 52px rgba(239,147,85,.9)}}",
+        "@keyframes wt-ring{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}",
+        "@keyframes wt-sv{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}",
+        "@keyframes wt-part{0%{transform:translateY(20px) scale(.6);opacity:0}15%{opacity:.95}70%{opacity:.55}100%{transform:translateY(-150px) scale(1.1);opacity:0}}",
+        "@keyframes wt-skin{0%{background-position:-220% 0}100%{background-position:220% 0}}",
+        ".wt-fab{animation:wt-sv 4.4s ease-in-out infinite;transition:transform .25s cubic-bezier(.2,.9,.3,1.35),box-shadow .25s ease}",
+        ".wt-fab:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 12px 32px rgba(217,102,55,.55)}",
+        ".wt-cta{transition:transform .22s cubic-bezier(.2,.9,.3,1.35),box-shadow .22s ease}",
+        ".wt-cta:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 14px 36px rgba(217,102,55,.5)}",
+        ".wt-card{animation:wt-pop .42s cubic-bezier(.2,.9,.3,1.12) both}",
+        ".wt-spot{animation:wt-halo 2.3s ease-in-out infinite}",
+        ".wt-luk{transition:transform .25s ease,background .25s ease}",
+        ".wt-luk:hover{transform:rotate(90deg) scale(1.08);background:rgba(255,255,255,.26)}",
+        ".wt-shimmer{background:linear-gradient(110deg,#fff 38%,#ffd2a8 50%,#fff 62%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:wt-skin 4.6s linear infinite}",
+        "@media (prefers-reduced-motion: reduce){.wt-fab,.wt-spot,.wt-card,.wt-shimmer,.wt-anim,.wt-prt{animation:none !important}}",
+      ].join("")}</style>
+
+      <button type="button" onClick={openTour} aria-label="Se hvad Astrid kan" className="wt-fab"
+        style={{ position: "fixed", right: 18, bottom: 18, zIndex: 900, cursor: "pointer", display: "flex", alignItems: "center", gap: 7, padding: "10px 16px", borderRadius: 999, border: "0.5px solid rgba(255,255,255,.35)", color: "#fff", fontSize: 13, fontWeight: 600, background: "linear-gradient(135deg,#ef9355,#d96637)", boxShadow: "0 6px 20px rgba(217,102,55,.42), inset 0 1px 0 rgba(255,255,255,.35)" }}>
+        <span aria-hidden="true">&#10022;</span> Se hvad Astrid kan
       </button>
 
       {open && (
         <div style={{ position: "fixed", inset: 0, zIndex: 1100 }}>
           {s.type === "spot" && rect ? (
-            <div style={{ position: "absolute", top: rect.y - PAD, left: rect.x - PAD, width: rect.w + PAD * 2, height: rect.h + PAD * 2, borderRadius: 16, boxShadow: "0 0 0 9999px rgba(18,15,24,0.80), 0 0 0 3px #ef9355, 0 0 30px rgba(239,147,85,.75)", transition: "top .3s ease, left .3s ease, width .3s ease, height .3s ease", pointerEvents: "none" }} />
+            <>
+              <div style={{ position: "absolute", top: rect.y - PAD, left: rect.x - PAD, width: rect.w + PAD * 2, height: rect.h + PAD * 2, borderRadius: 18, boxShadow: "0 0 0 9999px rgba(16,12,22,0.82)", transition: "top .45s " + fjedring + ", left .45s " + fjedring + ", width .45s " + fjedring + ", height .45s " + fjedring, pointerEvents: "none" }} />
+              <div className="wt-spot" style={{ position: "absolute", top: rect.y - PAD, left: rect.x - PAD, width: rect.w + PAD * 2, height: rect.h + PAD * 2, borderRadius: 18, transition: "top .45s " + fjedring + ", left .45s " + fjedring + ", width .45s " + fjedring + ", height .45s " + fjedring, pointerEvents: "none" }} />
+            </>
           ) : (
-            <div style={{ position: "absolute", inset: 0, background: "rgba(18,15,24,0.86)", backdropFilter: "blur(4px)" }} />
+            <div style={{ position: "absolute", inset: 0, background: "radial-gradient(120% 120% at 50% 38%, rgba(28,20,34,0.84) 0%, rgba(14,10,20,0.92) 100%)", backdropFilter: "blur(6px)" }} />
           )}
 
-          <button type="button" onClick={close} aria-label="Luk" style={{ position: "absolute", top: 18, right: 20, zIndex: 5, background: "rgba(255,255,255,.14)", border: "none", color: "#fff", width: 40, height: 40, borderRadius: "50%", fontSize: 22, cursor: "pointer" }}>×</button>
+          {(s.type === "orb" || s.type === "finish") && (
+            <div aria-hidden="true" style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
+              {PARTIKLER.map((x, i) => (
+                <span key={i} className="wt-prt" style={{ position: "absolute", left: x + "%", bottom: "26%", width: i % 3 === 0 ? 5 : 3, height: i % 3 === 0 ? 5 : 3, borderRadius: "50%", background: i % 4 === 0 ? "rgba(255,214,170,.95)" : "rgba(255,244,225,.8)", filter: "blur(.4px)", animation: "wt-part " + (4.6 + (i % 5)) + "s linear " + (i * 0.65) + "s infinite" }} />
+              ))}
+            </div>
+          )}
+
+          <button type="button" onClick={close} aria-label="Luk" className="wt-luk" style={{ position: "absolute", top: 18, right: 20, zIndex: 5, background: "rgba(255,255,255,.14)", border: "0.5px solid rgba(255,255,255,.25)", backdropFilter: "blur(6px)", color: "#fff", width: 40, height: 40, borderRadius: "50%", fontSize: 22, cursor: "pointer" }}>&times;</button>
 
           {s.type === "orb" && Card(
             <>
-              <div style={{ position: "relative", width: 220, height: 220, marginBottom: 26 }}>
-                <div style={{ position: "absolute", inset: -60, borderRadius: "50%", background: "radial-gradient(circle, rgba(246,200,150,.55), transparent 70%)", filter: "blur(8px)" }} />
-                <div style={{ position: "absolute", inset: 0, borderRadius: "50%", backgroundImage: "url(" + ORB + ")", backgroundSize: "cover", backgroundPosition: "center", boxShadow: "0 0 80px rgba(243,179,107,.55)" }} />
+              <div className="wt-anim" style={{ position: "relative", width: 226, height: 226, marginBottom: 28, animation: "wt-in .7s " + fjedring + " both" }}>
+                <div style={{ position: "absolute", inset: -64, borderRadius: "50%", background: "radial-gradient(circle, rgba(246,200,150,.55), transparent 70%)", filter: "blur(10px)" }} />
+                <div className="wt-anim" style={{ position: "absolute", inset: -16, borderRadius: "50%", background: "conic-gradient(from 0deg, transparent 0%, transparent 38%, rgba(255,199,140,.95) 50%, transparent 62%, transparent 100%)", WebkitMaskImage: "radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px))", maskImage: "radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px))", animation: "wt-ring 6.5s linear infinite" }} />
+                <div className="wt-anim" style={{ position: "absolute", inset: 0, borderRadius: "50%", backgroundImage: "url(" + ORB + ")", backgroundSize: "cover", backgroundPosition: "center", boxShadow: "0 0 90px rgba(243,179,107,.6), inset 0 0 30px rgba(255,255,255,.18)", animation: "wt-sv 5.2s ease-in-out infinite" }} />
               </div>
-              <div style={{ fontSize: 12, letterSpacing: ".22em", textTransform: "uppercase", color: "#ef9355", fontWeight: 700, marginBottom: 12 }}>Velkommen</div>
-              <div style={{ fontFamily: "var(--font-serif)", fontSize: 56, color: "#fff", lineHeight: 1.05 }}>Mød Astrid</div>
-              <div style={{ fontSize: 18, color: "rgba(255,255,255,.82)", marginTop: 12, maxWidth: 480, lineHeight: 1.5 }}>Din digitale kollega, der klarer jura, notater og frister, så du kan bruge tiden hos borgeren.</div>
-              <button type="button" onClick={() => { sStep(); setStep(1); }} style={{ marginTop: 28, padding: "13px 28px", borderRadius: 999, border: "none", cursor: "pointer", background: "linear-gradient(135deg,#ef9355,#d96637)", color: "#fff", fontWeight: 600, fontSize: 15 }}>Vis mig rundt (30 sek) →</button>
-              <button type="button" onClick={close} style={{ marginTop: 14, background: "none", border: "none", color: "rgba(255,255,255,.6)", cursor: "pointer", fontSize: 13 }}>Spring over</button>
+              <div style={{ fontSize: 12, letterSpacing: ".24em", textTransform: "uppercase", color: "#f3a06b", fontWeight: 700, marginBottom: 12, animation: "wt-in .6s " + fjedring + " .12s both" }}>Velkommen</div>
+              <div className="wt-shimmer" style={{ fontFamily: "var(--font-serif)", fontSize: 58, lineHeight: 1.05, animation: "wt-in .6s " + fjedring + " .2s both" }}>M&oslash;d Astrid</div>
+              <div style={{ fontSize: 18, color: "rgba(255,255,255,.84)", marginTop: 12, maxWidth: 480, lineHeight: 1.5, animation: "wt-in .6s " + fjedring + " .3s both" }}>Din digitale kollega, der klarer jura, notater og frister, s&aring; du kan bruge tiden hos borgeren.</div>
+              <button type="button" className="wt-cta" onClick={() => { sStep(); setStep(1); }} style={{ marginTop: 28, padding: "14px 30px", borderRadius: 999, border: "0.5px solid rgba(255,255,255,.35)", cursor: "pointer", background: "linear-gradient(135deg,#ef9355,#d96637)", color: "#fff", fontWeight: 600, fontSize: 15, boxShadow: "0 8px 26px rgba(217,102,55,.45), inset 0 1px 0 rgba(255,255,255,.35)", animation: "wt-in .6s " + fjedring + " .42s both" }}>Vis mig rundt (30 sek) &rarr;</button>
+              <button type="button" onClick={close} style={{ marginTop: 14, background: "none", border: "none", color: "rgba(255,255,255,.6)", cursor: "pointer", fontSize: 13, animation: "wt-in .6s " + fjedring + " .5s both" }}>Spring over</button>
             </>
           )}
 
           {s.type === "finish" && Card(
             <>
-              <div style={{ fontSize: 12, letterSpacing: ".22em", textTransform: "uppercase", color: "#ef9355", fontWeight: 700, marginBottom: 14 }}>Det får du ud af det</div>
-              <div style={{ fontFamily: "var(--font-serif)", fontSize: 48, color: "#fff", lineHeight: 1.1, maxWidth: 620 }}>Mere tid til det vigtige</div>
-              <div style={{ marginTop: 22, display: "flex", flexDirection: "column", gap: 12, alignItems: "center" }}>
-                {["Jura og notater klaret på minutter", "Aldrig i tvivl om den rette paragraf", "Mere tid hos borgeren, mindre på papir"].map((b) => (
-                  <div key={b} style={{ display: "flex", alignItems: "center", gap: 11, fontSize: 17, color: "rgba(255,255,255,.9)" }}>
-                    <span style={{ color: "#86bd8f", fontSize: 20 }}>✓</span> {b}
+              <div style={{ fontSize: 12, letterSpacing: ".24em", textTransform: "uppercase", color: "#f3a06b", fontWeight: 700, marginBottom: 14, animation: "wt-in .6s " + fjedring + " both" }}>Det f&aring;r du ud af det</div>
+              <div className="wt-shimmer" style={{ fontFamily: "var(--font-serif)", fontSize: 50, lineHeight: 1.1, maxWidth: 620, animation: "wt-in .6s " + fjedring + " .1s both" }}>Mere tid til det vigtige</div>
+              <div style={{ marginTop: 24, display: "flex", flexDirection: "column", gap: 13, alignItems: "center" }}>
+                {["Jura og notater klaret p\u00e5 minutter", "Aldrig i tvivl om den rette paragraf", "Mere tid hos borgeren, mindre p\u00e5 papir"].map((b, i) => (
+                  <div key={b} style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 17, color: "rgba(255,255,255,.92)", background: "rgba(255,255,255,.07)", border: "0.5px solid rgba(255,255,255,.14)", backdropFilter: "blur(8px)", borderRadius: 999, padding: "10px 22px", animation: "wt-in .55s " + fjedring + " " + (0.25 + i * 0.14) + "s both" }}>
+                    <span style={{ color: "#8fd49a", fontSize: 19 }}>&#10003;</span> {b}
                   </div>
                 ))}
               </div>
-              <button type="button" onClick={proev} style={{ marginTop: 30, padding: "13px 30px", borderRadius: 999, border: "none", cursor: "pointer", background: "linear-gradient(135deg,#ef9355,#d96637)", color: "#fff", fontWeight: 600, fontSize: 16 }}>Prøv det nu, det er gratis →</button>
-              <button type="button" onClick={close} style={{ marginTop: 14, background: "none", border: "none", color: "rgba(255,255,255,.6)", cursor: "pointer", fontSize: 13 }}>Luk</button>
+              <button type="button" className="wt-cta" onClick={proev} style={{ marginTop: 30, padding: "14px 32px", borderRadius: 999, border: "0.5px solid rgba(255,255,255,.35)", cursor: "pointer", background: "linear-gradient(135deg,#ef9355,#d96637)", color: "#fff", fontWeight: 600, fontSize: 16, boxShadow: "0 8px 26px rgba(217,102,55,.45), inset 0 1px 0 rgba(255,255,255,.35)", animation: "wt-in .6s " + fjedring + " .7s both" }}>Pr&oslash;v det nu, det er gratis &rarr;</button>
+              <button type="button" onClick={close} style={{ marginTop: 14, background: "none", border: "none", color: "rgba(255,255,255,.6)", cursor: "pointer", fontSize: 13, animation: "wt-in .6s " + fjedring + " .8s both" }}>Luk</button>
             </>
           )}
 
           {s.type === "spot" && rect && (
-            <div style={{ position: "absolute", zIndex: 6, width: 330, maxWidth: "86vw", background: "#fff", borderRadius: 16, padding: "16px 18px", boxShadow: "0 20px 50px rgba(0,0,0,.4)", ...tip }}>
+            <div key={step} className="wt-card" style={{ position: "absolute", zIndex: 6, width: 334, maxWidth: "86vw", background: "rgba(255,251,246,.92)", backdropFilter: "blur(16px) saturate(1.5)", border: "0.5px solid rgba(255,255,255,.7)", borderRadius: 18, padding: "15px 18px 16px", boxShadow: "0 24px 60px rgba(10,6,18,.45), inset 0 1px 0 rgba(255,255,255,.8)", ...tip }}>
+              <div style={{ height: 3, borderRadius: 999, background: "rgba(143,67,39,.14)", overflow: "hidden", marginBottom: 11 }}>
+                <div style={{ height: "100%", width: (spotNo / SPOT_TOTAL) * 100 + "%", borderRadius: 999, background: "linear-gradient(90deg,#ef9355,#d96637)", transition: "width .5s " + fjedring }} />
+              </div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 7 }}>
-                <span style={{ fontSize: 11, letterSpacing: ".09em", textTransform: "uppercase", color: "var(--kaerne-terracotta-deep,#8f4327)", fontWeight: 700 }}>{s.tag}</span>
-                <span style={{ fontSize: 11.5, color: "var(--kaerne-muted,#8a7a66)" }}>{spotNo} / {SPOT_TOTAL}</span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11, letterSpacing: ".09em", textTransform: "uppercase", color: "var(--kaerne-terracotta-deep,#8f4327)", fontWeight: 700 }}>
+                  <span aria-hidden="true" style={{ width: 6, height: 6, borderRadius: "50%", background: "linear-gradient(135deg,#ef9355,#d96637)" }} />
+                  {s.tag}
+                </span>
+                <span style={{ fontSize: 11.5, color: "var(--kaerne-muted,#8a7a66)", fontVariantNumeric: "tabular-nums" }}>{spotNo} / {SPOT_TOTAL}</span>
               </div>
               <div style={{ fontFamily: "var(--font-serif)", fontSize: 19, color: "var(--kaerne-ink,#2c2824)", marginBottom: 5, lineHeight: 1.2 }}>{s.title}</div>
               <div style={{ fontSize: 13.5, lineHeight: 1.55, color: "var(--kaerne-ink-soft,#5f5648)" }}>{s.text}</div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 14 }}>
-                <button type="button" onClick={prev} disabled={step <= 1} style={{ background: "none", border: "none", cursor: step <= 1 ? "default" : "pointer", color: step <= 1 ? "#cfc3b0" : "var(--kaerne-ink-soft,#5f5648)", fontSize: 13 }}>← Forrige</button>
-                <button type="button" onClick={next} style={{ padding: "9px 18px", borderRadius: 999, border: "none", cursor: "pointer", background: "var(--kaerne-terracotta,#e3794d)", color: "#fff", fontWeight: 600, fontSize: 13.5 }}>Næste →</button>
+                <button type="button" onClick={prev} disabled={step <= 1} style={{ background: "none", border: "none", cursor: step <= 1 ? "default" : "pointer", color: step <= 1 ? "#cfc3b0" : "var(--kaerne-ink-soft,#5f5648)", fontSize: 13 }}>&larr; Forrige</button>
+                <button type="button" onClick={next} className="wt-cta" style={{ padding: "9px 20px", borderRadius: 999, border: "none", cursor: "pointer", background: "linear-gradient(135deg,#ef9355,#d96637)", color: "#fff", fontWeight: 600, fontSize: 13.5, boxShadow: "0 5px 16px rgba(217,102,55,.4), inset 0 1px 0 rgba(255,255,255,.3)" }}>N&aelig;ste &rarr;</button>
               </div>
             </div>
           )}
