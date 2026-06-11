@@ -39,12 +39,13 @@ type Step =
 const STEPS: Step[] = [
   { type: "orb" },
   { type: "spot", input: true, tag: "Spørg om alt", title: "Stil din sag, få svar på sekunder", text: "Beskriv en sag anonymt. Du får faglig vurdering, de rette paragraffer og næste skridt, ikke bare spørgsmål tilbage." },
-  { type: "spot", find: "Find aktør", tag: "Den rette indsats", title: "Find den rette aktør", text: "Astrid foreslår indsats og leverandør, der matcher sagen og din kommune. Neutralt og fagligt." },
+  { type: "spot", find: "Find leverandør", tag: "Den rette indsats", title: "Find den rette leverandør", text: "Astrid foreslår indsats og leverandør, der matcher sagen og din kommune. Neutralt og fagligt." },
   { type: "spot", find: "Anonymisér", tag: "Tryghed", title: "Beskyt borgeren med ét klik", text: "Fjerner CPR, telefon, e-mail og adresse, før noget sendes. Du arbejder altid trygt." },
   { type: "spot", find: "Diktér", tag: "Endnu hurtigere", title: "Tal i stedet for at skrive", text: "Diktér sagen med stemmen, så går det lynhurtigt. Husk kun anonym tekst." },
   { type: "spot", find: "Upload sag", tag: "Spar tid", title: "Smid en hel sag ind", text: "Upload en anonym fil, så læser Astrid den og giver dig overblik og oplæg." },
   { type: "spot", find: "Min profil", tag: "Personligt", title: "Gør Astrid til din", text: "Fortæl hvem du er og hvilken kommune, så rammer svarene dig hver gang." },
   { type: "spot", find: "Mine samtaler", tag: "Altid ved hånden", title: "Gem dine samtaler", text: "Gem en samtale og find den frem igen, når du skal bruge den." },
+  { type: "spot", find: "Dagens faglige quiz", tag: "Skarp på 2 minutter", title: "Tag dagens faglige quiz", text: "Tre hurtige spørgsmål om jura og metode, lige ved siden af Astrid. Nye hver dag, og du kan altid spørge hende hvorfor." },
   { type: "finish" },
 ];
 const SPOT_TOTAL = STEPS.filter((s) => s.type === "spot").length;
@@ -65,6 +66,7 @@ export default function WelcomeTrailer() {
   const [rect, setRect] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
   const targetRef = useRef<HTMLElement | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const manual = useRef(false);
 
   const markSeen = () => { try { localStorage.setItem("astrid_intro_seen", "1"); } catch {} };
 
@@ -75,7 +77,7 @@ export default function WelcomeTrailer() {
     if (seen) return;
     let reduce = false;
     try { reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch {}
-    const t = setTimeout(() => { markSeen(); setStep(0); setOpen(true); }, reduce ? 1200 : 8200);
+    const t = setTimeout(() => { markSeen(); setStep(0); setOpen(true); }, reduce ? 1200 : 5600);
     return () => clearTimeout(t);
   }, []);
 
@@ -100,6 +102,10 @@ export default function WelcomeTrailer() {
       return () => { cancelAnimationFrame(raf); clearTimeout(t1); clearTimeout(t2); };
     } else {
       setRect(null);
+      if (s.type === "spot") {
+        const skip = setTimeout(() => setStep((v) => Math.min(STEPS.length - 1, v + 1)), 60);
+        return () => clearTimeout(skip);
+      }
     }
   }, [open, step, measure]);
 
@@ -112,17 +118,28 @@ export default function WelcomeTrailer() {
   }, [open, measure]);
 
   useEffect(() => {
-    if (!open || STEPS[step].type === "finish") return;
+    if (!open) return;
+    const k = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { if (timer.current) clearTimeout(timer.current); setOpen(false); setStep(0); }
+      else if (e.key === "ArrowRight") { manual.current = true; setStep((v) => Math.min(STEPS.length - 1, v + 1)); }
+      else if (e.key === "ArrowLeft") { manual.current = true; setStep((v) => Math.max(1, v - 1)); }
+    };
+    window.addEventListener("keydown", k);
+    return () => window.removeEventListener("keydown", k);
+  }, [open]);
+
+  useEffect(() => {
+    if (!open || manual.current || STEPS[step].type === "finish") return;
     if (timer.current) clearTimeout(timer.current);
     const dur = STEPS[step].type === "orb" ? 3800 : 5200;
     timer.current = setTimeout(() => { setStep((v) => { sStep(); return Math.min(STEPS.length - 1, v + 1); }); }, dur);
     return () => { if (timer.current) clearTimeout(timer.current); };
   }, [open, step]);
 
-  const openTour = () => { sOpen(); setStep(0); setOpen(true); };
+  const openTour = () => { sOpen(); manual.current = false; setStep(0); setOpen(true); };
   const close = () => { if (timer.current) clearTimeout(timer.current); setOpen(false); setStep(0); };
-  const next = () => { sStep(); setStep((v) => Math.min(STEPS.length - 1, v + 1)); };
-  const prev = () => { sStep(); setStep((v) => Math.max(1, v - 1)); };
+  const next = () => { sStep(); manual.current = true; setStep((v) => Math.min(STEPS.length - 1, v + 1)); };
+  const prev = () => { sStep(); manual.current = true; setStep((v) => Math.max(1, v - 1)); };
   const focusInput = () => { const el = document.querySelector('input[aria-label="Skriv til Astrid"]') as HTMLInputElement | null; el?.focus(); el?.scrollIntoView({ behavior: "smooth", block: "center" }); };
   const proev = () => { sDone(); close(); setTimeout(focusInput, 320); };
 
