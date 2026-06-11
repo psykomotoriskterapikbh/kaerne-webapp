@@ -611,7 +611,7 @@ export default function KarlaLanding() {
         </div>
 
         <div className="max-w-5xl mx-auto mt-12 flex flex-wrap justify-center gap-2.5">
-          {["Ingen samtaler gemmes", "Automatisk CPR-blokering", "Bygget på Barnets Lov 2024", "Støtte, ikke skøn", "Gratis at prøve"].map((b) => (
+          {["Gemmes kun i din browser", "Automatisk CPR-blokering", "Bygget på Barnets Lov 2024", "Støtte, ikke skøn", "Gratis at prøve"].map((b) => (
             <span key={b} className="px-4 py-2 rounded-full text-[12px]" style={{ background: "var(--kaerne-cream)", border: "0.5px solid var(--kaerne-border-soft)", color: "var(--kaerne-ink-soft)", letterSpacing: "0.04em" }}>
               {b}
             </span>
