@@ -37,7 +37,7 @@ export default function OmOsPage() {
 
         <section style={sec}>
           <h2 style={h2}>Kontakt</h2>
-          <p style={p}>Vil din kommune høre mere, booke en demo eller stille spørgsmål om sikkerhed og databehandling? Skriv til <a href="mailto:astrid@xn--krne-voa.dk" style={{ color: "var(--kaerne-terracotta-deep)", textDecoration: "underline" }}>astrid@kærne.dk</a> — du får svar fra et menneske.</p>
+          <p style={p}>Vil din kommune høre mere, booke en demo eller stille spørgsmål om sikkerhed og databehandling? Skriv til <a href="mailto:kontakt@astridai.dk" style={{ color: "var(--kaerne-terracotta-deep)", textDecoration: "underline" }}>kontakt@astridai.dk</a> — du får svar fra et menneske.</p>
           <p style={{ fontSize: 13, color: "var(--kaerne-muted)", fontStyle: "italic", margin: "14px 0 0" }}>Fulde virksomhedsoplysninger (CVR m.v.) tilføjes her, når selskabsregistreringen er endelig.</p>
         </section>
 
