@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Om os — holdet bag Astrid",
-  description: "Astrid bygges af Kærne — et dansk fagpersons-netværk på det sociale område. Læs om missionen, værdierne og holdet bag.",
+  description: "Astrid bygges af et lille dansk team med rødder i det sociale område. Læs om missionen, værdierne og holdet bag.",
 };
 
 const sec: React.CSSProperties = { marginTop: 28 };
@@ -19,7 +19,7 @@ export default function OmOsPage() {
 
         <section style={sec}>
           <h2 style={h2}>Hvem står bag</h2>
-          <p style={p}>Astrid bygges af <strong>Kærne</strong> — et dansk fagpersons-netværk på det sociale område med base på Sjælland. Vi arbejder til daglig med familiesager efter Barnets Lov og kender derfor hverdagen på socialområdet indefra: dokumentationspresset, fristerne og de svære skøn.</p>
+          <p style={p}>Astrid bygges af <strong>Astrid AI</strong> — et lille dansk team med base på Sjælland og rødder i det sociale område. Vi arbejder til daglig med familiesager efter Barnets Lov og kender derfor hverdagen på socialområdet indefra: dokumentationspresset, fristerne og de svære skøn.</p>
           <p style={p}>Astrid er vores svar på en enkel udfordring: dygtige fagfolk bruger alt for meget af deres tid på papir og for lidt hos borgeren.</p>
         </section>
 
