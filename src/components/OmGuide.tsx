@@ -25,7 +25,7 @@ const TRYGHED = [
   { t: "Samtaler gemmes kun i din browser", d: "Dine samtaler gemmes ikke hos os. Det, du vælger at gemme, ligger lokalt i din egen browser, og du kan slette det når som helst." },
   { t: "Automatisk CPR-blokering", d: "Beskeder med CPR-numre afvises, før de sendes, og 1-kliks anonymisering fjerner telefon, e-mail og adresse. Navne skal du selv tjekke." },
   { t: "Støtte, ikke skøn", d: "Astrid træffer aldrig afgørelser. Det socialfaglige skøn og myndighedsansvaret ligger altid hos dig og din kommune." },
-  { t: "Åbenhed om databehandling", d: "Spørg os direkte om GDPR, databehandling og sikkerhed på astrid@kærne.dk, og læs vores privatlivspolitik nederst på siden." },
+  { t: "Åbenhed om databehandling", d: "Spørg os direkte om GDPR, databehandling og sikkerhed på kontakt@astridai.dk, og læs vores privatlivspolitik nederst på siden." },
 ];
 
 const card: React.CSSProperties = {
@@ -96,10 +96,10 @@ export function OmGuide() {
           </div>
         </div>
         <div style={{ marginBottom: 14 }}>
-          <a href="mailto:astrid@xn--krne-voa.dk?subject=Astrid%20%E2%80%93%20book%20en%20demo%20for%20vores%20forvaltning" style={{ display: "inline-block", padding: "13px 28px", borderRadius: 999, background: "linear-gradient(135deg,#ef9355,#d96637)", color: "#fff", fontWeight: 600, fontSize: 15.5, textDecoration: "none", boxShadow: "0 5px 16px rgba(217,102,55,.34)" }}>Book 15 min for din forvaltning →</a>
+          <a href="mailto:kontakt@astridai.dk?subject=Astrid%20%E2%80%93%20book%20en%20demo%20for%20vores%20forvaltning" style={{ display: "inline-block", padding: "13px 28px", borderRadius: 999, background: "linear-gradient(135deg,#ef9355,#d96637)", color: "#fff", fontWeight: 600, fontSize: 15.5, textDecoration: "none", boxShadow: "0 5px 16px rgba(217,102,55,.34)" }}>Book 15 min for din forvaltning →</a>
         </div>
         <p style={{ fontSize: 14, color: "var(--kaerne-ink-soft)", margin: "4px 0 0" }}>
-          Vil din kommune høre mere, eller har du spørgsmål? <a href="mailto:astrid@xn--krne-voa.dk" style={{ color: "var(--kaerne-terracotta-deep)", textDecoration: "underline" }}>Skriv til os</a>.
+          Vil din kommune høre mere, eller har du spørgsmål? <a href="mailto:kontakt@astridai.dk" style={{ color: "var(--kaerne-terracotta-deep)", textDecoration: "underline" }}>Skriv til os</a>.
         </p>
         <div style={{ marginTop: 18, paddingTop: 16, borderTop: "0.5px solid var(--kaerne-border)" }}>
           <div style={{ fontSize: 13.5, color: "var(--kaerne-ink-soft)", marginBottom: 9 }}>Gratis bonus: en klar skabelon til §20-notatet.</div>
