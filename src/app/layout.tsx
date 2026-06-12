@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://kaerne-webapp.vercel.app"),
+  metadataBase: new URL("https://www.astridai.dk"),
   title: {
     default: "Astrid — Din digitale kollega i socialforvaltningen",
     template: "%s · Astrid",
