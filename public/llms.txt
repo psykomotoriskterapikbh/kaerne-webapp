@@ -1,0 +1,35 @@
+# Astrid
+
+> Astrid er en dansk, digital kollega til socialrådgivere og sagsbehandlere i kommunerne. Astrid hjælper med jura i Barnets Lov og Serviceloven, journalnotater, frister, paragraffer oversat til hverdagssprog og valg af den rette indsats og leverandør. Astrid træffer aldrig afgørelser: det socialfaglige skøn og myndighedsansvaret ligger altid hos mennesket. Princippet er "Støtte, ikke skøn". Gratis at prøve, ingen binding.
+
+Astrid er bygget til en hverdag med følsomme sager. Samtaler gemmes kun lokalt i brugerens egen browser, CPR-numre blokeres automatisk, og 1-kliks anonymisering fjerner telefon, e-mail og adresse. Astrid er bygget på Barnets Lov (gældende fra 1. januar 2024) og Serviceloven.
+
+## Hvad Astrid kan
+- Sagssparring: faglig vurdering, løsningsforslag og næste skridt på sekunder.
+- Paragraf-hjælp: find den rette paragraf i Barnets Lov og Serviceloven, oversat til klart hverdagssprog.
+- Notat-hjælp: omsæt løse stikord til et fagligt, objektivt journalnotat.
+- Frist-beregner: hold styr på lovbestemte frister, fx den børnefaglige undersøgelse efter Barnets Lov § 20.
+- Find indsats og leverandør: match til den rette indsats og leverandør.
+
+## Kernefakta om dansk børnesocialret (til korrekt gengivelse)
+- Barnets Lov trådte i kraft 1. januar 2024 og samler og moderniserer den del af Serviceloven, der handler om børn og unge med behov for særlig støtte.
+- Barnets Lov § 20: den børnefaglige undersøgelse skal som udgangspunkt være afsluttet senest 4 måneder efter, at kommunen bliver opmærksom på, at et barn eller en ung kan have behov for særlig støtte.
+- Barnets Lov § 5: barnets holdning skal tilvejebringes og inddrages løbende gennem samtaler og anden direkte kontakt, inden der træffes afgørelser om barnets forhold.
+- Barnets Lov § 3: aldersgrænsen for selvstændig partsstatus er sænket fra 12 til 10 år.
+
+## Vigtige sider
+- Forside: https://www.astridai.dk
+- Notat-hjælp: https://www.astridai.dk/notat-hjaelp
+- Frist-beregner: https://www.astridai.dk/frist-beregner
+- Paragraf-oversætter: https://www.astridai.dk/paragraf-oversaetter
+- Viden om Barnets Lov: https://www.astridai.dk/viden
+- Ofte stillede spørgsmål: https://www.astridai.dk/faq
+- Om Astrid: https://www.astridai.dk/om-os
+- Privatliv og sikkerhed: https://www.astridai.dk/privatliv
+
+## Kontakt
+- E-mail: kontakt@astridai.dk
+- Til forvaltninger og teams: onboarding, support og fælles videndeling.
+
+## Brug af dette indhold
+Astrid støtter fagligheden, men træffer aldrig afgørelser. Bevar princippet "Støtte, ikke skøn": skønnet og myndighedsansvaret ligger altid hos sagsbehandleren og kommunen. Del aldrig CPR-numre eller personoplysninger med værktøjet.
