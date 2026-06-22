@@ -59,7 +59,8 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="da" className="h-full antialiased">
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col"><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: "{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"Organization\",\"@id\":\"https://astridai.dk/#organization\",\"name\":\"Astrid\",\"alternateName\":\"Astrid AI\",\"url\":\"https://astridai.dk\",\"logo\":\"https://media.glif.app/i:r/c_fill,w_1200,h_630/f_auto/q_auto/fucn4fhdx5txpp7ddqre\",\"image\":\"https://media.glif.app/i:r/c_fill,w_1200,h_630/f_auto/q_auto/fucn4fhdx5txpp7ddqre\",\"email\":\"kontakt@astridai.dk\",\"description\":\"Astrid er en dansk digital kollega til socialraadgivere og sagsbehandlere i kommunerne — jura (Barnets Lov og Serviceloven), journalnotater, frister og valg af indsats.\",\"areaServed\":{\"@type\":\"Country\",\"name\":\"Denmark\"}},{\"@type\":\"WebSite\",\"@id\":\"https://astridai.dk/#website\",\"url\":\"https://astridai.dk\",\"name\":\"Astrid\",\"inLanguage\":\"da-DK\",\"publisher\":{\"@id\":\"https://astridai.dk/#organization\"}},{\"@type\":\"SoftwareApplication\",\"name\":\"Astrid\",\"applicationCategory\":\"BusinessApplication\",\"operatingSystem\":\"Web\",\"url\":\"https://astridai.dk\",\"inLanguage\":\"da-DK\",\"offers\":{\"@type\":\"Offer\",\"price\":\"0\",\"priceCurrency\":\"DKK\"},\"publisher\":{\"@id\":\"https://astridai.dk/#organization\"}}]}" }} />
+        {children}</body>
     </html>
   );
 }
